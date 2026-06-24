@@ -1,0 +1,637 @@
+[
+  {
+    "number": "000101/15",
+    "name": "Eevee",
+    "rarity": "Common"
+  },
+  {
+    "number": "000102/15",
+    "name": "Eevee",
+    "rarity": "Common"
+  },
+  {
+    "number": "000103/15",
+    "name": "Eevee",
+    "rarity": "Common"
+  },
+  {
+    "number": "000104/15",
+    "name": "Eevee",
+    "rarity": "Common"
+  },
+  {
+    "number": "000105/15",
+    "name": "Eevee",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000106/15",
+    "name": "Eevee",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000107/15",
+    "name": "Eevee",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000108/15",
+    "name": "Eevee",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000109/15",
+    "name": "Eevee",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000110/15",
+    "name": "Eevee",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000111/15",
+    "name": "Eevee",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000112/15",
+    "name": "Eevee",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000113/15",
+    "name": "Eevee V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000114/15",
+    "name": "Eevee VMAX",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "0115/15",
+    "name": "Eevee",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "000201/14",
+    "name": "Vaporeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000202/14",
+    "name": "Vaporeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000203/14",
+    "name": "Vaporeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000204/14",
+    "name": "Vaporeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000205/14",
+    "name": "Vaporeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000206/14",
+    "name": "Vaporeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000207/14",
+    "name": "Vaporeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000208/14",
+    "name": "Vaporeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000209/14",
+    "name": "Vaporeon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000210/14",
+    "name": "Vaporeon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000211/14",
+    "name": "Vaporeon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000212/14",
+    "name": "Vaporeon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000213/14",
+    "name": "Vaporeon V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000214/14",
+    "name": "Vaporeon VMAX",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "000301/14",
+    "name": "Jolteon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000302/14",
+    "name": "Jolteon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000303/14",
+    "name": "Jolteon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000304/14",
+    "name": "Jolteon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000305/14",
+    "name": "Jolteon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000306/14",
+    "name": "Jolteon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000307/14",
+    "name": "Jolteon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000308/14",
+    "name": "Jolteon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000309/14",
+    "name": "Jolteon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000310/14",
+    "name": "Jolteon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000311/14",
+    "name": "Jolteon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000312/14",
+    "name": "Jolteon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000313/14",
+    "name": "Jolteon V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000314/14",
+    "name": "Jolteon VMAX",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "000401/14",
+    "name": "Flareon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000402/14",
+    "name": "Flareon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000403/14",
+    "name": "Flareon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000404/14",
+    "name": "Flareon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000405/14",
+    "name": "Flareon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000406/14",
+    "name": "Flareon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000407/14",
+    "name": "Flareon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000408/14",
+    "name": "Flareon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000409/14",
+    "name": "Flareon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000410/14",
+    "name": "Flareon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000411/14",
+    "name": "Flareon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000412/14",
+    "name": "Flareon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000413/14",
+    "name": "Flareon V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000414/14",
+    "name": "Flareon VMAX",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "000501/14",
+    "name": "Espeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000502/14",
+    "name": "Espeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000503/14",
+    "name": "Espeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000504/14",
+    "name": "Espeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000505/14",
+    "name": "Espeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000506/14",
+    "name": "Espeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000507/14",
+    "name": "Espeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000508/14",
+    "name": "Espeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000509/14",
+    "name": "Espeon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000510/14",
+    "name": "Espeon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000511/14",
+    "name": "Espeon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000512/14",
+    "name": "Espeon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000513/14",
+    "name": "Espeon V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000514/14",
+    "name": "Espeon VMAX",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "000601/14",
+    "name": "Umbreon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000602/14",
+    "name": "Umbreon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000603/14",
+    "name": "Umbreon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000604/14",
+    "name": "Umbreon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000605/14",
+    "name": "Umbreon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000606/14",
+    "name": "Umbreon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000607/14",
+    "name": "Umbreon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000608/14",
+    "name": "Umbreon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000609/14",
+    "name": "Umbreon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000610/14",
+    "name": "Umbreon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000611/14",
+    "name": "Umbreon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000612/14",
+    "name": "Umbreon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000613/14",
+    "name": "Umbreon V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000614/14",
+    "name": "Umbreon VMAX",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "000701/14",
+    "name": "Leafeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000702/14",
+    "name": "Leafeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000703/14",
+    "name": "Leafeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000704/14",
+    "name": "Leafeon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000705/14",
+    "name": "Leafeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000706/14",
+    "name": "Leafeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000707/14",
+    "name": "Leafeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000708/14",
+    "name": "Leafeon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000709/14",
+    "name": "Leafeon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000710/14",
+    "name": "Leafeon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000711/14",
+    "name": "Leafeon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000712/14",
+    "name": "Leafeon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000713/14",
+    "name": "Leafeon V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000714/14",
+    "name": "Leafeon VMAX",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "000801/14",
+    "name": "Glaceon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000802/14",
+    "name": "Glaceon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000803/14",
+    "name": "Glaceon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000804/14",
+    "name": "Glaceon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000805/14",
+    "name": "Glaceon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000806/14",
+    "name": "Glaceon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000807/14",
+    "name": "Glaceon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000808/14",
+    "name": "Glaceon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000809/14",
+    "name": "Glaceon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000810/14",
+    "name": "Glaceon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000811/14",
+    "name": "Glaceon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000812/14",
+    "name": "Glaceon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000813/14",
+    "name": "Glaceon V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000814/14",
+    "name": "Glaceon VMAX",
+    "rarity": "Triple Rare"
+  },
+  {
+    "number": "000901/14",
+    "name": "Sylveon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000902/14",
+    "name": "Sylveon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000903/14",
+    "name": "Sylveon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000904/14",
+    "name": "Sylveon",
+    "rarity": "Common"
+  },
+  {
+    "number": "000905/14",
+    "name": "Sylveon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000906/14",
+    "name": "Sylveon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000907/14",
+    "name": "Sylveon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000908/14",
+    "name": "Sylveon",
+    "rarity": "Uncommon"
+  },
+  {
+    "number": "000909/14",
+    "name": "Sylveon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000910/14",
+    "name": "Sylveon",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000911/14",
+    "name": "Sylveon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000912/14",
+    "name": "Sylveon",
+    "rarity": "Double Rare"
+  },
+  {
+    "number": "000913/14",
+    "name": "Sylveon V",
+    "rarity": "Rare"
+  },
+  {
+    "number": "000914/14",
+    "name": "Sylveon VMAX",
+    "rarity": "Triple Rare"
+  }
+]

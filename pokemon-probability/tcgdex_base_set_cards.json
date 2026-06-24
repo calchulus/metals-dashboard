@@ -1,0 +1,1095 @@
+[
+  {
+    "id": "base1-1",
+    "localId": "1",
+    "name": "Alakazam",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "100",
+    "types": [
+      "Psychic"
+    ],
+    "stage": "Stage 2",
+    "evolvesFrom": "Kadabra"
+  },
+  {
+    "id": "base1-2",
+    "localId": "2",
+    "name": "Blastoise",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "100",
+    "types": [
+      "Water"
+    ],
+    "stage": "Stage 2",
+    "evolvesFrom": "Wartortle"
+  },
+  {
+    "id": "base1-3",
+    "localId": "3",
+    "name": "Chansey",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "120",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-4",
+    "localId": "4",
+    "name": "Charizard",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "120",
+    "types": [
+      "Fire",
+      "Colorless"
+    ],
+    "stage": "Stage 2",
+    "evolvesFrom": "Charmeleon"
+  },
+  {
+    "id": "base1-5",
+    "localId": "5",
+    "name": "Clefairy",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-6",
+    "localId": "6",
+    "name": "Gyarados",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "100",
+    "types": [
+      "Water"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Magikarp"
+  },
+  {
+    "id": "base1-7",
+    "localId": "7",
+    "name": "Hitmonchan",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Fighting"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-8",
+    "localId": "8",
+    "name": "Machamp",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "100",
+    "types": [
+      "Fighting"
+    ],
+    "stage": "Stage 2",
+    "evolvesFrom": "Machoke"
+  },
+  {
+    "id": "base1-9",
+    "localId": "9",
+    "name": "Magneton",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "90",
+    "types": [
+      "Lightning"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Magnemite"
+  },
+  {
+    "id": "base1-10",
+    "localId": "10",
+    "name": "Mewtwo",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Psychic"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-11",
+    "localId": "11",
+    "name": "Nidoking",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "90",
+    "types": [
+      "Grass",
+      "Fighting"
+    ],
+    "stage": "Stage 2",
+    "evolvesFrom": "Nidorino"
+  },
+  {
+    "id": "base1-12",
+    "localId": "12",
+    "name": "Ninetales",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "80",
+    "types": [
+      "Fire"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Vulpix"
+  },
+  {
+    "id": "base1-13",
+    "localId": "13",
+    "name": "Poliwrath",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "80",
+    "types": [
+      "Water",
+      "Fighting"
+    ],
+    "stage": "Stage 2",
+    "evolvesFrom": "Poliwhirl"
+  },
+  {
+    "id": "base1-14",
+    "localId": "14",
+    "name": "Raichu",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "80",
+    "types": [
+      "Lightning"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Pikachu"
+  },
+  {
+    "id": "base1-15",
+    "localId": "15",
+    "name": "Venusaur",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "100",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Stage 2",
+    "evolvesFrom": "Ivysaur"
+  },
+  {
+    "id": "base1-16",
+    "localId": "16",
+    "name": "Zapdos",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "90",
+    "types": [
+      "Lightning"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-17",
+    "localId": "17",
+    "name": "Beedrill",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "80",
+    "types": [
+      "Grass",
+      "Fighting"
+    ],
+    "stage": "Stage 2",
+    "evolvesFrom": "Kakuna"
+  },
+  {
+    "id": "base1-18",
+    "localId": "18",
+    "name": "Dragonair",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "80",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Dratini"
+  },
+  {
+    "id": "base1-19",
+    "localId": "19",
+    "name": "Dugtrio",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Fighting"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Diglett"
+  },
+  {
+    "id": "base1-20",
+    "localId": "20",
+    "name": "Electabuzz",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Lightning"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-21",
+    "localId": "21",
+    "name": "Electrode",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Lightning"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Voltorb"
+  },
+  {
+    "id": "base1-22",
+    "localId": "22",
+    "name": "Pidgeotto",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Pidgey"
+  },
+  {
+    "id": "base1-23",
+    "localId": "23",
+    "name": "Arcanine",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Fire"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Growlithe"
+  },
+  {
+    "id": "base1-24",
+    "localId": "24",
+    "name": "Charmeleon",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Fire"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Charmander"
+  },
+  {
+    "id": "base1-25",
+    "localId": "25",
+    "name": "Dewgong",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "80",
+    "types": [
+      "Water"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Seel"
+  },
+  {
+    "id": "base1-26",
+    "localId": "26",
+    "name": "Dratini",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-27",
+    "localId": "27",
+    "name": "Farfetch'd",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-28",
+    "localId": "28",
+    "name": "Growlithe",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Fire"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-29",
+    "localId": "29",
+    "name": "Haunter",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Psychic"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Gastly"
+  },
+  {
+    "id": "base1-30",
+    "localId": "30",
+    "name": "Ivysaur",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Bulbasaur"
+  },
+  {
+    "id": "base1-31",
+    "localId": "31",
+    "name": "Jynx",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Psychic"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-32",
+    "localId": "32",
+    "name": "Kadabra",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Psychic"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Abra"
+  },
+  {
+    "id": "base1-33",
+    "localId": "33",
+    "name": "Kakuna",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Weedle"
+  },
+  {
+    "id": "base1-34",
+    "localId": "34",
+    "name": "Machoke",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "80",
+    "types": [
+      "Fighting"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Machop"
+  },
+  {
+    "id": "base1-35",
+    "localId": "35",
+    "name": "Magikarp",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Water"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-36",
+    "localId": "36",
+    "name": "Magmar",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Fire"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-37",
+    "localId": "37",
+    "name": "Nidorino",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Nidoran\u2642"
+  },
+  {
+    "id": "base1-38",
+    "localId": "38",
+    "name": "Poliwhirl",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Water"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Poliwag"
+  },
+  {
+    "id": "base1-39",
+    "localId": "39",
+    "name": "Porygon",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-40",
+    "localId": "40",
+    "name": "Raticate",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Rattata"
+  },
+  {
+    "id": "base1-41",
+    "localId": "41",
+    "name": "Seel",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Water"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-42",
+    "localId": "42",
+    "name": "Wartortle",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Water"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Squirtle"
+  },
+  {
+    "id": "base1-43",
+    "localId": "43",
+    "name": "Abra",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Psychic"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-44",
+    "localId": "44",
+    "name": "Bulbasaur",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-45",
+    "localId": "45",
+    "name": "Caterpie",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-46",
+    "localId": "46",
+    "name": "Charmander",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Fire"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-47",
+    "localId": "47",
+    "name": "Diglett",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Fighting"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-48",
+    "localId": "48",
+    "name": "Doduo",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-49",
+    "localId": "49",
+    "name": "Drowzee",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Psychic"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-50",
+    "localId": "50",
+    "name": "Gastly",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Psychic"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-51",
+    "localId": "51",
+    "name": "Koffing",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-52",
+    "localId": "52",
+    "name": "Machop",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Fighting"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-53",
+    "localId": "53",
+    "name": "Magnemite",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Lightning"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-54",
+    "localId": "54",
+    "name": "Metapod",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Caterpie"
+  },
+  {
+    "id": "base1-55",
+    "localId": "55",
+    "name": "Nidoran\u2642",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-56",
+    "localId": "56",
+    "name": "Onix",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "70",
+    "types": [
+      "Fighting"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-57",
+    "localId": "57",
+    "name": "Pidgey",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-58",
+    "localId": "58",
+    "name": "Pikachu",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Lightning"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-59",
+    "localId": "59",
+    "name": "Poliwag",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Water"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-60",
+    "localId": "60",
+    "name": "Ponyta",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Fire"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-61",
+    "localId": "61",
+    "name": "Rattata",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Colorless"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-62",
+    "localId": "62",
+    "name": "Sandshrew",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Fighting"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-63",
+    "localId": "63",
+    "name": "Squirtle",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Water"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-64",
+    "localId": "64",
+    "name": "Starmie",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "60",
+    "types": [
+      "Water"
+    ],
+    "stage": "Stage 1",
+    "evolvesFrom": "Staryu"
+  },
+  {
+    "id": "base1-65",
+    "localId": "65",
+    "name": "Staryu",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Water"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-66",
+    "localId": "66",
+    "name": "Tangela",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "50",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-67",
+    "localId": "67",
+    "name": "Voltorb",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Lightning"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-68",
+    "localId": "68",
+    "name": "Vulpix",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "40",
+    "types": [
+      "Fire"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-69",
+    "localId": "69",
+    "name": "Weedle",
+    "category": "Pok\u00e9mon",
+    "supertype": "Pok\u00e9mon",
+    "hp": "30",
+    "types": [
+      "Grass"
+    ],
+    "stage": "Basic"
+  },
+  {
+    "id": "base1-70",
+    "localId": "70",
+    "name": "Clefairy Doll",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-71",
+    "localId": "71",
+    "name": "Computer Search",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-72",
+    "localId": "72",
+    "name": "Devolution Spray",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-73",
+    "localId": "73",
+    "name": "Impostor Professor Oak",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-74",
+    "localId": "74",
+    "name": "Item Finder",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-75",
+    "localId": "75",
+    "name": "Lass",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-76",
+    "localId": "76",
+    "name": "Pokemon Breeder",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-77",
+    "localId": "77",
+    "name": "Pokemon Trader",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-78",
+    "localId": "78",
+    "name": "Scoop Up",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-79",
+    "localId": "79",
+    "name": "Super Energy Removal",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-80",
+    "localId": "80",
+    "name": "Defender",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-81",
+    "localId": "81",
+    "name": "Energy Retrieval",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-82",
+    "localId": "82",
+    "name": "Full Heal",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-83",
+    "localId": "83",
+    "name": "Maintenance",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-84",
+    "localId": "84",
+    "name": "PlusPower",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-85",
+    "localId": "85",
+    "name": "Pokemon Center",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-86",
+    "localId": "86",
+    "name": "Pokemon Flute",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-87",
+    "localId": "87",
+    "name": "Pokedex",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-88",
+    "localId": "88",
+    "name": "Professor Oak",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-89",
+    "localId": "89",
+    "name": "Revive",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-90",
+    "localId": "90",
+    "name": "Super Potion",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-91",
+    "localId": "91",
+    "name": "Bill",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-92",
+    "localId": "92",
+    "name": "Energy Removal",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-93",
+    "localId": "93",
+    "name": "Gust of Wind",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-94",
+    "localId": "94",
+    "name": "Potion",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-95",
+    "localId": "95",
+    "name": "Switch",
+    "category": "Trainer",
+    "supertype": "Trainer"
+  },
+  {
+    "id": "base1-96",
+    "localId": "96",
+    "name": "Double Colorless Energy",
+    "category": "Energy",
+    "supertype": "Energy"
+  },
+  {
+    "id": "base1-97",
+    "localId": "97",
+    "name": "Fighting Energy",
+    "category": "Energy",
+    "supertype": "Energy"
+  },
+  {
+    "id": "base1-98",
+    "localId": "98",
+    "name": "Fire Energy",
+    "category": "Energy",
+    "supertype": "Energy"
+  },
+  {
+    "id": "base1-99",
+    "localId": "99",
+    "name": "Grass Energy",
+    "category": "Energy",
+    "supertype": "Energy"
+  },
+  {
+    "id": "base1-100",
+    "localId": "100",
+    "name": "Lightning Energy",
+    "category": "Energy",
+    "supertype": "Energy"
+  },
+  {
+    "id": "base1-101",
+    "localId": "101",
+    "name": "Psychic Energy",
+    "category": "Energy",
+    "supertype": "Energy"
+  },
+  {
+    "id": "base1-102",
+    "localId": "102",
+    "name": "Water Energy",
+    "category": "Energy",
+    "supertype": "Energy"
+  }
+]

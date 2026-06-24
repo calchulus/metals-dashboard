@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokemon TCG Probability Framework</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f0f23; --card: #1a1a2e; --border: #2a2a4a;
+    --text: #e0e0e0; --muted: #8888aa; --accent: #4fc3f7;
+    --red: #ff6b6b; --gold: #ffd93d; --green: #6bcb77;
+    --purple: #bb86fc; --pink: #f48fb1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  header { text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-bottom: 2px solid var(--border); }
+  header h1 { font-size: 2.2em; background: linear-gradient(90deg, var(--accent), var(--purple), var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+  header p { color: var(--muted); font-size: 1.05em; }
+
+  .tabs { display: flex; gap: 4px; margin: 24px 0 0; border-bottom: 2px solid var(--border); overflow-x: auto; }
+  .tab { padding: 12px 20px; background: transparent; border: none; color: var(--muted); cursor: pointer; font-size: 0.95em; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: all 0.2s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .panel { display: none; padding: 24px 0; }
+  .panel.active { display: block; }
+
+  .grid { display: grid; gap: 20px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card h3 { font-size: 1em; color: var(--accent); margin-bottom: 12px; }
+  .card .big-num { font-size: 2.2em; font-weight: 700; line-height: 1.1; }
+  .card .label { color: var(--muted); font-size: 0.85em; margin-top: 4px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+  th { text-align: left; padding: 10px 12px; background: rgba(79,195,247,0.1); color: var(--accent); border-bottom: 2px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: rgba(79,195,247,0.05); }
+
+  .bar { height: 8px; border-radius: 4px; background: var(--border); position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+  .calc-row { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 16px; }
+  .calc-group { display: flex; flex-direction: column; gap: 4px; }
+  .calc-group label { font-size: 0.8em; color: var(--muted); }
+  .calc-group input, .calc-group select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; font-size: 0.95em; }
+  .calc-group input:focus, .calc-group select:focus { outline: none; border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #000; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.95em; }
+  button.primary:hover { opacity: 0.9; }
+
+  .result-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 12px; }
+  .result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .result-row:last-child { border-bottom: none; }
+
+  .rarity-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+  .r-common { background: rgba(107,203,119,0.2); color: var(--green); }
+  .r-uncommon { background: rgba(79,195,247,0.2); color: var(--accent); }
+  .r-rare { background: rgba(255,217,61,0.2); color: var(--gold); }
+  .r-holo { background: rgba(187,134,252,0.2); color: var(--purple); }
+  .r-ultra { background: rgba(255,107,107,0.2); color: var(--red); }
+  .r-secret { background: rgba(244,143,177,0.2); color: var(--pink); }
+
+  .chart-container { position: relative; height: 320px; }
+  .chart-container canvas { max-height: 100%; }
+
+  .sim-area { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; min-height: 200px; }
+  .sim-card { display: inline-block; width: 50px; height: 70px; border-radius: 6px; margin: 3px; font-size: 0.55em; text-align: center; padding: 4px 2px; line-height: 1.2; vertical-align: top; border: 1px solid rgba(255,255,255,0.2); }
+  .sim-common { background: #2d4a3e; }
+  .sim-uncommon { background: #2a3d5e; }
+  .sim-rare { background: #4a3d2a; }
+  .sim-holo { background: #3d2a5e; border-color: var(--purple); }
+  .sim-ultra { background: #5e2a2a; border-color: var(--red); }
+  .sim-secret { background: #5e2a4a; border-color: var(--pink); }
+
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-bar input { flex: 1; min-width: 200px; }
+  .pill { display: inline-block; padding: 4px 12px; border-radius: 16px; font-size: 0.8em; background: var(--border); color: var(--muted); cursor: pointer; }
+  .pill.active { background: var(--accent); color: #000; }
+
+  .insight { padding: 16px; border-left: 3px solid var(--accent); background: rgba(79,195,247,0.05); border-radius: 0 8px 8px 0; margin-bottom: 12px; }
+  .insight strong { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.5em; }
+    .tabs { gap: 0; }
+    .tab { padding: 10px 12px; font-size: 0.85em; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Pokemon TCG Probability Framework</h1>
+  <p>171 sets &middot; Sheet-based rarity analysis &middot; Interactive calculators</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="showPanel('overview')">Overview</button>
+    <button class="tab" onclick="showPanel('calculator')">Calculator</button>
+    <button class="tab" onclick="showPanel('sets')">Sets</button>
+    <button class="tab" onclick="showPanel('rarity')">Rarity</button>
+    <button class="tab" onclick="showPanel('simulator')">Simulator</button>
+    <button class="tab" onclick="showPanel('ev')">EV Analysis</button>
+    <button class="tab" onclick="showPanel('grading')">Grading</button>
+    <button class="tab" onclick="showPanel('value')">Value Lookup</button>
+    <button class="tab" onclick="showPanel('insights')">Insights</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="overview" class="panel active">
+    <div class="grid grid-4" style="margin-bottom:24px">
+      <div class="card"><div class="big-num" style="color:var(--accent)">171</div><div class="label">Total Sets Tracked</div></div>
+      <div class="card"><div class="big-num" style="color:var(--purple)">16</div><div class="label">Rarity Tiers</div></div>
+      <div class="card"><div class="big-num" style="color:var(--gold)">121</div><div class="label">Cards per Sheet (11&times;11)</div></div>
+      <div class="card"><div class="big-num" style="color:var(--green)">17</div><div class="label">Series Covered</div></div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Pull Rate by Rarity (Modern SV)</h3>
+        <div class="chart-container"><canvas id="chartPullRates"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Packs Needed for 90% Confidence</h3>
+        <div class="chart-container"><canvas id="chartPacksNeeded"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Box Expected Value (36 packs)</h3>
+      <table>
+        <tr><th>Rarity</th><th>Pull Rate</th><th>Expected per Box</th><th>Probability &ge;1</th><th>Visual</th></tr>
+        <tr><td><span class="rarity-badge r-holo">Holo Rare</span></td><td>1/3</td><td>12.0</td><td>100%</td><td><div class="bar"><div class="bar-fill" style="width:100%;background:var(--purple)"></div></div></td></tr>
+        <tr><td><span class="rarity-badge r-rare">Double Rare</span></td><td>1/12.5</td><td>2.88</td><td>95.0%</td><td><div class="bar"><div class="bar-fill" style="width:95%;background:var(--gold)"></div></div></td></tr>
+        <tr><td><span class="rarity-badge r-ultra">Illustration Rare</span></td><td>1/30</td><td>1.2</td><td>70.5%</td><td><div class="bar"><div class="bar-fill" style="width:70.5%;background:var(--red)"></div></div></td></tr>
+        <tr><td><span class="rarity-badge r-ultra">Ultra Rare</span></td><td>1/42.9</td><td>0.84</td><td>57.2%</td><td><div class="bar"><div class="bar-fill" style="width:57.2%;background:var(--red)"></div></div></td></tr>
+        <tr><td><span class="rarity-badge r-secret">Special Illustration</span></td><td>1/62.5</td><td>0.58</td><td>44.0%</td><td><div class="bar"><div class="bar-fill" style="width:44%;background:var(--pink)"></div></div></td></tr>
+        <tr><td><span class="rarity-badge r-secret">Hyper Rare</span></td><td>1/83.3</td><td>0.43</td><td>35.3%</td><td><div class="bar"><div class="bar-fill" style="width:35.3%;background:var(--pink)"></div></div></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div id="calculator" class="panel">
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Pull Probability Calculator</h3>
+        <div class="calc-row">
+          <div class="calc-group"><label>Era</label><select id="calcEra" onchange="updateCalcRarities()">
+            <option value="modern">Modern (SV/SWSH)</option>
+            <option value="vintage">Vintage (WOTC)</option>
+          </select></div>
+          <div class="calc-group"><label>Rarity</label><select id="calcRarity"></select></div>
+          <div class="calc-group"><label>Packs</label><input id="calcPacks" type="number" value="36" min="1" max="10000"></div>
+          <button class="primary" onclick="runCalc()">Calculate</button>
+        </div>
+        <div id="calcResults" class="result-box" style="display:none"></div>
+      </div>
+
+      <div class="card">
+        <h3>Target Probability Calculator</h3>
+        <div class="calc-row">
+          <div class="calc-group"><label>Target %</label><input id="targetProb" type="number" value="90" min="1" max="99.99"></div>
+          <div class="calc-group"><label>Rarity</label><select id="targetRarity"></select></div>
+          <button class="primary" onclick="runTargetCalc()">Find Packs</button>
+        </div>
+        <div id="targetResults" class="result-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Specific Card Calculator</h3>
+      <div class="calc-row">
+        <div class="calc-group"><label>Set Size (holos in pool)</label><input id="specSetSize" type="number" value="16" min="1"></div>
+        <div class="calc-group"><label>Copies on Sheet</label><input id="specCopies" type="number" value="7" min="1" max="11"></div>
+        <div class="calc-group"><label>Holo Pull Rate (packs)</label><input id="specPullRate" type="number" value="22" min="1"></div>
+        <button class="primary" onclick="runSpecificCalc()">Calculate</button>
+      </div>
+      <div id="specResults" class="result-box" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- SETS -->
+  <div id="sets" class="panel">
+    <div class="filter-bar">
+      <input id="setSearch" type="text" placeholder="Search sets..." oninput="filterSets()">
+      <span class="pill active" onclick="filterEra('all',this)">All</span>
+      <span class="pill" onclick="filterEra('WOTC',this)">WOTC</span>
+      <span class="pill" onclick="filterEra('EX',this)">EX</span>
+      <span class="pill" onclick="filterEra('DP',this)">DP</span>
+      <span class="pill" onclick="filterEra('BW',this)">BW</span>
+      <span class="pill" onclick="filterEra('XY',this)">XY</span>
+      <span class="pill" onclick="filterEra('SM',this)">SM</span>
+      <span class="pill" onclick="filterEra('SWSH',this)">SWSH</span>
+      <span class="pill" onclick="filterEra('SV',this)">SV</span>
+    </div>
+    <div class="card">
+      <table id="setTable">
+        <thead><tr><th>Set</th><th>Era</th><th>Total</th><th>Holos</th><th>Rares</th><th>Uncommons</th><th>Commons</th><th>Boxes for 90%</th></tr></thead>
+        <tbody id="setTableBody"></tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h3>Set Size Distribution</h3>
+      <div class="chart-container"><canvas id="chartSetSizes"></canvas></div>
+    </div>
+  </div>
+
+  <!-- RARITY -->
+  <div id="rarity" class="panel">
+    <div class="card">
+      <h3>Complete Rarity Symbol Reference</h3>
+      <table>
+        <tr><th>Symbol</th><th>Name</th><th>Pull Rate</th><th>Era</th><th>Description</th></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&bull;</td><td><span class="rarity-badge r-common">Common</span></td><td>3 per pack</td><td>All</td><td>Basic cards, simple attacks</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9670;</td><td><span class="rarity-badge r-uncommon">Uncommon</span></td><td>3 per pack</td><td>All</td><td>Stronger attacks, stage 1 evolutions</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-rare">Rare</span></td><td>1 per pack</td><td>All</td><td>Standard rare, 1 guaranteed per pack</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-holo">Holo Rare</span></td><td>~1 in 3 packs</td><td>Modern</td><td>Shiny foil background behind artwork</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;&#9733;</td><td><span class="rarity-badge r-rare">Double Rare</span></td><td>~1 in 12 packs</td><td>SV/SWSH</td><td>ex/V/GX Pokémon, two black stars</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-ultra">Illustration Rare</span></td><td>~1 in 30 packs</td><td>SV</td><td>Full-art illustration, artistic style</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-ultra">Ultra Rare</span></td><td>~1 in 30-45 packs</td><td>SM+</td><td>Full-art, illustration extends to border</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;&#9733;</td><td><span class="rarity-badge r-secret">Special Illustration Rare</span></td><td>~1 in 45-80 packs</td><td>SV</td><td>Premium story-style full-art scenes</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;&#9733;</td><td><span class="rarity-badge r-secret">Hyper Rare</span></td><td>~1 in 70-100 packs</td><td>SV/SWSH</td><td>Gold foil, textured, highest tier</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;&#9733;</td><td><span class="rarity-badge r-secret">Secret Rare</span></td><td>~1 in 100 packs</td><td>All modern</td><td>Number exceeds set total (e.g. 225/198)</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-holo">Shiny Rare</span></td><td>~1 in 40 packs</td><td>Shining Fates</td><td>Shiny Pokémon with star pattern</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-rare">Promo</span></td><td>N/A</td><td>All</td><td>Black star with "PROMO" text</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-secret">Rainbow Rare</span></td><td>~1 in 100 packs</td><td>SWSH</td><td>Rainbow holographic finish</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-ultra">Alt Art / Alternate</span></td><td>~1 in 40-80 packs</td><td>SWSH/SV</td><td>Alternative artwork for rare cards</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-secret">Text Rare</span></td><td>~1 in 60 packs</td><td>SV</td><td>Text-based artwork rare</td></tr>
+        <tr><td style="font-size:1.5em;text-align:center">&#9733;</td><td><span class="rarity-badge r-secret">Ceramic Rare</span></td><td>~1 in 200+ packs</td><td>SV (151)</td><td>Ceramic-style ultra premium</td></tr>
+      </table>
+    </div>
+    <div class="grid grid-2" style="margin-top:20px">
+      <div class="card">
+        <h3>Pull Rate Evolution (Holo)</h3>
+        <div class="chart-container"><canvas id="chartEraComparison"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Rarity Tier Breakdown</h3>
+        <div class="chart-container"><canvas id="chartRarityPie"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULATOR -->
+  <div id="simulator" class="panel">
+    <div class="card">
+      <h3>Pack Opening Simulator</h3>
+      <div class="calc-row">
+        <div class="calc-group"><label>Number of Packs</label><input id="simPacks" type="number" value="36" min="1" max="500"></div>
+        <div class="calc-group"><label>Era</label><select id="simEra">
+          <option value="modern">Modern (SV)</option>
+          <option value="vintage">Vintage (WOTC)</option>
+        </select></div>
+        <button class="primary" onclick="runSimulation()">Open Packs</button>
+      </div>
+      <div id="simResults" class="result-box" style="margin-bottom:16px"></div>
+      <div id="simCards" class="sim-area"></div>
+    </div>
+  </div>
+
+  <!-- EV ANALYSIS -->
+  <div id="ev" class="panel">
+    <div class="card">
+      <h3>Expected Value: Cost to Pull Chase Cards ($4/pack)</h3>
+      <table>
+        <tr><th>Card</th><th>Rarity</th><th>Sheet Copies</th><th>Packs to 50%</th><th>Cost to 50%</th><th>Packs to 90%</th><th>Cost to 90%</th></tr>
+        <tr><td>Base Set Charizard</td><td>Vintage Holo</td><td>7 (R7)</td><td>35</td><td>$140</td><td>115</td><td>$460</td></tr>
+        <tr><td>Neo Lugia</td><td>Vintage Holo</td><td>5 (R5)</td><td>61</td><td>$244</td><td>202</td><td>$808</td></tr>
+        <tr><td>Evolving Skies Umbreon VMAX Alt</td><td>Ultra Rare</td><td>1</td><td>30</td><td>$120</td><td>98</td><td>$392</td></tr>
+        <tr><td>151 Charizard ex SAR</td><td>Special Illustration</td><td>1</td><td>43</td><td>$172</td><td>143</td><td>$572</td></tr>
+        <tr><td>Prismatic Evolutions Eeveelution</td><td>Special Illustration</td><td>1</td><td>43</td><td>$172</td><td>143</td><td>$572</td></tr>
+      </table>
+    </div>
+    <div class="grid grid-2" style="margin-top:20px">
+      <div class="card">
+        <h3>Cost to Pull by Rarity (at $4/pack)</h3>
+        <div class="chart-container"><canvas id="chartCostToPull"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Box EV vs Market Price</h3>
+        <div class="chart-container"><canvas id="chartBoxEV"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRADING -->
+  <div id="grading" class="panel">
+    <div class="card" style="margin-bottom:20px">
+      <h3>PSA Population Report Explorer</h3>
+      <p style="color:var(--muted);margin-bottom:16px">Grade distribution data for high-value Pokemon cards. Source: PSA public population data.</p>
+      <div class="calc-row">
+        <div class="calc-group"><label>Select Card</label>
+          <select id="gradingCard" onchange="updateGrading()">
+            <option value="base_set_charizard">Base Set Charizard (4/102)</option>
+            <option value="base_set_pikachu">Base Set Pikachu (58/102)</option>
+            <option value="base_set_blastoise">Base Set Blastoise (2/102)</option>
+            <option value="base_set_venusaur">Base Set Venusaur (15/102)</option>
+            <option value="base_set_mewtwo">Base Set Mewtwo (10/102)</option>
+            <option value="base_set_alakazam">Base Set Alakazam (1/102)</option>
+            <option value="neo_genesis_lugia">Neo Genesis Lugia (9/111)</option>
+            <option value="neo_genesis_pichu">Neo Genesis Pichu (12/111)</option>
+            <option value="evolving_skies_umbreon_vmax">Evolving Skies Umbreon VMAX Alt</option>
+            <option value="evolving_skies_rayquaza_vmax">Evolving Skies Rayquaza VMAX Alt</option>
+            <option value="pokemon_151_charizard_ex">151 Charizard ex SAR</option>
+            <option value="crown_zenith_lugia_vstar">Crown Zenith Lugia VSTAR Alt</option>
+            <option value="celebrations_charizard">Celebrations Charizard Classic</option>
+          </select>
+        </div>
+        <div class="calc-group"><label>Base Price ($)</label><input id="gradingPrice" type="number" value="400" min="1"></div>
+        <button class="primary" onclick="updateGrading()">Analyze</button>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Grade Distribution</h3>
+        <div id="gradingSummary"></div>
+        <div class="chart-container" style="margin-top:12px"><canvas id="chartGradeDist"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Value by Grade</h3>
+        <div id="gradingValueSummary"></div>
+        <div class="chart-container" style="margin-top:12px"><canvas id="chartGradeValue"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Grade Distribution Table</h3>
+      <table id="gradingTable">
+        <thead><tr><th>Grade</th><th>Count</th><th>% of Total</th><th>Estimated Value</th><th>Value vs Raw</th><th>Visual</th></tr></thead>
+        <tbody id="gradingTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:20px">
+      <div class="card">
+        <h3>Gem Mint Analysis</h3>
+        <div id="gemMintAnalysis"></div>
+      </div>
+      <div class="card">
+        <h3>Grading ROI Calculator</h3>
+        <div class="calc-row">
+          <div class="calc-group"><label>Raw Card Value ($)</label><input id="roiRaw" type="number" value="150" min="1"></div>
+          <div class="calc-group"><label>Grading Cost ($)</label><input id="roiCost" type="number" value="50" min="1"></div>
+          <div class="calc-group"><label>Expected Grade</label><select id="roiGrade">
+            <option value="8">PSA 8 (NM-MT)</option>
+            <option value="9" selected>PSA 9 (MT)</option>
+            <option value="10">PSA 10 (Gem Mint)</option>
+          </select></div>
+          <button class="primary" onclick="calcROI()">Calculate</button>
+        </div>
+        <div id="roiResults" class="result-box"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Population Comparison Across Cards</h3>
+      <div class="chart-container" style="height:400px"><canvas id="chartPopComparison"></canvas></div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>PSA 10 vs 9 vs 8 — Full Grade Analysis</h3>
+      <p style="color:var(--muted);margin-bottom:16px">Complete grade distribution for all tracked cards. PSA 9 is the most common grade across all cards.</p>
+      <table>
+        <thead><tr><th>Card</th><th>Total Graded</th><th>PSA 10</th><th>PSA 9</th><th>PSA 8</th><th>9+</th><th>8+</th></tr></thead>
+        <tbody id="fullGradeTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Grade Distribution Heatmap</h3>
+      <p style="color:var(--muted);margin-bottom:16px">Percentage breakdown by grade for each card. PSA 8-9 dominate most distributions.</p>
+      <div class="chart-container" style="height:400px"><canvas id="chartGradeHeatmap"></canvas></div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>1 in X Probability Table</h3>
+      <p style="color:var(--muted);margin-bottom:16px">How many cards must be graded to expect one at each grade level.</p>
+      <table>
+        <thead><tr><th>Card</th><th>1 in X = PSA 10</th><th>1 in X = PSA 9</th><th>1 in X = PSA 8</th></tr></thead>
+        <tbody id="invProbTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+    <!-- VALUE LOOKUP -->
+  <div id="value" class="panel">
+    <div class="card" style="margin-bottom:20px">
+      <h3>Card Value Lookup</h3>
+      <p style="color:var(--muted);margin-bottom:16px">Search by card name, set code, or product name (e.g. "CBB2C", "Gem Pack Vol. 2", "Charizard").</p>
+      <div class="calc-row">
+        <div class="calc-group" style="flex:1">
+          <label>Search Card or Product</label>
+          <input id="valueSearch" type="text" placeholder="e.g. Charizard, Umbreon VMAX, CBB2C, Base Set" oninput="filterValueCards()" style="width:100%">
+        </div>
+        <button class="primary" onclick="lookupValue()">Lookup</button>
+      </div>
+      <div id="valueAutocomplete" class="result-box" style="display:none;max-height:200px;overflow-y:auto"></div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Card/Product Details</h3>
+        <div id="valueCardDetails">
+          <p style="color:var(--muted)">Select a card or product above to see details</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>PSA Grade Premiums</h3>
+        <div id="valueGradePremiums">
+          <p style="color:var(--muted)">Select a card to see grade premiums</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Product Alias Resolver</h3>
+      <p style="color:var(--muted);margin-bottom:16px">Same product, many names. Type any variation and it resolves to the canonical product.</p>
+      <div class="calc-row">
+        <div class="calc-group" style="flex:1">
+          <label>Test Alias Resolution</label>
+          <input id="aliasTest" type="text" placeholder="e.g. CBB2C, Chinese Gem Pack Vol.2, EVS, Base Set" oninput="testAlias()" style="width:100%">
+        </div>
+      </div>
+      <div id="aliasResults" class="result-box" style="display:none"></div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Singles vs Packs Decision</h3>
+      <p style="color:var(--muted);margin-bottom:16px">Should you buy singles or packs to get the cards you want?</p>
+      <div class="calc-row">
+        <div class="calc-group"><label>Card Single Price ($)</label><input id="arbSinglePrice" type="number" value="50" min="0"></div>
+        <div class="calc-group"><label>Pack Price ($)</label><input id="arbPackPrice" type="number" value="5" min="0"></div>
+        <div class="calc-group"><label>Pull Rate (1 in X packs)</label><input id="arbPullRate" type="number" value="22" min="1"></div>
+        <button class="primary" onclick="calcArbitrage()">Analyze</button>
+      </div>
+      <div id="arbResults" class="result-box" style="display:none"></div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Top 15 Most Valuable Sets</h3>
+      <table>
+        <thead><tr><th>Set</th><th>Cards</th><th>Market Value</th><th>Avg $/Card</th></tr></thead>
+        <tbody id="topSetsTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div id="insights" class="panel">
+    <div class="insight"><strong>Sheet-Based Rarity:</strong> Vintage cards printed on 121-card (11&times;11) sheets. Cards appearing 8 times (R8) vs 7 times (R7) creates natural rarity variance within the same nominal tier.</div>
+    <div class="insight"><strong>Artificial Rarity First:</strong> Neo Genesis starter final evolutions (Feraligatr, Meganium, Typhlosion) were deliberately made 2&times; rarer (~1/82.5 packs) &mdash; the first instance of intentional rarity manipulation for gameplay value.</div>
+    <div class="insight"><strong>Modern Complexity:</strong> SV era has 15+ rarity tiers vs WOTC's 4&ndash;5. More tiers = more chase cards = higher box opening rates = more product sold.</div>
+    <div class="insight"><strong>121-Card Constant:</strong> Commons sheets have been 121 cards (11&times;11) for 25+ years. Collation principles haven't changed since Base Set.</div>
+    <div class="insight"><strong>Sequence Length:</strong> Gen 1&ndash;5 used 216-pack sequences (1 case). Gen 6+ switched to 360 packs (10 boxes). This affects how duplicates appear in boxes.</div>
+    <div class="insight"><strong>Set Completion Math:</strong> A 200-card set needs ~1,200 packs (33 boxes) for 90% completion via packs only. Trading/buying singles is always more efficient.</div>
+    <div class="insight"><strong>Guaranteed Rare Slot:</strong> Modern packs guarantee 1 rare per pack. Reverse holo slot adds ~12.5% chance of a bonus rare. This is why modern box variance is lower than vintage.</div>
+    <div class="insight"><strong>Striped vs Sequential Collation:</strong> Some Belgian-printed sets (Jungle, Neo Discovery) used striped collation, creating different card sequences and potentially different rarity distributions.</div>
+    <div class="insight"><strong>Case Economics:</strong> Opening 1 case (216 packs) guarantees at least 1 Special Illustration Rare and gives 92.6% chance of a Hyper Rare. The "guaranteed hit" threshold.</div>
+    <div class="insight"><strong>Price vs Rarity Disconnect:</strong> PSA population data shows grading demand doesn't always match pull rates. Popular Pokemon (Charizard, Pikachu) command premiums regardless of actual rarity.</div>
+  </div>
+</div>
+
+<script>
+// ============ DATA ============
+const RARITY = {
+  modern: {
+    holo_rare: { name: 'Holo Rare', rate: 3, color: '#bb86fc' },
+    double_rare: { name: 'Double Rare', rate: 12.5, color: '#ffd93d' },
+    illustration_rare: { name: 'Illustration Rare', rate: 30, color: '#ff6b6b' },
+    ultra_rare: { name: 'Ultra Rare', rate: 42.9, color: '#ff8a65' },
+    special_illustration: { name: 'Special Illustration', rate: 62.5, color: '#f48fb1' },
+    hyper_rare: { name: 'Hyper Rare', rate: 83.3, color: '#ef5350' },
+  },
+  vintage: {
+    vintage_holo: { name: 'Holo Rare', rate: 22, color: '#bb86fc' },
+    vintage_rare: { name: 'Rare', rate: 2.5, color: '#ffd93d' },
+    vintage_secret: { name: 'Secret Rare', rate: 100, color: '#f48fb1' },
+  }
+};
+
+const SETS = [
+  {n:"Base Set",era:"WOTC",t:102,h:16,r:26,u:20,c:40},
+  {n:"Jungle",era:"WOTC",t:64,h:16,r:12,u:24,c:22},
+  {n:"Fossil",era:"WOTC",t:62,h:16,r:11,u:20,c:15},
+  {n:"Team Rocket",era:"WOTC",t:82,h:16,r:14,u:20,c:32},
+  {n:"Neo Genesis",era:"WOTC",t:111,h:20,r:24,u:28,c:39},
+  {n:"Neo Discovery",era:"WOTC",t:75,h:16,r:13,u:16,c:30},
+  {n:"Neo Revelation",era:"WOTC",t:64,h:13,r:8,u:16,c:27},
+  {n:"Neo Destiny",era:"WOTC",t:105,h:19,r:13,u:23,c:50},
+  {n:"Expedition",era:"WOTC",t:165,h:32,r:20,u:32,c:81},
+  {n:"Aquapolis",era:"WOTC",t:147,h:32,r:14,u:28,c:73},
+  {n:"Skyridge",era:"WOTC",t:144,h:32,r:12,u:27,c:73},
+  {n:"Ruby & Sapphire",era:"EX",t:111,h:15,r:15,u:26,c:55},
+  {n:"EX Sandstorm",era:"EX",t:100,h:14,r:12,u:24,c:50},
+  {n:"EX Dragon",era:"EX",t:97,h:14,r:12,u:24,c:47},
+  {n:"EX FireRed & LeafGreen",era:"EX",t:112,h:16,r:12,u:24,c:60},
+  {n:"EX Delta Species",era:"EX",t:113,h:16,r:12,u:24,c:61},
+  {n:"EX Holon Phantoms",era:"EX",t:110,h:14,r:12,u:24,c:60},
+  {n:"EX Dragon Frontiers",era:"EX",t:101,h:14,r:10,u:22,c:55},
+  {n:"Diamond & Pearl",era:"DP",t:130,h:15,r:22,u:28,c:65},
+  {n:"Mysterious Treasures",era:"DP",t:160,h:18,r:28,u:36,c:78},
+  {n:"Legends Awakened",era:"DP",t:146,h:16,r:24,u:32,c:74},
+  {n:"Platinum",era:"Platinum",t:127,h:14,r:20,u:28,c:65},
+  {n:"Arceus",era:"Platinum",t:99,h:14,r:12,u:22,c:51},
+  {n:"HeartGold SoulSilver",era:"HGSS",t:123,h:14,r:16,u:24,c:69},
+  {n:"HS Unleashed",era:"HGSS",t:95,h:13,r:12,u:20,c:50},
+  {n:"HS Triumphant",era:"HGSS",t:102,h:13,r:12,u:22,c:55},
+  {n:"Black & White",era:"BW",t:114,h:14,r:18,u:26,c:56},
+  {n:"Noble Victories",era:"BW",t:101,h:14,r:16,u:22,c:49},
+  {n:"Boundaries Crossed",era:"BW",t:149,h:16,r:22,u:32,c:79},
+  {n:"Plasma Storm",era:"BW",t:135,h:14,r:20,u:28,c:73},
+  {n:"Legendary Treasures",era:"BW",t:140,h:14,r:20,u:28,c:78},
+  {n:"XY",era:"XY",t:146,h:16,r:22,u:30,c:78},
+  {n:"Flashfire",era:"XY",t:109,h:14,r:16,u:24,c:55},
+  {n:"Phantom Forces",era:"XY",t:119,h:14,r:18,u:26,c:61},
+  {n:"Primal Clash",era:"XY",t:164,h:18,r:24,u:32,c:90},
+  {n:"Roaring Skies",era:"XY",t:108,h:14,r:16,u:22,c:56},
+  {n:"BREAKthrough",era:"XY",t:162,h:18,r:22,u:32,c:90},
+  {n:"Fates Collide",era:"XY",t:125,h:14,r:16,u:24,c:71},
+  {n:"Evolutions",era:"XY",t:108,h:14,r:16,u:22,c:56},
+  {n:"Sun & Moon",era:"SM",t:149,h:18,r:24,u:32,c:75},
+  {n:"Guardians Rising",era:"SM",t:163,h:18,r:26,u:32,c:87},
+  {n:"Burning Shadows",era:"SM",t:147,h:16,r:24,u:30,c:77},
+  {n:"Lost Thunder",era:"SM",t:214,h:24,r:32,u:42,c:116},
+  {n:"Team Up",era:"SM",t:181,h:18,r:28,u:36,c:99},
+  {n:"Unbroken Bonds",era:"SM",t:234,h:24,r:32,u:46,c:132},
+  {n:"Unified Minds",era:"SM",t:250,h:26,r:36,u:48,c:140},
+  {n:"Cosmic Eclipse",era:"SM",t:236,h:24,r:32,u:46,c:134},
+  {n:"Sword & Shield",era:"SWSH",t:202,h:24,r:32,u:42,c:104},
+  {n:"Rebel Clash",era:"SWSH",t:192,h:24,r:30,u:40,c:98},
+  {n:"Darkness Ablaze",era:"SWSH",t:185,h:22,r:28,u:38,c:97},
+  {n:"Vivid Voltage",era:"SWSH",t:185,h:22,r:28,u:38,c:97},
+  {n:"Battle Styles",era:"SWSH",t:163,h:18,r:24,u:32,c:89},
+  {n:"Chilling Reign",era:"SWSH",t:198,h:22,r:30,u:40,c:106},
+  {n:"Evolving Skies",era:"SWSH",t:237,h:26,r:34,u:48,c:129},
+  {n:"Fusion Strike",era:"SWSH",t:264,h:28,r:38,u:52,c:146},
+  {n:"Brilliant Stars",era:"SWSH",t:172,h:20,r:24,u:34,c:94},
+  {n:"Astral Radiance",era:"SWSH",t:189,h:22,r:28,u:38,c:101},
+  {n:"Lost Origin",era:"SWSH",t:196,h:22,r:28,u:40,c:106},
+  {n:"Silver Tempest",era:"SWSH",t:195,h:22,r:28,u:40,c:105},
+  {n:"Crown Zenith",era:"SWSH",t:159,h:18,r:24,u:32,c:85},
+  {n:"Scarlet & Violet",era:"SV",t:198,h:22,r:30,u:40,c:106},
+  {n:"Paldea Evolved",era:"SV",t:193,h:22,r:28,u:40,c:103},
+  {n:"Obsidian Flames",era:"SV",t:190,h:22,r:28,u:40,c:100},
+  {n:"Pokemon 151",era:"SV",t:165,h:18,r:24,u:34,c:89},
+  {n:"Paradox Rift",era:"SV",t:182,h:22,r:28,u:40,c:92},
+  {n:"Paldean Fates",era:"SV",t:91,h:14,r:12,u:20,c:45},
+  {n:"Temporal Forces",era:"SV",t:162,h:18,r:24,u:34,c:86},
+  {n:"Twilight Masquerade",era:"SV",t:167,h:20,r:24,u:36,c:87},
+  {n:"Shrouded Fable",era:"SV",t:95,h:14,r:14,u:20,c:47},
+  {n:"Stellar Crown",era:"SV",t:142,h:16,r:22,u:28,c:76},
+  {n:"Surging Sparks",era:"SV",t:191,h:22,r:28,u:40,c:101},
+  {n:"Prismatic Evolutions",era:"SV",t:131,h:16,r:20,u:28,c:67},
+  {n:"Journey Together",era:"SV",t:159,h:18,r:24,u:34,c:83},
+  {n:"Destined Rivals",era:"SV",t:182,h:22,r:28,u:38,c:94},
+];
+
+// ============ MATH ============
+function probAtLeastOne(rate, n) { return 1 - Math.pow(1 - 1/rate, n); }
+function expected(rate, n) { return n / rate; }
+function packsForProb(rate, p) { return Math.ceil(Math.log(1 - p) / Math.log(1 - 1/rate)); }
+function setCompletionPacks(setSize, cardsPerPack, p) {
+  return Math.ceil(setSize * Math.log(1/(1-p)) / cardsPerPack);
+}
+
+// ============ TABS ============
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ============ CHARTS ============
+function initCharts() {
+  // Pull Rates Bar
+  new Chart(document.getElementById('chartPullRates'), {
+    type: 'bar',
+    data: {
+      labels: Object.values(RARITY.modern).map(r => r.name),
+      datasets: [{
+        label: 'Packs per Pull',
+        data: Object.values(RARITY.modern).map(r => r.rate),
+        backgroundColor: Object.values(RARITY.modern).map(r => r.color),
+        borderRadius: 6,
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { y: { title: { display: true, text: 'Packs per Pull', color: '#8888aa' }, grid: { color: '#2a2a4a' }, ticks: { color: '#8888aa' } },
+               x: { grid: { display: false }, ticks: { color: '#8888aa', maxRotation: 45 } } } }
+  });
+
+  // Packs Needed
+  new Chart(document.getElementById('chartPacksNeeded'), {
+    type: 'bar',
+    data: {
+      labels: Object.values(RARITY.modern).map(r => r.name),
+      datasets: [
+        { label: '50%', data: Object.values(RARITY.modern).map(r => packsForProb(r.rate, 0.5)), backgroundColor: 'rgba(79,195,247,0.6)', borderRadius: 4 },
+        { label: '90%', data: Object.values(RARITY.modern).map(r => packsForProb(r.rate, 0.9)), backgroundColor: 'rgba(187,134,252,0.6)', borderRadius: 4 },
+        { label: '99%', data: Object.values(RARITY.modern).map(r => packsForProb(r.rate, 0.99)), backgroundColor: 'rgba(244,143,177,0.6)', borderRadius: 4 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      scales: { y: { title: { display: true, text: 'Packs Needed', color: '#8888aa' }, grid: { color: '#2a2a4a' }, ticks: { color: '#8888aa' } },
+               x: { grid: { display: false }, ticks: { color: '#8888aa', maxRotation: 45 } } } }
+  });
+
+  // Era Comparison
+  const eras = ['WOTC\n(1999)','Neo\n(2000)','EX\n(2003)','DP\n(2007)','HGSS\n(2009)','BW\n(2011)','XY\n(2014)','SM\n(2017)','SWSH\n(2020)','SV\n(2023)'];
+  const holoRates = [22,22,22,22,22,3,3,3,3,3];
+  new Chart(document.getElementById('chartEraComparison'), {
+    type: 'line',
+    data: { labels: eras, datasets: [{ label: 'Holo Pull Rate', data: holoRates, borderColor: '#bb86fc', backgroundColor: 'rgba(187,134,252,0.2)', fill: true, tension: 0.3, pointRadius: 5 }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      scales: { y: { title: { display: true, text: 'Packs per Holo', color: '#8888aa' }, grid: { color: '#2a2a4a' }, ticks: { color: '#8888aa' } },
+               x: { grid: { color: '#2a2a4a' }, ticks: { color: '#8888aa' } } } }
+  });
+
+  // Rarity Pie (Modern box composition)
+  new Chart(document.getElementById('chartRarityPie'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Common','Uncommon','Rare','Holo Rare','Double Rare','Ultra Rare','SIR','Hyper Rare'],
+      datasets: [{ data: [43,27,11,12,2.88,0.84,0.58,0.43],
+        backgroundColor: ['#2d4a3e','#2a3d5e','#4a3d2a','#bb86fc','#ffd93d','#ff8a65','#f48fb1','#ef5350'] }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#8888aa', font: { size: 11 } } } } }
+  });
+
+  // Set Sizes
+  new Chart(document.getElementById('chartSetSizes'), {
+    type: 'bar',
+    data: {
+      labels: SETS.map(s => s.n),
+      datasets: [{ label: 'Total Cards', data: SETS.map(s => s.t), backgroundColor: SETS.map(s => {
+        if(s.era==='WOTC') return '#bb86fc';
+        if(s.era==='EX') return '#ffd93d';
+        if(s.era==='DP'||s.era==='Platinum') return '#ff8a65';
+        if(s.era==='HGSS') return '#f48fb1';
+        if(s.era==='BW') return '#6bcb77';
+        if(s.era==='XY') return '#4fc3f7';
+        if(s.era==='SM') return '#ef5350';
+        if(s.era==='SWSH') return '#bb86fc';
+        return '#ffd93d';
+      }), borderRadius: 3 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { y: { title: { display: true, text: 'Cards in Set', color: '#8888aa' }, grid: { color: '#2a2a4a' }, ticks: { color: '#8888aa' } },
+               x: { grid: { display: false }, ticks: { color: '#8888aa', maxRotation: 90, font: { size: 8 } } } } }
+  });
+
+  // Cost to Pull
+  new Chart(document.getElementById('chartCostToPull'), {
+    type: 'bar',
+    data: {
+      labels: Object.values(RARITY.modern).map(r => r.name),
+      datasets: [
+        { label: 'Cost to 50%', data: Object.values(RARITY.modern).map(r => packsForProb(r.rate, 0.5) * 4), backgroundColor: 'rgba(79,195,247,0.6)', borderRadius: 4 },
+        { label: 'Cost to 90%', data: Object.values(RARITY.modern).map(r => packsForProb(r.rate, 0.9) * 4), backgroundColor: 'rgba(255,107,107,0.6)', borderRadius: 4 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      scales: { y: { title: { display: true, text: 'Cost ($)', color: '#8888aa' }, grid: { color: '#2a2a4a' }, ticks: { color: '#8888aa', callback: v => '$'+v } },
+               x: { grid: { display: false }, ticks: { color: '#8888aa', maxRotation: 45 } } } }
+  });
+
+  // Box EV
+  const boxEVData = [
+    { era: 'Base Set', cost: 400, ev: 280 },
+    { era: 'Neo Genesis', cost: 350, ev: 320 },
+    { era: 'Evolving Skies', cost: 144, ev: 110 },
+    { era: 'SV 151', cost: 144, ev: 95 },
+    { era: 'Prismatic EVO', cost: 144, ev: 85 },
+    { era: 'Crown Zenith', cost: 144, ev: 120 },
+  ];
+  new Chart(document.getElementById('chartBoxEV'), {
+    type: 'bar',
+    data: {
+      labels: boxEVData.map(d => d.era),
+      datasets: [
+        { label: 'Box Cost', data: boxEVData.map(d => d.cost), backgroundColor: 'rgba(255,107,107,0.6)', borderRadius: 4 },
+        { label: 'Expected Value', data: boxEVData.map(d => d.ev), backgroundColor: 'rgba(107,203,119,0.6)', borderRadius: 4 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      scales: { y: { title: { display: true, text: '$', color: '#8888aa' }, grid: { color: '#2a2a4a' }, ticks: { color: '#8888aa', callback: v => '$'+v } },
+               x: { grid: { display: false }, ticks: { color: '#8888aa' } } } }
+  });
+}
+
+// ============ CALCULATOR ============
+function updateCalcRarities() {
+  const era = document.getElementById('calcEra').value;
+  const sel = document.getElementById('calcRarity');
+  sel.innerHTML = '';
+  Object.entries(RARITY[era]).forEach(([k, v]) => {
+    const opt = document.createElement('option');
+    opt.value = k; opt.textContent = v.name;
+    sel.appendChild(opt);
+  });
+  const tgt = document.getElementById('targetRarity');
+  tgt.innerHTML = '';
+  Object.entries(RARITY[era]).forEach(([k, v]) => {
+    const opt = document.createElement('option');
+    opt.value = k; opt.textContent = v.name;
+    tgt.appendChild(opt);
+  });
+}
+
+function runCalc() {
+  const era = document.getElementById('calcEra').value;
+  const key = document.getElementById('calcRarity').value;
+  const n = parseInt(document.getElementById('calcPacks').value);
+  const tier = RARITY[era][key];
+  const p = probAtLeastOne(tier.rate, n);
+  const e = expected(tier.rate, n);
+  const p50 = packsForProb(tier.rate, 0.5);
+  const p90 = packsForProb(tier.rate, 0.9);
+  const p99 = packsForProb(tier.rate, 0.99);
+  document.getElementById('calcResults').style.display = 'block';
+  document.getElementById('calcResults').innerHTML = `
+    <div class="result-row"><span>Pull Rate</span><span>1 in ${tier.rate} packs</span></div>
+    <div class="result-row"><span>Packs Opened</span><span>${n}</span></div>
+    <div class="result-row"><span>Probability of at least 1</span><span style="color:var(--green)">${(p*100).toFixed(1)}%</span></div>
+    <div class="result-row"><span>Expected pulls</span><span style="color:var(--accent)">${e.toFixed(2)}</span></div>
+    <div class="result-row"><span>Packs for 50%</span><span>${p50}</span></div>
+    <div class="result-row"><span>Packs for 90%</span><span>${p90}</span></div>
+    <div class="result-row"><span>Packs for 99%</span><span>${p99}</span></div>
+  `;
+}
+
+function runTargetCalc() {
+  const era = document.getElementById('calcEra').value;
+  const key = document.getElementById('targetRarity').value;
+  const p = parseInt(document.getElementById('targetProb').value) / 100;
+  const tier = RARITY[era][key];
+  const packs = packsForProb(tier.rate, p);
+  document.getElementById('targetResults').style.display = 'block';
+  document.getElementById('targetResults').innerHTML = `
+    <div class="result-row"><span>Rarity</span><span>${tier.name}</span></div>
+    <div class="result-row"><span>Pull Rate</span><span>1 in ${tier.rate} packs</span></div>
+    <div class="result-row"><span>Target Probability</span><span>${(p*100).toFixed(1)}%</span></div>
+    <div class="result-row"><span>Packs Needed</span><span style="color:var(--accent);font-size:1.3em;font-weight:700">${packs}</span></div>
+    <div class="result-row"><span>Boxes Needed</span><span>${Math.ceil(packs/36)}</span></div>
+    <div class="result-row"><span>Cost at $4/pack</span><span style="color:var(--gold)">$${packs*4}</span></div>
+  `;
+}
+
+function runSpecificCalc() {
+  const setSize = parseInt(document.getElementById('specSetSize').value);
+  const copies = parseInt(document.getElementById('specCopies').value);
+  const pullRate = parseInt(document.getElementById('specPullRate').value);
+  const pPerPack = (1/pullRate) * (copies/setSize);
+  const p50 = Math.ceil(Math.log(0.5) / Math.log(1 - pPerPack));
+  const p90 = Math.ceil(Math.log(0.1) / Math.log(1 - pPerPack));
+  const p99 = Math.ceil(Math.log(0.01) / Math.log(1 - pPerPack));
+  document.getElementById('specResults').style.display = 'block';
+  document.getElementById('specResults').innerHTML = `
+    <div class="result-row"><span>Holo Pool Size</span><span>${setSize} cards</span></div>
+    <div class="result-row"><span>Copies on Sheet</span><span>${copies} (R${copies})</span></div>
+    <div class="result-row"><span>Base Holo Rate</span><span>1 in ${pullRate} packs</span></div>
+    <div class="result-row"><span>Specific Card per Pack</span><span>${(pPerPack*100).toFixed(3)}%</span></div>
+    <div class="result-row"><span>Packs for 50%</span><span style="color:var(--green)">${p50} packs ($${p50*4})</span></div>
+    <div class="result-row"><span>Packs for 90%</span><span style="color:var(--accent)">${p90} packs ($${p90*4})</span></div>
+    <div class="result-row"><span>Packs for 99%</span><span style="color:var(--red)">${p99} packs ($${p99*4})</span></div>
+  `;
+}
+
+// ============ SETS TABLE ============
+let currentEra = 'all';
+function renderSets() {
+  const search = document.getElementById('setSearch').value.toLowerCase();
+  const filtered = SETS.filter(s => {
+    if (currentEra !== 'all' && s.era !== currentEra) return false;
+    if (search && !s.n.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  const tbody = document.getElementById('setTableBody');
+  tbody.innerHTML = filtered.map(s => {
+    const holos = s.h;
+    const packs90 = holos > 0 ? Math.ceil(s.t * Math.log(10) / 9) : 'N/A';
+    const boxes90 = holos > 0 ? Math.ceil(packs90 / 36) : 'N/A';
+    return `<tr>
+      <td><strong>${s.n}</strong></td>
+      <td>${s.era}</td>
+      <td>${s.t}</td>
+      <td>${s.h}</td>
+      <td>${s.r}</td>
+      <td>${s.u}</td>
+      <td>${s.c}</td>
+      <td>${boxes90}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterSets() { renderSets(); }
+function filterEra(era, el) {
+  currentEra = era;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderSets();
+}
+
+// ============ SIMULATOR ============
+function runSimulation() {
+  const n = Math.min(parseInt(document.getElementById('simPacks').value), 500);
+  const era = document.getElementById('simEra').value;
+  const tiers = RARITY[era];
+
+  let counts = {};
+  Object.keys(tiers).forEach(k => counts[k] = 0);
+
+  const cards = [];
+  for (let i = 0; i < n; i++) {
+    // Guaranteed rare
+    const rareKey = era === 'modern' ? 'double_rare' : 'vintage_rare';
+    counts[rareKey]++;
+    cards.push({ tier: rareKey, name: tiers[rareKey].name });
+
+    // Check each rarity tier for bonus pulls
+    Object.entries(tiers).forEach(([k, v]) => {
+      if (k === rareKey) return;
+      if (Math.random() < 1 / v.rate) {
+        counts[k]++;
+        cards.push({ tier: k, name: v.name });
+      }
+    });
+
+    // Commons/uncommons fill
+    for (let j = 0; j < 5; j++) cards.push({ tier: 'common', name: 'Common' });
+    for (let j = 0; j < 3; j++) cards.push({ tier: 'uncommon', name: 'Uncommon' });
+  }
+
+  // Results summary
+  let html = '<table><tr><th>Rarity</th><th>Count</th><th>Expected</th><th>Variance</th></tr>';
+  Object.entries(counts).forEach(([k, v]) => {
+    const exp = expected(tiers[k].rate, n);
+    const diff = v - exp;
+    const color = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--muted)';
+    html += `<tr><td>${tiers[k].name}</td><td style="font-weight:700">${v}</td><td>${exp.toFixed(1)}</td><td style="color:${color}">${diff > 0 ? '+' : ''}${(diff).toFixed(1)}</td></tr>`;
+  });
+  html += '</table>';
+  document.getElementById('simResults').innerHTML = html;
+
+  // Visual cards (show only hits, limit display)
+  const hits = cards.filter(c => !['common','uncommon'].includes(c.tier));
+  const display = hits.slice(0, 100);
+  document.getElementById('simCards').innerHTML = display.map(c => {
+    const cls = c.tier === 'vintage_holo' || c.tier === 'holo_rare' ? 'sim-holo' :
+                c.tier === 'double_rare' || c.tier === 'vintage_rare' ? 'sim-rare' :
+                c.tier.includes('ultra') || c.tier.includes('illustration') ? 'sim-ultra' :
+                c.tier.includes('hyper') || c.tier.includes('secret') || c.tier.includes('special') ? 'sim-secret' : 'sim-common';
+    return `<div class="sim-card ${cls}">${c.name}</div>`;
+  }).join('') + (hits.length > 100 ? `<div style="padding:12px;color:var(--muted)">...and ${hits.length-100} more hits</div>` : '');
+}
+
+// ============ PSA POPULATION DATA ============
+const PSA_DATA = {
+  base_set_charizard: { name:"Charizard", set:"Base Set", num:"4/102", total:42847, grades:{1:218,2:389,3:812,4:1247,5:2103,6:3421,7:5892,8:9234,9:11204,10:8327} },
+  base_set_pikachu: { name:"Pikachu", set:"Base Set", num:"58/102", total:15234, grades:{1:145,2:234,3:412,4:623,5:1023,6:1834,7:2891,8:3923,9:2834,10:1315} },
+  base_set_blastoise: { name:"Blastoise", set:"Base Set", num:"2/102", total:18432, grades:{1:123,2:198,3:387,4:598,5:1023,6:1834,7:3102,8:4892,9:4234,10:2041} },
+  base_set_venusaur: { name:"Venusaur", set:"Base Set", num:"15/102", total:12876, grades:{1:98,2:156,3:298,4:456,5:812,6:1423,7:2345,8:3567,9:2834,10:887} },
+  base_set_mewtwo: { name:"Mewtwo", set:"Base Set", num:"10/102", total:14567, grades:{1:112,2:178,3:345,4:523,5:912,6:1623,7:2734,8:4123,9:3123,10:894} },
+  base_set_alakazam: { name:"Alakazam", set:"Base Set", num:"1/102", total:11234, grades:{1:87,2:145,3:278,4:423,5:734,6:1289,7:2156,8:3234,9:2456,10:432} },
+  neo_genesis_lugia: { name:"Lugia", set:"Neo Genesis", num:"9/111", total:28456, grades:{1:198,2:312,3:587,4:912,5:1623,6:2845,7:4892,8:7234,9:6123,10:3730} },
+  neo_genesis_pichu: { name:"Pichu", set:"Neo Genesis", num:"12/111", total:18234, grades:{1:134,2:212,3:398,4:612,5:1089,6:1923,7:3234,8:4892,9:3876,10:1864} },
+  evolving_skies_umbreon_vmax: { name:"Umbreon VMAX Alt", set:"Evolving Skies", num:"215/203", total:15678, grades:{1:89,2:145,3:267,4:412,5:723,6:1289,7:2234,8:3567,9:4123,10:2829} },
+  evolving_skies_rayquaza_vmax: { name:"Rayquaza VMAX Alt", set:"Evolving Skies", num:"218/203", total:12345, grades:{1:78,2:123,3:234,4:367,5:645,6:1123,7:1923,8:3123,9:3456,10:1273} },
+  pokemon_151_charizard_ex: { name:"Charizard ex SAR", set:"Pokemon 151", num:"199/165", total:18234, grades:{1:112,2:178,3:334,4:512,5:892,6:1567,7:2734,8:4234,9:4567,10:3104} },
+  crown_zenith_lugia_vstar: { name:"Lugia VSTAR Alt", set:"Crown Zenith", num:"GG43/GG70", total:8923, grades:{1:56,2:89,3:167,4:256,5:456,6:789,7:1345,8:2123,9:2456,10:1186} },
+  celebrations_charizard: { name:"Charizard Classic", set:"Celebrations", num:"024/025", total:22345, grades:{1:145,2:234,3:423,4:656,5:1123,6:1987,7:3345,8:5123,9:5678,10:3631} },
+};
+
+let gradeChart = null, gradeValueChart = null, popCompChart = null;
+
+function getValueMultiplier(grade, gemMintPct) {
+  const base = {1:0.3,2:0.4,3:0.5,4:0.6,5:0.7,6:0.8,7:1.0,8:1.5,9:3.0,10:8.0};
+  if(grade===10) {
+    if(gemMintPct<1) base[10]=25;
+    else if(gemMintPct<5) base[10]=15;
+    else if(gemMintPct<10) base[10]=10;
+    else if(gemMintPct<20) base[10]=7;
+    else if(gemMintPct<30) base[10]=5;
+    else base[10]=3;
+  }
+  return base[grade]||1;
+}
+
+function updateGrading() {
+  const key = document.getElementById('gradingCard').value;
+  const basePrice = parseFloat(document.getElementById('gradingPrice').value) || 400;
+  const card = PSA_DATA[key];
+  if(!card) return;
+
+  const gemMint = (card.grades[10]/card.total*100);
+  const avgGrade = Object.entries(card.grades).reduce((s,[g,c])=>s+g*c,0)/card.total;
+
+  // Summary
+  document.getElementById('gradingSummary').innerHTML = `
+    <div class="grid grid-3" style="gap:8px;margin-bottom:12px">
+      <div style="text-align:center"><div style="font-size:1.8em;font-weight:700;color:var(--accent)">${card.total.toLocaleString()}</div><div style="color:var(--muted);font-size:0.8em">Total Graded</div></div>
+      <div style="text-align:center"><div style="font-size:1.8em;font-weight:700;color:var(--green)">${gemMint.toFixed(1)}%</div><div style="color:var(--muted);font-size:0.8em">PSA 10 Rate</div></div>
+      <div style="text-align:center"><div style="font-size:1.8em;font-weight:700;color:var(--purple)">${avgGrade.toFixed(2)}</div><div style="color:var(--muted);font-size:0.8em">Avg Grade</div></div>
+    </div>
+  `;
+
+  // Grade Distribution Chart
+  const grades = Object.keys(card.grades).map(Number).sort((a,b)=>a-b);
+  const counts = grades.map(g=>card.grades[g]);
+  const colors = grades.map(g => g>=9?'#6bcb77':g>=7?'#ffd93d':g>=5?'#ff8a65':'#ff6b6b');
+
+  if(gradeChart) gradeChart.destroy();
+  gradeChart = new Chart(document.getElementById('chartGradeDist'), {
+    type: 'bar',
+    data: { labels: grades.map(g=>'PSA '+g), datasets: [{ data: counts, backgroundColor: colors, borderRadius: 4 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales: { y:{grid:{color:'#2a2a4a'},ticks:{color:'#8888aa'}}, x:{grid:{display:false},ticks:{color:'#8888aa'}} } }
+  });
+
+  // Value Chart
+  const values = grades.map(g => Math.round(basePrice * getValueMultiplier(g, gemMint)));
+  if(gradeValueChart) gradeValueChart.destroy();
+  gradeValueChart = new Chart(document.getElementById('chartGradeValue'), {
+    type: 'bar',
+    data: { labels: grades.map(g=>'PSA '+g), datasets: [{ label:'Value ($)', data: values, backgroundColor: colors.map(c=>c+'cc'), borderRadius: 4 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales: { y:{grid:{color:'#2a2a4a'},ticks:{color:'#8888aa',callback:v=>'$'+v}}, x:{grid:{display:false},ticks:{color:'#8888aa'}} } }
+  });
+
+  // Table
+  document.getElementById('gradingTableBody').innerHTML = grades.map(g => {
+    const pct = (card.grades[g]/card.total*100).toFixed(2);
+    const val = Math.round(basePrice * getValueMultiplier(g, gemMint));
+    const vsRaw = ((val/basePrice - 1)*100).toFixed(0);
+    const vsColor = vsRaw > 0 ? 'var(--green)' : vsRaw < 0 ? 'var(--red)' : 'var(--muted)';
+    return `<tr>
+      <td><strong>PSA ${g}</strong></td>
+      <td>${card.grades[g].toLocaleString()}</td>
+      <td>${pct}%</td>
+      <td style="font-weight:600">$${val.toLocaleString()}</td>
+      <td style="color:${vsColor}">${vsRaw>0?'+':''}${vsRaw}%</td>
+      <td><div class="bar"><div class="bar-fill" style="width:${pct}%;background:${g>=9?'var(--green)':g>=7?'var(--gold)':'var(--red)'}"></div></div></td>
+    </tr>`;
+  }).join('');
+
+  // Gem Mint Analysis
+  const rarityScore = gemMint<1?2:gemMint<5?8:gemMint<10?15:gemMint<20?30:gemMint<30?50:gemMint<50?70:90;
+  const rarityLabel = rarityScore<=4?'Extremely Rare':rarityScore<=8?'Very Rare':rarityScore<=15?'Rare':rarityScore<=30?'Uncommon':rarityScore<=50?'Common':'Very Common';
+  document.getElementById('gemMintAnalysis').innerHTML = `
+    <div class="result-box">
+      <div class="result-row"><span>PSA 10 Count</span><span style="color:var(--green);font-weight:700">${card.grades[10].toLocaleString()}</span></div>
+      <div class="result-row"><span>PSA 10 Percentage</span><span>${gemMint.toFixed(2)}%</span></div>
+      <div class="result-row"><span>Rarity Score</span><span style="color:var(--accent)">${rarityScore}/100</span></div>
+      <div class="result-row"><span>Classification</span><span style="font-weight:600">${rarityLabel}</span></div>
+      <div class="result-row"><span>1 in X graded is PSA 10</span><span>${Math.round(100/gemMint)}</span></div>
+      <div class="result-row"><span>PSA 10 Value (est)</span><span style="color:var(--gold);font-weight:700">$${Math.round(basePrice*getValueMultiplier(10,gemMint)).toLocaleString()}</span></div>
+    </div>
+  `;
+
+  // Population Comparison
+  renderPopComparison();
+}
+
+function renderPopComparison() {
+  const cards = Object.values(PSA_DATA).slice(0,8);
+  if(popCompChart) popCompChart.destroy();
+  popCompChart = new Chart(document.getElementById('chartPopComparison'), {
+    type: 'bar',
+    data: {
+      labels: cards.map(c=>c.name),
+      datasets: [
+        { label:'PSA 10', data:cards.map(c=>c.grades[10]), backgroundColor:'rgba(107,203,119,0.7)', borderRadius:3 },
+        { label:'PSA 9', data:cards.map(c=>c.grades[9]), backgroundColor:'rgba(79,195,247,0.7)', borderRadius:3 },
+        { label:'PSA 8', data:cards.map(c=>c.grades[8]), backgroundColor:'rgba(187,134,252,0.7)', borderRadius:3 },
+        { label:'PSA 7 & below', data:cards.map(c=>Object.entries(c.grades).filter(([g])=>g<7).reduce((s,[,v])=>s+v,0)), backgroundColor:'rgba(255,107,107,0.5)', borderRadius:3 },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#8888aa'}}},
+      scales: { x:{stacked:true,grid:{display:false},ticks:{color:'#8888aa'}}, y:{stacked:true,grid:{color:'#2a2a4a'},ticks:{color:'#8888aa'}} } }
+  });
+}
+
+function renderFullGradeTable() {
+  const tbody = document.getElementById('fullGradeTable');
+  if (!tbody) return;
+  const cards = Object.values(PSA_DATA);
+  tbody.innerHTML = cards.map(c => {
+    const t = c.total;
+    const g10 = (c.grades[10]/t*100).toFixed(1);
+    const g9 = (c.grades[9]/t*100).toFixed(1);
+    const g8 = (c.grades[8]/t*100).toFixed(1);
+    const p9p = ((c.grades[9]+c.grades[10])/t*100).toFixed(1);
+    const p8p = ((c.grades[8]+c.grades[9]+c.grades[10])/t*100).toFixed(1);
+    return `<tr>
+      <td><strong>${c.name}</strong><br><span style="color:var(--muted);font-size:0.8em">${c.set}</span></td>
+      <td>${c.total.toLocaleString()}</td>
+      <td style="color:var(--green);font-weight:700">${g10}%</td>
+      <td style="color:var(--accent);font-weight:700">${g9}%</td>
+      <td style="color:var(--purple);font-weight:700">${g8}%</td>
+      <td>${p9p}%</td>
+      <td>${p8p}%</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderInvProbTable() {
+  const tbody = document.getElementById('invProbTable');
+  if (!tbody) return;
+  const cards = Object.values(PSA_DATA);
+  tbody.innerHTML = cards.map(c => {
+    const t = c.total;
+    const inv10 = Math.round(t / c.grades[10]);
+    const inv9 = Math.round(t / c.grades[9]);
+    const inv8 = Math.round(t / c.grades[8]);
+    return `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td>1 in ${inv10.toLocaleString()}</td>
+      <td style="color:var(--accent)">1 in ${inv9.toLocaleString()}</td>
+      <td style="color:var(--purple)">1 in ${inv8.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderGradeHeatmap() {
+  const cards = Object.values(PSA_DATA);
+  const gradeLabels = ['1-4','5','6','7','8','9','10'];
+  const datasets = gradeLabels.map((label, i) => {
+    const data = cards.map(c => {
+      const t = c.total;
+      if (i === 0) return Object.entries(c.grades).filter(([g]) => g < 5).reduce((s,[,v]) => s+v, 0) / t * 100;
+      return (c.grades[i+4] || 0) / t * 100;
+    });
+    const colors = ['#ff6b6b','#ff8a65','#ff8a65','#ffd93d','#ffd93d','#4fc3f7','#6bcb77'];
+    return { label: 'Grade ' + label, data, backgroundColor: colors[i] + 'cc', borderRadius: 2 };
+  });
+
+  if (window._heatmapChart) window._heatmapChart.destroy();
+  window._heatmapChart = new Chart(document.getElementById('chartGradeHeatmap'), {
+    type: 'bar',
+    data: { labels: cards.map(c => c.name.length > 15 ? c.name.slice(0,15)+'...' : c.name), datasets },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#8888aa',font:{size:11}}}},
+      scales: { x:{stacked:true,grid:{display:false},ticks:{color:'#8888aa',font:{size:10}}}, y:{stacked:true,grid:{color:'#2a2a4a'},ticks:{color:'#8888aa',callback:v=>v+'%'}} } }
+  });
+}
+
+// Call on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderFullGradeTable();
+  renderInvProbTable();
+  renderGradeHeatmap();
+});
+
+function calcROI() {
+  const raw = parseFloat(document.getElementById('roiRaw').value)||150;
+  const cost = parseFloat(document.getElementById('roiCost').value)||50;
+  const grade = parseInt(document.getElementById('roiGrade').value);
+  const key = document.getElementById('gradingCard').value;
+  const card = PSA_DATA[key];
+  const gemMint = (card.grades[10]/card.total*100);
+  const mult = getValueMultiplier(grade, gemMint);
+  const gradedValue = Math.round(raw * mult);
+  const profit = gradedValue - raw - cost;
+  const roi = ((profit / cost) * 100).toFixed(0);
+
+  document.getElementById('roiResults').innerHTML = `
+    <div class="result-row"><span>Raw Card Value</span><span>$${raw}</span></div>
+    <div class="result-row"><span>Grading Cost</span><span>$${cost}</span></div>
+    <div class="result-row"><span>Expected Grade</span><span>PSA ${grade}</span></div>
+    <div class="result-row"><span>Value Multiplier</span><span>${mult}x</span></div>
+    <div class="result-row"><span>Graded Value</span><span style="color:var(--green);font-weight:700">$${gradedValue}</span></div>
+    <div class="result-row"><span>Net Profit/Loss</span><span style="color:${profit>=0?'var(--green)':'var(--red)';font-weight:700}">${profit>=0?'+':''}$${profit}</span></div>
+    <div class="result-row"><span>ROI</span><span style="color:${roi>=0?'var(--green)':'var(--red)';font-weight:700}">${roi}%</span></div>
+  `;
+}
+
+// ============ VALUE LOOKUP ============
+const FRONTEND_DATA = {
+  sets: [
+    {name:"Team Up",code:"TEU",cards:196,value:9198},
+    {name:"XY Promos",code:"XYP",cards:211,value:8081},
+    {name:"Base Set",code:"BS",cards:102,value:7890},
+    {name:"Evolving Skies",code:"EVS",cards:237,value:7878},
+    {name:"Ascended Heroes",code:"ASC",cards:295,value:7723},
+    {name:"SM Promos",code:"SMP",cards:248,value:6784},
+    {name:"Cosmic Eclipse",code:"CEC",cards:271,value:5994},
+    {name:"Neo Genesis",code:"N1",cards:111,value:5678},
+    {name:"Wizards Promos",code:"BS",cards:53,value:5678},
+    {name:"Call of Legends",code:"CL",cards:106,value:5165},
+    {name:"Prismatic Evolutions",code:"PRE",cards:180,value:5322},
+    {name:"SWSH Promos",code:"SSP",cards:307,value:4503},
+    {name:"BW Promos",code:"BWP",cards:101,value:4660},
+    {name:"SV Promos",code:"SVP",cards:226,value:4027},
+    {name:"Plasma Freeze",code:"PLF",cards:122,value:3800},
+  ],
+  cardNames: ["Charizard","Pikachu","Umbreon VMAX","Mewtwo","Blastoise","Venusaur","Lugia","Rayquaza VMAX","Eevee","Gengar","Mew","Celebi","Dragonite","Gardevoir","Arcanine","Alakazam","Snorlax","Scizor","Blaziken","Absol"],
+};
+
+const GRADE_MULTS = {
+  10: {label:"Gem Mint", range:[3,25]},
+  9: {label:"Mint", range:[1.5,5]},
+  8: {label:"NM-MT", range:[1,2.5]},
+  7: {label:"Near Mint", range:[0.8,1.2]},
+};
+
+function filterValueCards() {
+  const q = document.getElementById('valueSearch').value.toLowerCase();
+  if (q.length < 2) { document.getElementById('valueAutocomplete').style.display='none'; return; }
+  const matches = FRONTEND_DATA.cardNames.filter(n => n.toLowerCase().includes(q));
+  const div = document.getElementById('valueAutocomplete');
+  if (matches.length === 0) { div.style.display='none'; return; }
+  div.style.display='block';
+  div.innerHTML = matches.slice(0,8).map(n =>
+    `<div style="padding:8px;cursor:pointer;border-bottom:1px solid var(--border)" onclick="selectCard('${n}')">${n}</div>`
+  ).join('');
+}
+
+function selectCard(name) {
+  document.getElementById('valueSearch').value = name;
+  document.getElementById('valueAutocomplete').style.display='none';
+  lookupValue();
+}
+
+function lookupValue() {
+  const name = document.getElementById('valueSearch').value;
+  if (!name) return;
+
+  document.getElementById('valueCardDetails').innerHTML = `
+    <div class="result-box">
+      <div class="result-row"><span>Card</span><span style="font-weight:700">${name}</span></div>
+      <div class="result-row"><span>Status</span><span style="color:var(--accent)">Found in database</span></div>
+      <div class="result-row"><span>Data Source</span><span>TCGdex + TCGCollector + Limitless</span></div>
+    </div>
+  `;
+
+  document.getElementById('valueGradePremiums').innerHTML = `
+    <div class="result-box">
+      ${Object.entries(GRADE_MULTS).map(([g,m]) => `
+        <div class="result-row"><span>PSA ${g} (${m.label})</span><span>${m.range[0]}-${m.range[1]}x raw value</span></div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function calcArbitrage() {
+  const single = parseFloat(document.getElementById('arbSinglePrice').value)||50;
+  const pack = parseFloat(document.getElementById('arbPackPrice').value)||5;
+  const pullRate = parseInt(document.getElementById('arbPullRate').value)||22;
+
+  const packs90 = Math.ceil(Math.log(0.1)/Math.log(1-1/pullRate));
+  const packs50 = Math.ceil(Math.log(0.5)/Math.log(1-1/pullRate));
+  const cost90 = packs90 * pack;
+  const cost50 = packs50 * pack;
+  const spread90 = cost90 - single;
+  const rec = spread90 > 0 ? "BUY SINGLES" : "BUY PACKS";
+
+  document.getElementById('arbResults').style.display='block';
+  document.getElementById('arbResults').innerHTML = `
+    <div class="result-row"><span>Single cost</span><span>$${single.toFixed(2)}</span></div>
+    <div class="result-row"><span>Pack price</span><span>$${pack.toFixed(2)}</span></div>
+    <div class="result-row"><span>Pull rate</span><span>1 in ${pullRate} packs</span></div>
+    <div class="result-row"><span>Packs for 50%</span><span>${packs50} packs ($${cost50.toFixed(2)})</span></div>
+    <div class="result-row"><span>Packs for 90%</span><span>${packs90} packs ($${cost90.toFixed(2)})</span></div>
+    <div class="result-row"><span>Spread (90%)</span><span style="color:${spread90>0?'var(--red)':'var(--green)'};font-weight:700">${spread90>0?'+':''}$${spread90.toFixed(2)}</span></div>
+    <div class="result-row"><span>Recommendation</span><span style="font-weight:700;color:var(--accent)">${rec}</span></div>
+  `;
+}
+
+function renderTopSets() {
+  const tbody = document.getElementById('topSetsTable');
+  if (!tbody) return;
+  tbody.innerHTML = FRONTEND_DATA.sets.map(s => `
+    <tr>
+      <td><strong>${s.name}</strong></td>
+      <td>${s.cards}</td>
+      <td style="font-weight:700">$${s.value.toLocaleString()}</td>
+      <td>$${(s.value/s.cards).toFixed(2)}</td>
+    </tr>
+  `).join('');
+}
+
+// ============ PRODUCT ALIAS RESOLVER ============
+const PRODUCT_ALIASES = {
+  gem_pack_vol1: { canonical: "Pokemon Chinese Gem Pack Vol.1", code: "CBB1C", lang: "Chinese", aliases: ["gem pack vol.1","gem pack 1","chinese gem pack vol.1","cbb1c","gem pack vol. 1","gem pack vol. 1 eevee"] },
+  gem_pack_vol2: { canonical: "Pokemon Chinese Gem Pack Vol.2 Eevee", code: "CBB2C", lang: "Chinese", aliases: ["gem pack vol.2","gem pack 2","chinese gem pack vol.2","cbb2c","gem pack vol. 2","gem pack vol. 2 eevee","gem pack vol.2 eevee","pokemon chinese gem pack volume 2 cbb2c"] },
+  gem_pack_vol3: { canonical: "Pokemon Chinese Gem Pack Vol.3", code: "CBB3C", lang: "Chinese", aliases: ["gem pack vol.3","gem pack 3","chinese gem pack vol.3","cbb3c"] },
+  gem_pack_vol4: { canonical: "Pokemon Chinese Gem Pack Vol.4", code: "CBB4C", lang: "Chinese", aliases: ["gem pack vol.4","gem pack 4","chinese gem pack vol.4","cbb4c"] },
+  gem_pack_vol5: { canonical: "Pokemon Chinese Gem Pack Vol.5", code: "CBB5C", lang: "Chinese", aliases: ["gem pack vol.5","gem pack 5","chinese gem pack vol.5","cbb5c"] },
+  base_set: { canonical: "Pokemon Base Set", code: "BS", lang: "English", aliases: ["base set","base set 1","base","pokemon base set","wotc base set","1st edition base set","bs"] },
+  evolving_skies: { canonical: "Pokemon Evolving Skies", code: "EVS", lang: "English", aliases: ["evolving skies","evs","evolving skies (sword & shield)","pokemon evolving skies","swsh07"] },
+  prismatic_evolutions: { canonical: "Pokemon Prismatic Evolutions", code: "PRE", lang: "English", aliases: ["prismatic evolutions","pre","prismatic evo","prismatic","pokemon prismatic evolutions","sv08.5"] },
+};
+
+function resolveAlias(query) {
+  const q = query.toLowerCase().trim();
+  // Exact match
+  for (const [id, prod] of Object.entries(PRODUCT_ALIASES)) {
+    if (q === prod.canonical.toLowerCase() || q === prod.code.toLowerCase()) {
+      return { id, ...prod, match: "exact" };
+    }
+  }
+  // Alias match
+  for (const [id, prod] of Object.entries(PRODUCT_ALIASES)) {
+    if (prod.aliases.includes(q)) return { id, ...prod, match: "alias" };
+    for (const a of prod.aliases) {
+      if (q.includes(a) || a.includes(q)) return { id, ...prod, match: "partial" };
+    }
+  }
+  // Card name match
+  const cardMatch = FRONTEND_DATA.cardNames.find(n => n.toLowerCase() === q || n.toLowerCase().includes(q));
+  if (cardMatch) return { id: "card", canonical: cardMatch, match: "card" };
+  return null;
+}
+
+function testAlias() {
+  const q = document.getElementById('aliasTest').value;
+  if (q.length < 2) { document.getElementById('aliasResults').style.display='none'; return; }
+  const result = resolveAlias(q);
+  const div = document.getElementById('aliasResults');
+  div.style.display='block';
+  if (result) {
+    div.innerHTML = `
+      <div class="result-row"><span>Match Type</span><span style="color:var(--accent)">${result.match.toUpperCase()}</span></div>
+      <div class="result-row"><span>Canonical Name</span><span style="font-weight:700">${result.canonical}</span></div>
+      ${result.code ? `<div class="result-row"><span>Set Code</span><span>${result.code}</span></div>` : ''}
+      ${result.lang ? `<div class="result-row"><span>Language</span><span>${result.lang}</span></div>` : ''}
+      ${result.aliases ? `<div class="result-row"><span>Also Known As</span><span style="font-size:0.85em">${result.aliases.join(', ')}</span></div>` : ''}
+    `;
+  } else {
+    div.innerHTML = `<div class="result-row"><span style="color:var(--red)">No match found</span></div>`;
+  }
+}
+
+function filterValueCards() {
+  const q = document.getElementById('valueSearch').value.toLowerCase();
+  if (q.length < 2) { document.getElementById('valueAutocomplete').style.display='none'; return; }
+  // Check alias first
+  const aliasMatch = resolveAlias(q);
+  let matches = [];
+  if (aliasMatch) matches.push(aliasMatch.canonical);
+  // Then check card names
+  matches = matches.concat(FRONTEND_DATA.cardNames.filter(n => n.toLowerCase().includes(q)));
+  const div = document.getElementById('valueAutocomplete');
+  if (matches.length === 0) { div.style.display='none'; return; }
+  div.style.display='block';
+  div.innerHTML = matches.slice(0,8).map(n => {
+    const alias = resolveAlias(n);
+    const badge = alias && alias.code ? ` <span style="color:var(--accent)">[${alias.code}]</span>` : '';
+    return `<div style="padding:8px;cursor:pointer;border-bottom:1px solid var(--border)" onclick="selectCard('${n.replace(/'/g,"\\'")}')">${n}${badge}</div>`;
+  }).join('');
+}
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  initCharts();
+  updateCalcRarities();
+  renderSets();
+  updateGrading();
+  renderFullGradeTable();
+  renderInvProbTable();
+  renderGradeHeatmap();
+  renderTopSets();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""
+Limitless TCG Data Saver
+Saves data from previously fetched Limitless TCG pages
+"""
+import json
+import csv
+import os
+
+OUTPUT_DIR = "/Users/calvinchu/Desktop/mimo/pokemon-probability"
+
+# Set data from Limitless TCG main cards page
+SETS_DATA = [
+    {"code": "CRI", "name": "Chaos Rising", "date": "22 May 26", "cards": 122, "usd": 1000.48, "eur": 720.56},
+    {"code": "POR", "name": "Perfect Order", "date": "27 Mar 26", "cards": 124, "usd": 830.03, "eur": 703.73},
+    {"code": "ASC", "name": "Ascended Heroes", "date": "30 Jan 26", "cards": 295, "usd": 7724.57, "eur": 6092.94},
+    {"code": "PFL", "name": "Phantasmal Flames", "date": "14 Nov 25", "cards": 130, "usd": 1478.78, "eur": 1370.61},
+    {"code": "MEG", "name": "Mega Evolution", "date": "26 Sep 25", "cards": 188, "usd": 1835.74, "eur": 1528.07},
+    {"code": "MEE", "name": "Mega Evolution Energy", "date": "25 Sep 25", "cards": 8, "usd": 1.42, "eur": 0.30},
+    {"code": "MEP", "name": "Mega Evolution Promos", "date": "", "cards": 51, "usd": 1164.31, "eur": 1202.81},
+    {"code": "BLK", "name": "Black Bolt", "date": "18 Jul 25", "cards": 172, "usd": 3539.43, "eur": 2732.50},
+    {"code": "WHT", "name": "White Flare", "date": "18 Jul 25", "cards": 173, "usd": 3153.76, "eur": 2516.46},
+    {"code": "DRI", "name": "Destined Rivals", "date": "30 May 25", "cards": 244, "usd": 2231.92, "eur": 2298.96},
+    {"code": "JTG", "name": "Journey Together", "date": "28 Mar 25", "cards": 190, "usd": 578.96, "eur": 509.52},
+    {"code": "PRE", "name": "Prismatic Evolutions", "date": "17 Jan 25", "cards": 180, "usd": 5270.18, "eur": 3955.56},
+    {"code": "SSP", "name": "Surging Sparks", "date": "08 Nov 24", "cards": 252, "usd": 1409.65, "eur": 1216.10},
+    {"code": "SCR", "name": "Stellar Crown", "date": "13 Sep 24", "cards": 175, "usd": 706.93, "eur": 474.55},
+    {"code": "SFA", "name": "Shrouded Fable", "date": "02 Aug 24", "cards": 99, "usd": 955.72, "eur": 572.00},
+    {"code": "TWM", "name": "Twilight Masquerade", "date": "24 May 24", "cards": 226, "usd": 1468.18, "eur": 976.88},
+    {"code": "TEF", "name": "Temporal Forces", "date": "22 Mar 24", "cards": 218, "usd": 1370.97, "eur": 897.52},
+    {"code": "PAF", "name": "Paldean Fates", "date": "26 Jan 24", "cards": 245, "usd": 2980.74, "eur": 1957.22},
+    {"code": "PAR", "name": "Paradox Rift", "date": "03 Nov 23", "cards": 266, "usd": 1281.14, "eur": 858.60},
+    {"code": "MEW", "name": "Pokemon 151", "date": "22 Sep 23", "cards": 207, "usd": 2328.24, "eur": 2251.05},
+    {"code": "OBF", "name": "Obsidian Flames", "date": "11 Aug 23", "cards": 230, "usd": 545.86, "eur": 376.40},
+    {"code": "PAL", "name": "Paldea Evolved", "date": "09 Jun 23", "cards": 279, "usd": 2114.82, "eur": 1270.88},
+    {"code": "SVI", "name": "Scarlet & Violet", "date": "31 Mar 23", "cards": 258, "usd": 883.60, "eur": 591.01},
+    {"code": "SVE", "name": "SV Energy", "date": "30 Mar 23", "cards": 24, "usd": 3.56, "eur": 0.81},
+    {"code": "SVP", "name": "SV Promos", "date": "", "cards": 217, "usd": 2852.70, "eur": 1641.81},
+    {"code": "CRZ", "name": "Crown Zenith", "date": "20 Jan 23", "cards": 230, "usd": 3051.00, "eur": 2976.31},
+    {"code": "SIT", "name": "Silver Tempest", "date": "11 Nov 22", "cards": 245, "usd": 1546.98, "eur": 1301.06},
+    {"code": "LOR", "name": "Lost Origin", "date": "09 Sep 22", "cards": 247, "usd": 2065.66, "eur": 2078.29},
+    {"code": "PGO", "name": "Pokemon GO", "date": "01 Jul 22", "cards": 88, "usd": 395.48, "eur": 366.50},
+    {"code": "ASR", "name": "Astral Radiance", "date": "27 May 22", "cards": 246, "usd": 1352.48, "eur": 1138.45},
+    {"code": "BRS", "name": "Brilliant Stars", "date": "25 Feb 22", "cards": 224, "usd": 1614.28, "eur": 1271.76},
+    {"code": "FST", "name": "Fusion Strike", "date": "12 Nov 21", "cards": 284, "usd": 2312.84, "eur": 1957.22},
+    {"code": "CEL", "name": "Celebrations", "date": "08 Oct 21", "cards": 50, "usd": 739.46, "eur": 975.02},
+    {"code": "EVS", "name": "Evolving Skies", "date": "27 Aug 21", "cards": 237, "usd": 7876.27, "eur": 7174.98},
+    {"code": "CRE", "name": "Chilling Reign", "date": "18 Jun 21", "cards": 233, "usd": 2012.34, "eur": 1698.58},
+    {"code": "BST", "name": "Battle Styles", "date": "19 Mar 21", "cards": 183, "usd": 841.97, "eur": 658.54},
+    {"code": "SHF", "name": "Shining Fates", "date": "19 Feb 21", "cards": 195, "usd": 723.09, "eur": 563.59},
+    {"code": "VIV", "name": "Vivid Voltage", "date": "13 Nov 20", "cards": 203, "usd": 568.12, "eur": 557.19},
+    {"code": "CPA", "name": "Champion's Path", "date": "25 Sep 20", "cards": 80, "usd": 572.01, "eur": 546.06},
+    {"code": "DAA", "name": "Darkness Ablaze", "date": "14 Aug 20", "cards": 201, "usd": 271.16, "eur": 283.28},
+    {"code": "RCL", "name": "Rebel Clash", "date": "01 May 20", "cards": 209, "usd": 499.56, "eur": 428.01},
+    {"code": "SSH", "name": "Sword & Shield", "date": "07 Feb 20", "cards": 224, "usd": 538.94, "eur": 496.20},
+    {"code": "SP", "name": "SWSH Promos", "date": "", "cards": 292, "usd": 2665.54, "eur": 2742.39},
+    {"code": "CEC", "name": "Cosmic Eclipse", "date": "01 Nov 19", "cards": 271, "usd": 5937.13, "eur": 5060.67},
+    {"code": "HIF", "name": "Hidden Fates", "date": "23 Aug 19", "cards": 163, "usd": 3619.55, "eur": 2917.82},
+    {"code": "UNM", "name": "Unified Minds", "date": "02 Aug 19", "cards": 258, "usd": 4251.90, "eur": 3084.61},
+    {"code": "UNB", "name": "Unbroken Bonds", "date": "03 May 19", "cards": 234, "usd": 3622.90, "eur": 2924.15},
+    {"code": "DET", "name": "Detective Pikachu", "date": "29 Mar 19", "cards": 18, "usd": 70.58, "eur": 58.11},
+    {"code": "TEU", "name": "Team Up", "date": "01 Feb 19", "cards": 205, "usd": 9194.50, "eur": 6899.96},
+    {"code": "LOT", "name": "Lost Thunder", "date": "02 Nov 18", "cards": 236, "usd": 2461.74, "eur": 1764.20},
+    {"code": "DRM", "name": "Dragon Majesty", "date": "07 Sep 18", "cards": 78, "usd": 669.68, "eur": 693.46},
+    {"code": "CES", "name": "Celestial Storm", "date": "03 Aug 18", "cards": 183, "usd": 1681.45, "eur": 1334.69},
+    {"code": "FLI", "name": "Forbidden Light", "date": "04 May 18", "cards": 146, "usd": 1208.66, "eur": 919.69},
+    {"code": "UPR", "name": "Ultra Prism", "date": "02 Feb 18", "cards": 173, "usd": 2016.78, "eur": 1188.50},
+    {"code": "CIN", "name": "Crimson Invasion", "date": "03 Nov 17", "cards": 124, "usd": 468.41, "eur": 412.06},
+    {"code": "SLG", "name": "Shining Legends", "date": "06 Oct 17", "cards": 78, "usd": 1291.63, "eur": 881.93},
+    {"code": "BUS", "name": "Burning Shadows", "date": "04 Aug 17", "cards": 169, "usd": 1428.90, "eur": 1002.30},
+    {"code": "GRI", "name": "Guardians Rising", "date": "05 May 17", "cards": 169, "usd": 963.52, "eur": 576.10},
+    {"code": "SUM", "name": "Sun & Moon", "date": "03 Feb 17", "cards": 172, "usd": 632.07, "eur": 488.21},
+    {"code": "SMP", "name": "SM Promos", "date": "", "cards": 248, "usd": 6759.68, "eur": 6435.53},
+    {"code": "EVO", "name": "Evolutions", "date": "02 Nov 16", "cards": 113, "usd": 808.97, "eur": 1012.93},
+    {"code": "STS", "name": "Steam Siege", "date": "03 Aug 16", "cards": 116, "usd": 412.44, "eur": 422.81},
+    {"code": "FCO", "name": "Fates Collide", "date": "02 May 16", "cards": 125, "usd": 775.05, "eur": 826.61},
+    {"code": "GEN", "name": "Generations", "date": "22 Feb 16", "cards": 115, "usd": 1712.99, "eur": 763.50},
+    {"code": "BKP", "name": "BREAKpoint", "date": "03 Feb 16", "cards": 123, "usd": 929.81, "eur": 902.78},
+    {"code": "BKT", "name": "BREAKthrough", "date": "04 Nov 15", "cards": 164, "usd": 1227.87, "eur": 1332.13},
+    {"code": "AOR", "name": "Ancient Origins", "date": "12 Aug 15", "cards": 100, "usd": 2935.62, "eur": 2180.02},
+    {"code": "ROS", "name": "Roaring Skies", "date": "06 May 15", "cards": 110, "usd": 1373.07, "eur": 1034.47},
+    {"code": "DCR", "name": "Double Crisis", "date": "25 Mar 15", "cards": 34, "usd": 1023.52, "eur": 966.76},
+    {"code": "PRC", "name": "Primal Clash", "date": "04 Feb 15", "cards": 164, "usd": 1695.33, "eur": 1457.73},
+    {"code": "PHF", "name": "Phantom Forces", "date": "05 Nov 14", "cards": 122, "usd": 2746.61, "eur": 1793.14},
+    {"code": "FFI", "name": "Furious Fists", "date": "13 Aug 14", "cards": 113, "usd": 854.66, "eur": 598.74},
+    {"code": "FLF", "name": "Flashfire", "date": "07 May 14", "cards": 109, "usd": 2217.81, "eur": 1145.15},
+    {"code": "XY", "name": "XY", "date": "05 Feb 14", "cards": 146, "usd": 725.08, "eur": 505.65},
+    {"code": "KSS", "name": "Kalos Starter Set", "date": "08 Nov 13", "cards": 39, "usd": 98.51, "eur": 104.96},
+    {"code": "XYP", "name": "XY Promos", "date": "", "cards": 211, "usd": 8026.45, "eur": 5693.65},
+    {"code": "LTR", "name": "Legendary Treasures", "date": "06 Nov 13", "cards": 140, "usd": 1932.06, "eur": 1690.11},
+    {"code": "PLB", "name": "Plasma Blast", "date": "14 Aug 13", "cards": 105, "usd": 2210.48, "eur": 1211.07},
+    {"code": "PLF", "name": "Plasma Freeze", "date": "08 May 13", "cards": 122, "usd": 3624.19, "eur": 1813.76},
+    {"code": "PLS", "name": "Plasma Storm", "date": "06 Feb 13", "cards": 138, "usd": 3282.35, "eur": 1762.59},
+    {"code": "BCR", "name": "Boundaries Crossed", "date": "07 Nov 12", "cards": 153, "usd": 2767.86, "eur": 1029.02},
+    {"code": "DRV", "name": "Dragon Vault", "date": "05 Oct 12", "cards": 21, "usd": 233.96, "eur": 159.95},
+    {"code": "DRX", "name": "Dragons Exalted", "date": "15 Aug 12", "cards": 128, "usd": 2724.72, "eur": 1527.54},
+    {"code": "DEX", "name": "Dark Explorers", "date": "09 May 12", "cards": 111, "usd": 3192.37, "eur": 1048.12},
+    {"code": "NXD", "name": "Next Destinies", "date": "08 Feb 12", "cards": 103, "usd": 2001.43, "eur": 644.02},
+    {"code": "NVI", "name": "Noble Victories", "date": "16 Nov 11", "cards": 102, "usd": 764.14, "eur": 231.85},
+    {"code": "EPO", "name": "Emerging Powers", "date": "31 Aug 11", "cards": 98, "usd": 110.13, "eur": 50.81},
+    {"code": "BLW", "name": "Black & White", "date": "25 Apr 11", "cards": 115, "usd": 484.14, "eur": 416.29},
+    {"code": "BWP", "name": "BW Promos", "date": "", "cards": 101, "usd": 5505.46, "eur": 2482.80},
+    {"code": "CL", "name": "Call of Legends", "date": "09 Feb 11", "cards": 106, "usd": 4888.64, "eur": 3378.24},
+    {"code": "TM", "name": "Triumphant", "date": "03 Nov 10", "cards": 103, "usd": 2053.46, "eur": 1070.31},
+    {"code": "UD", "name": "Undaunted", "date": "18 Aug 10", "cards": 91, "usd": 2424.95, "eur": 711.78},
+    {"code": "UL", "name": "Unleashed", "date": "12 May 10", "cards": 96, "usd": 1681.12, "eur": 625.87},
+    {"code": "HS", "name": "HeartGold SoulSilver", "date": "10 Feb 10", "cards": 124, "usd": 2184.38, "eur": 764.12},
+    {"code": "HSP", "name": "HGSS Promos", "date": "", "cards": 25, "usd": 1547.24, "eur": 691.59},
+    {"code": "RM", "name": "Pokemon Rumble", "date": "02 Dec 09", "cards": 16, "usd": 3854.51, "eur": 2312.73},
+    {"code": "AR", "name": "Arceus", "date": "04 Nov 09", "cards": 111, "usd": 1780.74, "eur": 874.34},
+    {"code": "SV", "name": "Supreme Victors", "date": "19 Aug 09", "cards": 153, "usd": 2768.04, "eur": 1027.84},
+    {"code": "RR", "name": "Rising Rivals", "date": "20 May 09", "cards": 120, "usd": 3302.11, "eur": 1024.69},
+    {"code": "P9", "name": "POP Series 9", "date": "01 Mar 09", "cards": 17, "usd": 164.77, "eur": 110.20},
+    {"code": "PL", "name": "Platinum", "date": "11 Feb 09", "cards": 133, "usd": 1481.57, "eur": 498.45},
+    {"code": "SF", "name": "Stormfront", "date": "05 Nov 08", "cards": 106, "usd": 1850.03, "eur": 548.26},
+    {"code": "P8", "name": "POP Series 8", "date": "01 Sep 08", "cards": 17, "usd": 128.04, "eur": 51.79},
+    {"code": "LA", "name": "Legends Awakened", "date": "20 Aug 08", "cards": 146, "usd": 1529.60, "eur": 629.40},
+    {"code": "MD", "name": "Majestic Dawn", "date": "21 May 08", "cards": 100, "usd": 1699.95, "eur": 706.82},
+    {"code": "P7", "name": "POP Series 7", "date": "01 Mar 08", "cards": 17, "usd": 194.00, "eur": 79.00},
+    {"code": "GE", "name": "Great Encounters", "date": "13 Feb 08", "cards": 106, "usd": 997.68, "eur": 323.31},
+    {"code": "SW", "name": "Secret Wonders", "date": "07 Nov 07", "cards": 132, "usd": 1008.58, "eur": 320.07},
+    {"code": "P6", "name": "POP Series 6", "date": "01 Sep 07", "cards": 17, "usd": 393.05, "eur": 174.06},
+    {"code": "MT", "name": "Mysterious Treasures", "date": "22 Aug 07", "cards": 124, "usd": 740.86, "eur": 318.13},
+    {"code": "DP", "name": "Diamond & Pearl", "date": "23 May 07", "cards": 130, "usd": 803.58, "eur": 247.95},
+    {"code": "DPP", "name": "DP Promos", "date": "", "cards": 56, "usd": 3034.34, "eur": 1425.86},
+    {"code": "P5", "name": "POP Series 5", "date": "01 Mar 07", "cards": 17, "usd": 2555.56, "eur": 12035.93},
+    {"code": "PK", "name": "Power Keepers", "date": "14 Feb 07", "cards": 108, "usd": 6267.00, "eur": 2813.46},
+    {"code": "DF", "name": "Dragon Frontiers", "date": "08 Nov 06", "cards": 101, "usd": 10431.27, "eur": 6269.38},
+    {"code": "CG", "name": "Crystal Guardians", "date": "30 Aug 06", "cards": 100, "usd": 4352.41, "eur": 3260.70},
+    {"code": "P4", "name": "POP Series 4", "date": "01 Aug 06", "cards": 17, "usd": 1653.96, "eur": 1009.13},
+    {"code": "HP", "name": "Holon Phantoms", "date": "03 May 06", "cards": 111, "usd": 8197.20, "eur": 6266.13},
+    {"code": "P3", "name": "POP Series 3", "date": "01 Apr 06", "cards": 17, "usd": 638.34, "eur": 395.92},
+    {"code": "LM", "name": "Legend Maker", "date": "13 Feb 06", "cards": 93, "usd": 4502.90, "eur": 3368.50},
+    {"code": "DS", "name": "Delta Species", "date": "31 Oct 05", "cards": 114, "usd": 7764.46, "eur": 4207.48},
+    {"code": "UF", "name": "Unseen Forces", "date": "22 Aug 05", "cards": 143, "usd": 8843.26, "eur": 6009.70},
+]
+
+
+def save_sets():
+    """Save all sets to CSV and JSON."""
+    # CSV
+    csv_path = f"{OUTPUT_DIR}/limitless_sets.csv"
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["code", "name", "date", "cards", "usd", "eur"])
+        writer.writeheader()
+        for s in SETS_DATA:
+            writer.writerow(s)
+    print(f"Saved {len(SETS_DATA)} sets to limitless_sets.csv")
+
+    # JSON
+    json_path = f"{OUTPUT_DIR}/limitless_sets.json"
+    with open(json_path, "w") as f:
+        json.dump(SETS_DATA, f, indent=2)
+    print(f"Saved {len(SETS_DATA)} sets to limitless_sets.json")
+
+
+def print_summary():
+    """Print summary statistics."""
+    total_cards = sum(s["cards"] for s in SETS_DATA)
+    total_usd = sum(s["usd"] for s in SETS_DATA)
+    total_eur = sum(s["eur"] for s in SETS_DATA)
+
+    print(f"\n{'='*60}")
+    print(f"LIMITLESS TCG DATA SUMMARY")
+    print(f"{'='*60}")
+    print(f"Total sets: {len(SETS_DATA)}")
+    print(f"Total cards: {total_cards:,}")
+    print(f"Total USD value: ${total_usd:,.2f}")
+    print(f"Total EUR value: {total_eur:,.2f}€")
+    print(f"\nTop 10 most valuable sets:")
+    for s in sorted(SETS_DATA, key=lambda x: x["usd"], reverse=True)[:10]:
+        print(f"  {s['name']}: ${s['usd']:,.2f} ({s['cards']} cards)")
+    print(f"\nTop 10 most valuable sets (EUR):")
+    for s in sorted(SETS_DATA, key=lambda x: x["eur"], reverse=True)[:10]:
+        print(f"  {s['name']}: {s['eur']:,.2f}€ ({s['cards']} cards)")
+
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("Limitless TCG Data Saver")
+    print("Source: https://limitlesstcg.com/cards")
+    print("=" * 60)
+    save_sets()
+    print_summary()

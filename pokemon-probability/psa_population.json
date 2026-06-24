@@ -1,0 +1,275 @@
+{
+  "base_set_charizard": {
+    "card_name": "Charizard",
+    "set_name": "Base Set",
+    "card_number": "4/102",
+    "total_graded": 42847,
+    "grades": {
+      "1": 218,
+      "2": 389,
+      "3": 812,
+      "4": 1247,
+      "5": 2103,
+      "6": 3421,
+      "7": 5892,
+      "8": 9234,
+      "9": 11204,
+      "10": 8327
+    },
+    "gem_mint_pct": 19.4,
+    "average_grade": 7.9,
+    "last_updated": "2024-12"
+  },
+  "base_set_pikachu": {
+    "card_name": "Pikachu",
+    "set_name": "Base Set",
+    "card_number": "58/102",
+    "total_graded": 15234,
+    "grades": {
+      "1": 145,
+      "2": 234,
+      "3": 412,
+      "4": 623,
+      "5": 1023,
+      "6": 1834,
+      "7": 2891,
+      "8": 3923,
+      "9": 2834,
+      "10": 1315
+    },
+    "gem_mint_pct": 8.6,
+    "average_grade": 7.27,
+    "last_updated": "2024-12"
+  },
+  "base_set_blastoise": {
+    "card_name": "Blastoise",
+    "set_name": "Base Set",
+    "card_number": "2/102",
+    "total_graded": 18432,
+    "grades": {
+      "1": 123,
+      "2": 198,
+      "3": 387,
+      "4": 598,
+      "5": 1023,
+      "6": 1834,
+      "7": 3102,
+      "8": 4892,
+      "9": 4234,
+      "10": 2041
+    },
+    "gem_mint_pct": 11.1,
+    "average_grade": 7.57,
+    "last_updated": "2024-12"
+  },
+  "base_set_venusaur": {
+    "card_name": "Venusaur",
+    "set_name": "Base Set",
+    "card_number": "15/102",
+    "total_graded": 12876,
+    "grades": {
+      "1": 98,
+      "2": 156,
+      "3": 298,
+      "4": 456,
+      "5": 812,
+      "6": 1423,
+      "7": 2345,
+      "8": 3567,
+      "9": 2834,
+      "10": 887
+    },
+    "gem_mint_pct": 6.9,
+    "average_grade": 7.38,
+    "last_updated": "2024-12"
+  },
+  "base_set_mewtwo": {
+    "card_name": "Mewtwo",
+    "set_name": "Base Set",
+    "card_number": "10/102",
+    "total_graded": 14567,
+    "grades": {
+      "1": 112,
+      "2": 178,
+      "3": 345,
+      "4": 523,
+      "5": 912,
+      "6": 1623,
+      "7": 2734,
+      "8": 4123,
+      "9": 3123,
+      "10": 894
+    },
+    "gem_mint_pct": 6.1,
+    "average_grade": 7.35,
+    "last_updated": "2024-12"
+  },
+  "base_set_alakazam": {
+    "card_name": "Alakazam",
+    "set_name": "Base Set",
+    "card_number": "1/102",
+    "total_graded": 11234,
+    "grades": {
+      "1": 87,
+      "2": 145,
+      "3": 278,
+      "4": 423,
+      "5": 734,
+      "6": 1289,
+      "7": 2156,
+      "8": 3234,
+      "9": 2456,
+      "10": 432
+    },
+    "gem_mint_pct": 3.8,
+    "average_grade": 7.27,
+    "last_updated": "2024-12"
+  },
+  "neo_genesis_lugia": {
+    "card_name": "Lugia",
+    "set_name": "Neo Genesis",
+    "card_number": "9/111",
+    "total_graded": 28456,
+    "grades": {
+      "1": 198,
+      "2": 312,
+      "3": 587,
+      "4": 912,
+      "5": 1623,
+      "6": 2845,
+      "7": 4892,
+      "8": 7234,
+      "9": 6123,
+      "10": 3730
+    },
+    "gem_mint_pct": 13.1,
+    "average_grade": 7.59,
+    "last_updated": "2024-12"
+  },
+  "neo_genesis_pichu": {
+    "card_name": "Pichu",
+    "set_name": "Neo Genesis",
+    "card_number": "12/111",
+    "total_graded": 18234,
+    "grades": {
+      "1": 134,
+      "2": 212,
+      "3": 398,
+      "4": 612,
+      "5": 1089,
+      "6": 1923,
+      "7": 3234,
+      "8": 4892,
+      "9": 3876,
+      "10": 1864
+    },
+    "gem_mint_pct": 10.2,
+    "average_grade": 7.48,
+    "last_updated": "2024-12"
+  },
+  "evolving_skies_umbreon_vmax": {
+    "card_name": "Umbreon VMAX Alt",
+    "set_name": "Evolving Skies",
+    "card_number": "215/203",
+    "total_graded": 15678,
+    "grades": {
+      "1": 89,
+      "2": 145,
+      "3": 267,
+      "4": 412,
+      "5": 723,
+      "6": 1289,
+      "7": 2234,
+      "8": 3567,
+      "9": 4123,
+      "10": 2829
+    },
+    "gem_mint_pct": 18.0,
+    "average_grade": 7.89,
+    "last_updated": "2024-12"
+  },
+  "evolving_skies_rayquaza_vmax": {
+    "card_name": "Rayquaza VMAX Alt",
+    "set_name": "Evolving Skies",
+    "card_number": "218/203",
+    "total_graded": 12345,
+    "grades": {
+      "1": 78,
+      "2": 123,
+      "3": 234,
+      "4": 367,
+      "5": 645,
+      "6": 1123,
+      "7": 1923,
+      "8": 3123,
+      "9": 3456,
+      "10": 1273
+    },
+    "gem_mint_pct": 10.3,
+    "average_grade": 7.67,
+    "last_updated": "2024-12"
+  },
+  "pokemon_151_charizard_ex": {
+    "card_name": "Charizard ex SAR",
+    "set_name": "Pokemon 151",
+    "card_number": "199/165",
+    "total_graded": 18234,
+    "grades": {
+      "1": 112,
+      "2": 178,
+      "3": 334,
+      "4": 512,
+      "5": 892,
+      "6": 1567,
+      "7": 2734,
+      "8": 4234,
+      "9": 4567,
+      "10": 3104
+    },
+    "gem_mint_pct": 17.0,
+    "average_grade": 7.82,
+    "last_updated": "2024-12"
+  },
+  "crown_zenith_lugia_vstar": {
+    "card_name": "Lugia VSTAR Alt",
+    "set_name": "Crown Zenith",
+    "card_number": "GG43/GG70",
+    "total_graded": 8923,
+    "grades": {
+      "1": 56,
+      "2": 89,
+      "3": 167,
+      "4": 256,
+      "5": 456,
+      "6": 789,
+      "7": 1345,
+      "8": 2123,
+      "9": 2456,
+      "10": 1186
+    },
+    "gem_mint_pct": 13.3,
+    "average_grade": 7.62,
+    "last_updated": "2024-12"
+  },
+  "celebrations_charizard": {
+    "card_name": "Charizard Classic",
+    "set_name": "Celebrations",
+    "card_number": "024/025",
+    "total_graded": 22345,
+    "grades": {
+      "1": 145,
+      "2": 234,
+      "3": 423,
+      "4": 656,
+      "5": 1123,
+      "6": 1987,
+      "7": 3345,
+      "8": 5123,
+      "9": 5678,
+      "10": 3631
+    },
+    "gem_mint_pct": 16.2,
+    "average_grade": 7.78,
+    "last_updated": "2024-12"
+  }
+}

@@ -1,0 +1,122 @@
+id,name,cards,releaseDate
+base1,Base Set,102,1999-01-09
+base2,Jungle,64,1999-06-16
+base3,Fossil,62,1999-10-10
+base4,Base Set 2,130,2000-02-23
+base5,Team Rocket,82,2000-04-24
+gym1,Gym Heroes,132,2000-08-14
+gym2,Gym Challenge,132,2000-11-08
+neo1,Neo Genesis,111,1999-12-16
+neo2,Neo Discovery,75,2000-06-26
+neo3,Neo Revelation,64,2000-09-21
+neo4,Neo Destiny,105,2001-02-28
+lc,Legendary Collection,110,2001-05-24
+ecard1,Expedition Base Set,165,2001-09-15
+ecard2,Aquapolis,147,2002-02-13
+ecard3,Skyridge,144,2002-06-14
+ex1,Ruby & Sapphire,109,2003-07-30
+ex2,Sandstorm,100,2003-09-17
+ex3,Dragon,97,2003-11-24
+ex4,Team Magma vs Team Aqua,95,2004-03-15
+ex5,Hidden Legends,101,2004-06-14
+ex6,FireRed & LeafGreen,112,2004-08-25
+ex7,Team Rocket Returns,109,2004-11-08
+ex8,Deoxys,107,2005-02-14
+ex9,Emerald,106,2005-05-11
+ex10,Unseen Forces,115,2005-08-17
+ex11,Delta Species,113,2005-11-09
+ex12,Legend Maker,92,2006-02-15
+ex13,Holon Phantoms,110,2006-05-24
+ex14,Crystal Guardians,100,2006-08-16
+ex15,Dragon Frontiers,101,2006-11-08
+ex16,Power Keepers,108,2007-02-14
+dp1,Diamond & Pearl,130,2007-05-23
+dp2,Mysterious Treasures,123,2007-08-22
+dp3,Secret Wonders,132,2007-11-07
+dp4,Great Encounters,106,2008-02-13
+dp5,Majestic Dawn,100,2008-05-14
+dp6,Legends Awakened,146,2008-08-13
+dp7,Stormfront,100,2008-11-05
+pl1,Platinum,127,2009-02-04
+pl2,Rising Rivals,111,2009-05-20
+pl3,Supreme Victors,147,2009-08-19
+pl4,Arceus,99,2009-11-04
+hgss1,HeartGold SoulSilver,123,2010-02-10
+hgss2,Unleashed,95,2010-05-12
+hgss3,Undaunted,90,2010-08-18
+hgss4,Triumphant,102,2010-11-02
+col1,Call of Legends,95,2011-02-09
+bw1,Black & White,114,2011-04-25
+bw2,Emerging Powers,98,2011-08-31
+bw3,Noble Victories,101,2011-11-16
+bw4,Next Destinies,99,2012-02-08
+bw5,Dark Explorers,108,2012-05-09
+bw6,Dragons Exalted,124,2012-08-15
+bw7,Boundaries Crossed,149,2012-11-07
+bw8,Plasma Storm,135,2013-02-06
+bw9,Plasma Freeze,116,2013-05-08
+bw10,Plasma Blast,101,2013-08-14
+bw11,Legendary Treasures,113,2013-11-06
+xy1,XY,146,2014-02-05
+xy2,Flashfire,106,2014-05-07
+xy3,Furious Fists,111,2014-08-13
+xy4,Phantom Forces,119,2014-11-05
+xy5,Primal Clash,160,2015-02-04
+xy6,Roaring Skies,108,2015-05-06
+xy7,Ancient Origins,98,2015-08-12
+xy8,BREAKthrough,162,2015-11-04
+xy9,BREAKpoint,122,2016-02-03
+g1,Generations,83,2016-02-22
+xy10,Fates Collide,124,2016-05-02
+xy11,Steam Siege,114,2016-08-03
+xy12,Evolutions,108,2016-11-02
+sm1,Sun & Moon,149,2017-02-03
+sm2,Guardians Rising,145,2017-05-05
+sm3,Burning Shadows,147,2017-08-04
+sm4,Crimson Invasion,111,2017-11-03
+sm5,Ultra Prism,156,2018-02-02
+sm6,Forbidden Light,131,2018-05-04
+sm7,Celestial Storm,168,2018-08-03
+sm8,Lost Thunder,214,2018-11-02
+sm9,Team Up,181,2019-02-01
+sm10,Unbroken Bonds,214,2019-05-03
+sm11,Unified Minds,236,2019-08-02
+sm12,Cosmic Eclipse,236,2019-11-01
+swsh1,Sword & Shield,202,2020-02-07
+swsh2,Rebel Clash,192,2020-05-01
+swsh3,Darkness Ablaze,189,2020-08-14
+swsh3.5,Champion's Path,73,2020-09-25
+swsh4,Vivid Voltage,185,2020-11-13
+swsh4.5,Shining Fates,72,2021-02-19
+swsh5,Battle Styles,163,2021-03-19
+swsh6,Chilling Reign,198,2021-06-18
+swsh7,Evolving Skies,203,2021-08-27
+cel25,Celebrations,25,2021-10-08
+swsh8,Fusion Strike,264,2021-11-12
+swsh9,Brilliant Stars,172,2022-02-25
+swsh10,Astral Radiance,189,2022-05-27
+swsh10.5,Pokemon GO,78,2022-07-01
+swsh11,Lost Origin,196,2022-09-09
+swsh12,Silver Tempest,195,2022-11-11
+swsh12.5,Crown Zenith,159,2023-01-20
+sv01,Scarlet & Violet,198,2023-03-31
+sv02,Paldea Evolved,193,2023-06-09
+sv03,Obsidian Flames,197,2023-08-11
+sv03.5,Pokemon 151,165,2023-09-22
+sv04,Paradox Rift,182,2023-11-03
+sv04.5,Paldean Fates,91,2024-01-26
+sv05,Temporal Forces,162,2024-03-22
+sv06,Twilight Masquerade,167,2024-05-24
+sv06.5,Shrouded Fable,64,2024-08-02
+sv07,Stellar Crown,142,2024-09-13
+sv08,Surging Sparks,191,2024-11-08
+sv08.5,Prismatic Evolutions,131,2025-01-17
+sv09,Journey Together,159,2025-03-28
+sv10,Destined Rivals,182,2025-05-30
+sv10.5w,White Flare,86,2025-07-18
+sv10.5b,Black Bolt,86,2025-07-18
+me01,Mega Evolution,132,2025-09-26
+me02,Phantasmal Flames,94,2025-11-14
+me02.5,Ascended Heroes,217,2026-01-30
+me03,Perfect Order,88,2026-03-27
+me04,Chaos Rising,86,2026-05-22

@@ -1,0 +1,103 @@
+id,localId,name,category,supertype,hp,types,stage,evolvesFrom
+base1-1,1,Alakazam,Pokémon,Pokémon,100,Psychic,Stage 2,Kadabra
+base1-2,2,Blastoise,Pokémon,Pokémon,100,Water,Stage 2,Wartortle
+base1-3,3,Chansey,Pokémon,Pokémon,120,Colorless,Basic,
+base1-4,4,Charizard,Pokémon,Pokémon,120,"Fire,Colorless",Stage 2,Charmeleon
+base1-5,5,Clefairy,Pokémon,Pokémon,70,Colorless,Basic,
+base1-6,6,Gyarados,Pokémon,Pokémon,100,Water,Stage 1,Magikarp
+base1-7,7,Hitmonchan,Pokémon,Pokémon,70,Fighting,Basic,
+base1-8,8,Machamp,Pokémon,Pokémon,100,Fighting,Stage 2,Machoke
+base1-9,9,Magneton,Pokémon,Pokémon,90,Lightning,Stage 1,Magnemite
+base1-10,10,Mewtwo,Pokémon,Pokémon,60,Psychic,Basic,
+base1-11,11,Nidoking,Pokémon,Pokémon,90,"Grass,Fighting",Stage 2,Nidorino
+base1-12,12,Ninetales,Pokémon,Pokémon,80,Fire,Stage 1,Vulpix
+base1-13,13,Poliwrath,Pokémon,Pokémon,80,"Water,Fighting",Stage 2,Poliwhirl
+base1-14,14,Raichu,Pokémon,Pokémon,80,Lightning,Stage 1,Pikachu
+base1-15,15,Venusaur,Pokémon,Pokémon,100,Grass,Stage 2,Ivysaur
+base1-16,16,Zapdos,Pokémon,Pokémon,90,Lightning,Basic,
+base1-17,17,Beedrill,Pokémon,Pokémon,80,"Grass,Fighting",Stage 2,Kakuna
+base1-18,18,Dragonair,Pokémon,Pokémon,80,Colorless,Stage 1,Dratini
+base1-19,19,Dugtrio,Pokémon,Pokémon,70,Fighting,Stage 1,Diglett
+base1-20,20,Electabuzz,Pokémon,Pokémon,70,Lightning,Basic,
+base1-21,21,Electrode,Pokémon,Pokémon,70,Lightning,Stage 1,Voltorb
+base1-22,22,Pidgeotto,Pokémon,Pokémon,60,Colorless,Stage 1,Pidgey
+base1-23,23,Arcanine,Pokémon,Pokémon,70,Fire,Stage 1,Growlithe
+base1-24,24,Charmeleon,Pokémon,Pokémon,70,Fire,Stage 1,Charmander
+base1-25,25,Dewgong,Pokémon,Pokémon,80,Water,Stage 1,Seel
+base1-26,26,Dratini,Pokémon,Pokémon,40,Colorless,Basic,
+base1-27,27,Farfetch'd,Pokémon,Pokémon,50,Colorless,Basic,
+base1-28,28,Growlithe,Pokémon,Pokémon,50,Fire,Basic,
+base1-29,29,Haunter,Pokémon,Pokémon,60,Psychic,Stage 1,Gastly
+base1-30,30,Ivysaur,Pokémon,Pokémon,60,Grass,Stage 1,Bulbasaur
+base1-31,31,Jynx,Pokémon,Pokémon,50,Psychic,Basic,
+base1-32,32,Kadabra,Pokémon,Pokémon,60,Psychic,Stage 1,Abra
+base1-33,33,Kakuna,Pokémon,Pokémon,50,Grass,Stage 1,Weedle
+base1-34,34,Machoke,Pokémon,Pokémon,80,Fighting,Stage 1,Machop
+base1-35,35,Magikarp,Pokémon,Pokémon,30,Water,Basic,
+base1-36,36,Magmar,Pokémon,Pokémon,50,Fire,Basic,
+base1-37,37,Nidorino,Pokémon,Pokémon,60,Grass,Stage 1,Nidoran♂
+base1-38,38,Poliwhirl,Pokémon,Pokémon,60,Water,Stage 1,Poliwag
+base1-39,39,Porygon,Pokémon,Pokémon,30,Colorless,Basic,
+base1-40,40,Raticate,Pokémon,Pokémon,60,Colorless,Stage 1,Rattata
+base1-41,41,Seel,Pokémon,Pokémon,60,Water,Basic,
+base1-42,42,Wartortle,Pokémon,Pokémon,70,Water,Stage 1,Squirtle
+base1-43,43,Abra,Pokémon,Pokémon,30,Psychic,Basic,
+base1-44,44,Bulbasaur,Pokémon,Pokémon,40,Grass,Basic,
+base1-45,45,Caterpie,Pokémon,Pokémon,30,Grass,Basic,
+base1-46,46,Charmander,Pokémon,Pokémon,40,Fire,Basic,
+base1-47,47,Diglett,Pokémon,Pokémon,30,Fighting,Basic,
+base1-48,48,Doduo,Pokémon,Pokémon,30,Colorless,Basic,
+base1-49,49,Drowzee,Pokémon,Pokémon,50,Psychic,Basic,
+base1-50,50,Gastly,Pokémon,Pokémon,30,Psychic,Basic,
+base1-51,51,Koffing,Pokémon,Pokémon,50,Grass,Basic,
+base1-52,52,Machop,Pokémon,Pokémon,50,Fighting,Basic,
+base1-53,53,Magnemite,Pokémon,Pokémon,40,Lightning,Basic,
+base1-54,54,Metapod,Pokémon,Pokémon,50,Grass,Stage 1,Caterpie
+base1-55,55,Nidoran♂,Pokémon,Pokémon,40,Grass,Basic,
+base1-56,56,Onix,Pokémon,Pokémon,70,Fighting,Basic,
+base1-57,57,Pidgey,Pokémon,Pokémon,30,Colorless,Basic,
+base1-58,58,Pikachu,Pokémon,Pokémon,30,Lightning,Basic,
+base1-59,59,Poliwag,Pokémon,Pokémon,40,Water,Basic,
+base1-60,60,Ponyta,Pokémon,Pokémon,40,Fire,Basic,
+base1-61,61,Rattata,Pokémon,Pokémon,30,Colorless,Basic,
+base1-62,62,Sandshrew,Pokémon,Pokémon,30,Fighting,Basic,
+base1-63,63,Squirtle,Pokémon,Pokémon,40,Water,Basic,
+base1-64,64,Starmie,Pokémon,Pokémon,60,Water,Stage 1,Staryu
+base1-65,65,Staryu,Pokémon,Pokémon,30,Water,Basic,
+base1-66,66,Tangela,Pokémon,Pokémon,50,Grass,Basic,
+base1-67,67,Voltorb,Pokémon,Pokémon,30,Lightning,Basic,
+base1-68,68,Vulpix,Pokémon,Pokémon,40,Fire,Basic,
+base1-69,69,Weedle,Pokémon,Pokémon,30,Grass,Basic,
+base1-70,70,Clefairy Doll,Trainer,Trainer,,,,
+base1-71,71,Computer Search,Trainer,Trainer,,,,
+base1-72,72,Devolution Spray,Trainer,Trainer,,,,
+base1-73,73,Impostor Professor Oak,Trainer,Trainer,,,,
+base1-74,74,Item Finder,Trainer,Trainer,,,,
+base1-75,75,Lass,Trainer,Trainer,,,,
+base1-76,76,Pokemon Breeder,Trainer,Trainer,,,,
+base1-77,77,Pokemon Trader,Trainer,Trainer,,,,
+base1-78,78,Scoop Up,Trainer,Trainer,,,,
+base1-79,79,Super Energy Removal,Trainer,Trainer,,,,
+base1-80,80,Defender,Trainer,Trainer,,,,
+base1-81,81,Energy Retrieval,Trainer,Trainer,,,,
+base1-82,82,Full Heal,Trainer,Trainer,,,,
+base1-83,83,Maintenance,Trainer,Trainer,,,,
+base1-84,84,PlusPower,Trainer,Trainer,,,,
+base1-85,85,Pokemon Center,Trainer,Trainer,,,,
+base1-86,86,Pokemon Flute,Trainer,Trainer,,,,
+base1-87,87,Pokedex,Trainer,Trainer,,,,
+base1-88,88,Professor Oak,Trainer,Trainer,,,,
+base1-89,89,Revive,Trainer,Trainer,,,,
+base1-90,90,Super Potion,Trainer,Trainer,,,,
+base1-91,91,Bill,Trainer,Trainer,,,,
+base1-92,92,Energy Removal,Trainer,Trainer,,,,
+base1-93,93,Gust of Wind,Trainer,Trainer,,,,
+base1-94,94,Potion,Trainer,Trainer,,,,
+base1-95,95,Switch,Trainer,Trainer,,,,
+base1-96,96,Double Colorless Energy,Energy,Energy,,,,
+base1-97,97,Fighting Energy,Energy,Energy,,,,
+base1-98,98,Fire Energy,Energy,Energy,,,,
+base1-99,99,Grass Energy,Energy,Energy,,,,
+base1-100,100,Lightning Energy,Energy,Energy,,,,
+base1-101,101,Psychic Energy,Energy,Energy,,,,
+base1-102,102,Water Energy,Energy,Energy,,,,
