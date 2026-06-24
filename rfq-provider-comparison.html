@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RFQ Providers Deep Comparison — Illiquid Metals</title>
+<style>
+:root{--bg:#0d1117;--s:#161b22;--b:#30363d;--t:#e6edf3;--m:#8b949e;--a:#58a6ff;--g:#3fb950;--o:#d29922;--r:#f85149;--p:#bc8cff;--c:#39d2c0;--pk:#f778ba}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t);line-height:1.5}
+.ct{max-width:1600px;margin:0 auto;padding:24px}
+h1{font-size:1.7rem;margin-bottom:4px}
+.sub{color:var(--m);margin-bottom:24px;font-size:.9rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+.card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:18px}
+.card h2{font-size:.95rem;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.full{grid-column:1/-1}
+.note{background:rgba(210,153,34,.1);border-left:3px solid var(--o);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.8rem;color:var(--m);margin-top:14px}
+.note strong{color:var(--o)}
+.src{text-align:center;color:var(--m);font-size:.7rem;margin-top:22px;padding-top:14px;border-top:1px solid var(--b)}
+
+table{width:100%;border-collapse:collapse;font-size:.72rem}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--b)}
+th{color:var(--m);font-weight:500;text-transform:uppercase;font-size:.66rem;letter-spacing:.5px;position:sticky;top:0;background:var(--s)}
+tr:hover{background:rgba(88,166,255,.04)}
+.table-scroll{max-height:500px;overflow-y:auto}
+
+.provider-card{background:var(--bg);border-radius:10px;padding:16px;margin-bottom:12px;border-left:4px solid}
+.provider-card h3{font-size:.9rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.provider-card .tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:600}
+
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:8px}
+.feat-item{background:var(--s);border-radius:6px;padding:8px;text-align:center}
+.feat-item .icon{font-size:1.2rem;margin-bottom:4px}
+.feat-item .label{font-size:.68rem;color:var(--m)}
+.feat-item .val{font-size:.75rem;font-weight:500;color:var(--t)}
+
+.check{color:var(--g)}
+.cross{color:var(--r)}
+.partial{color:var(--o)}
+
+.score-bar{display:flex;gap:2px;margin-top:4px}
+.score-dot{width:8px;height:8px;border-radius:50%;background:var(--b)}
+.score-dot.filled{background:var(--g)}
+.score-dot.filled.med{background:var(--o)}
+.score-dot.filled.low{background:var(--r)}
+
+.filter-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.filter-tab{padding:5px 12px;border-radius:16px;font-size:.72rem;cursor:pointer;border:1px solid var(--b);background:var(--s);color:var(--t);transition:all .2s}
+.filter-tab:hover{border-color:var(--a)}
+.filter-tab.active{background:var(--a);color:#fff;border-color:var(--a)}
+
+.insight-box{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(57,210,192,.08));border:1px solid var(--a);border-radius:10px;padding:16px;margin-top:14px}
+.insight-box h3{font-size:.9rem;color:var(--a);margin-bottom:8px}
+.insight-box p{font-size:.78rem;color:var(--t);line-height:1.5}
+.insight-box ul{margin-top:8px;padding-left:16px}
+.insight-box li{font-size:.75rem;color:var(--m);margin-bottom:4px}
+
+.cost-matrix{font-size:.7rem}
+.cost-matrix th{font-size:.62rem}
+.cost-matrix td{font-size:.7rem}
+</style>
+</head>
+<body>
+<div class="ct">
+<h1>RFQ Providers Deep Comparison</h1>
+<p class="sub">Feature matrix · Access requirements · Metal coverage · Pricing models · Technology capabilities</p>
+
+<div class="filter-tabs" id="filterTabs">
+<div class="filter-tab active" data-filter="all">All Providers</div>
+<div class="filter-tab" data-filter="tier1">Tier 1 — Physical Traders</div>
+<div class="filter-tab" data-filter="tier2">Tier 2 — Brokers/Platforms</div>
+<div class="filter-tab" data-filter="tier3">Tier 3 — Exchange/Clearing</div>
+<div class="filter-tab" data-filter="specialty">Specialty — Rare Earths</div>
+</div>
+
+<div class="grid">
+
+<!-- FEATURE MATRIX -->
+<div class="card full">
+<h2>Feature Comparison Matrix</h2>
+<div class="table-scroll">
+<table id="featureTable">
+<thead>
+<tr>
+<th>Provider</th>
+<th>Type</th>
+<th>Min Trade</th>
+<th>Settlement</th>
+<th>Clearing</th>
+<th>Metals</th>
+<th>RFQ Method</th>
+<th>Price Transparency</th>
+<th>Credit Terms</th>
+<th>Reporting</th>
+</tr>
+</thead>
+<tbody id="featureBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- DETAILED PROVIDER CARDS -->
+<div class="card full">
+<h2>Provider Deep Dives</h2>
+<div class="table-scroll" style="max-height:none">
+<div id="providerCards"></div>
+</div>
+</div>
+
+<!-- COST COMPARISON -->
+<div class="card">
+<h2>Cost Structure Comparison</h2>
+<div class="table-scroll">
+<table class="cost-matrix">
+<thead><tr><th>Provider</th><th>Spread</th><th>Commission</th><th>Clearing</th><th>FX Cost</th><th>Total Est.</th></tr></thead>
+<tbody id="costBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- METAL COVERAGE MATRIX -->
+<div class="card">
+<h2>Metal Coverage Matrix</h2>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Provider</th><th>Au</th><th>Ag</th><th>Pt</th><th>Pd</th><th>Cu</th><th>Co</th><th>Li</th><th>NdPr</th><th>REE</th></tr></thead>
+<tbody id="coverageBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- TECHNOLOGY SCORES -->
+<div class="card full">
+<h2>Technology & Platform Scores</h2>
+<table>
+<thead><tr><th>Provider</th><th>API Access</th><th> algo Execution</th><th>Block Trading</th><th>Post-Trade</th><th>Compliance</th><th>Mobile</th><th>Overall</th></tr></thead>
+<tbody id="techBody"></tbody>
+</table>
+</div>
+
+<!-- RECOMMENDATIONS -->
+<div class="card full">
+<div class="insight-box">
+<h3>Recommendation by Use Case</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:12px">
+<div>
+<h4 style="color:var(--a);font-size:.82rem;margin-bottom:6px">Physical Gold/Silver (Institutional)</h4>
+<ul style="font-size:.75rem;color:var(--m)">
+<li><strong>Primary:</strong> LBMA member via BullionVault, MKS PAMP</li>
+<li><strong>Min:</strong> 400 oz gold, 20,000 oz silver</li>
+<li><strong>Why:</strong> Tightest spreads, benchmark pricing</li>
+</ul>
+</div>
+<div>
+<h4 style="color:var(--g);font-size:.82rem;margin-bottom:6px">Base Metals (Cu, Al, Zn, Ni)</h4>
+<ul style="font-size:.75rem;color:var(--m)">
+<li><strong>Primary:</strong> LME member via Marex, INTL FCStone</li>
+<li><strong>Min:</strong> 1 lot (25 tons)</li>
+<li><strong>Why:</strong> LME clearing, standard contracts</li>
+</ul>
+</div>
+<div>
+<h4 style="color:var(--o);font-size:.82rem;margin-bottom:6px">Cobalt / Lithium</h4>
+<ul style="font-size:.75rem;color:var(--m)">
+<li><strong>Primary:</strong> Traxys, Trafigura (relationship)</li>
+<li><strong>Min:</strong> $500K-$1M+</li>
+<li><strong>Why:</strong> Physical traders with inventory</li>
+</ul>
+</div>
+<div>
+<h4 style="color:var(--p);font-size:.82rem;margin-bottom:6px">Rare Earths (NdPr, Ter, Dy)</h4>
+<ul style="font-size:.75rem;color:var(--m)">
+<li><strong>Primary:</strong> Goldberg & Sons, Traxys, producer offtake</li>
+<li><strong>Min:</strong> $250K-$500K</li>
+<li><strong>Why:</strong> Specialist knowledge, thin books</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="src">Data: Exchange reports, broker disclosures, industry research · Feature availability as of Q2 2026</div>
+</div>
+
+<script>
+const PROVIDERS = [
+  {
+    id:"traxys",name:"Traxys",tier:"tier1",type:"Physical Trader",color:"#58a6ff",
+    desc:"Largest independent physical commodity trader. Deep expertise in cobalt, lithium, rare earths, specialty metals.",
+    metals:["Cu","Co","Li","NdPr","W","Ta","Nb","Mn","Fe"],
+    minTrade:"$500K-$2M",settlement:"Physical/T+2",clearing:"OTC bilateral",rfqMethod:"Direct relationship",
+    priceTrans:"Negotiated",creditTerms:"30-60 days (relationship)",reporting:"Custom",
+    fees:{spread:"5-15 bps",commission:"Negotiated",clearing:"N/A",fx:"0-2%",total:"15-30 bps"},
+    tech:{api:false,algo:false,block:true,postTrade:true,compliance:true,mobile:false,score:6},
+    features:["Physical delivery","Offtake agreements","Warehouse network","Technical specs","Assay certificates"]
+  },
+  {
+    id:"trafigura",name:"Trafigura",tier:"tier1",type:"Physical Trader",color:"#e87d4f",
+    desc:"Top 3 global commodity trader. Metals & minerals division with deep cobalt, lithium, nickel books.",
+    metals:["Cu","Ni","Co","Li","Pb","Zn","Fe"],
+    minTrade:"$1M-$5M",settlement:"Physical/T+2",clearing:"OTC bilateral",rfqMethod:"Direct relationship",
+    priceTrans:"Negotiated",creditTerms:"30-90 days",reporting:"Custom",
+    fees:{spread:"3-10 bps",commission:"Negotiated",clearing:"N/A",fx:"0-1.5%",total:"10-25 bps"},
+    tech:{api:false,algo:false,block:true,postTrade:true,compliance:true,mobile:false,score:5},
+    features:["Physical delivery","Financing","Logistics","Risk management","Offtake"]
+  },
+  {
+    id:"glencore",name:"Glencore",tier:"tier1",type:"Physical Trader",color:"#3fb950",
+    desc:"Largest commodity trader by revenue. Vertically integrated mining + trading.",
+    metals:["Cu","Zn","Ni","Co","Pb","Cd","Ag","Pt","Pd"],
+    minTrade:"$1M-$10M",settlement:"Physical/T+2",clearing:"OTC bilateral",rfqMethod:"Direct relationship",
+    priceTrans:"Negotiated",creditTerms:"30-90 days",reporting:"Custom",
+    fees:{spread:"2-8 bps",commission:"Negotiated",clearing:"N/A",fx:"0-1%",total:"8-20 bps"},
+    tech:{api:false,algo:false,block:true,postTrade:true,compliance:true,mobile:false,score:5},
+    features:["Vertical integration","Producer access","Global logistics","Financing","Risk management"]
+  },
+  {
+    id:"marex",name:"Marex Spectron",tier:"tier2",type:"Broker",color:"#bc8cff",
+    desc:"Global commodity broker. LME ring member. Electronic + voice execution.",
+    metals:["Cu","Al","Zn","Ni","Sn","Pb","Fe","Au","Ag"],
+    minTrade:"$100K-$500K",settlement:"T+2 (LME)",clearing:"LME Clear",rfqMethod:"Electronic/Voice",
+    priceTrans:"Market + Spread",creditTerms:"LME margin",reporting:"Standard",
+    fees:{spread:"1-5 bps",commission:"$0.50-2/ton",clearing:"$0.10-0.50/ton",fx:"0.5-1%",total:"5-15 bps"},
+    tech:{api:true,algo:true,block:true,postTrade:true,compliance:true,mobile:true,score:8},
+    features:["LME ring access","Electronic trading","Algorithmic execution","Market data","Research"]
+  },
+  {
+    id:"intl_fcstone",name:"INTL FCStone",tier:"tier2",type:"Broker/Dealer",color:"#d29922",
+    desc:"Full-service broker. Strong in OTC metals, precious metals, base metals.",
+    metals:["Au","Ag","Pt","Pd","Cu","Al","Zn","Ni"],
+    minTrade:"$50K-$250K",settlement:"T+2",clearing:"LME/CME/OTC",rfqMethod:"Electronic/Voice",
+    priceTrans:"Market + Spread",creditTerms:"LME margin",reporting:"Standard",
+    fees:{spread:"1-4 bps",commission:"$0.50-1.50/lot",clearing:"$0.10-0.25/lot",fx:"0.3-0.8%",total:"3-12 bps"},
+    tech:{api:true,algo:true,block:true,postTrade:true,compliance:true,mobile:true,score:8},
+    features:["Multi-asset","Electronic execution","Clearing services","Research","Advisory"]
+  },
+  {
+    id:"mks_pamp",name:"MKS PAMP",tier:"tier2",type:"Bullion/Refiner",color:"#f778ba",
+    desc:"Swiss refinery and precious metals trader. LBMA good delivery.",
+    metals:["Au","Ag","Pt","Pd","Rh"],
+    minTrade:"$100K-$1M",settlement:"T+2 (LBMA)",clearing:"LBMA",rfqMethod:"Electronic/Voice",
+    priceTrans:"LBMA Fix + Spread",creditTerms:"30 days",reporting:"Standard",
+    fees:{spread:"0.5-2 bps",commission:"$0.25-0.75/oz",clearing:"$0.50/oz",fx:"0-0.5%",total:"2-8 bps"},
+    tech:{api:true,algo:false,block:true,postTrade:true,compliance:true,mobile:true,score:7},
+    features:["LBMA good delivery","Refining","Vault storage","Digital platform","Sustainability"]
+  },
+  {
+    id:"goldberg",name:"Goldberg & Sons",tier:"specialty",type:"Specialty Metals",color:"#39d2c0",
+    desc:"Specialist in minor metals, rare earths, specialty alloys. Over 50 years experience.",
+    metals:["NdPr","Ter","Dy","W","Ta","Nb","Mo","V","Re","Ge","Ga","In"],
+    minTrade:"$50K-$500K",settlement:"T+2 to T+30",clearing:"OTC bilateral",rfqMethod:"Voice/Email",
+    priceTrans:"Negotiated",creditTerms:"30-60 days",reporting:"Custom",
+    fees:{spread:"10-30 bps",commission:"Negotiated",clearing:"N/A",fx:"1-3%",total:"20-50 bps"},
+    tech:{api:false,algo:false,block:true,postTrade:true,compliance:true,mobile:false,score:4},
+    features:["Expert knowledge","Assay services","Custom specifications","Market intelligence","Long-term contracts"]
+  },
+  {
+    id:"lme",name:"LME",tier:"tier3",type:"Exchange",color:"#58a6ff",
+    desc:"London Metal Exchange. The global benchmark for base metals pricing.",
+    metals:["Cu","Al","Zn","Ni","Sn","Pb","Co","Fe"],
+    minTrade:"1 lot (25 tons)",settlement:"T+2 (cash/3M)",clearing:"LME Clear",rfqMethod:"Ring/Electronic",
+    priceTrans:"Transparent (Ring)",creditTerms:"LME margin (5-15%)",reporting:"Official",
+    fees:{spread:"1-3 bps",commission:"$0.25-1/ton",clearing:"$0.10-0.50/ton",fx:"0-0.3%",total:"2-6 bps"},
+    tech:{api:true,algo:true,block:true,postTrade:true,compliance:true,mobile:true,score:9},
+    features:["Ring trading","Electronic (LMEselect)","Clearing","Warehousing","Price reporting"]
+  },
+  {
+    id:"comex",name:"COMEX/CME",tier:"tier3",type:"Exchange",color:"#e87d4f",
+    desc:"CME Group metals division. Gold, silver, copper futures and options.",
+    metals:["Au","Ag","Cu","Pt","Pd"],
+    minTrade:"1 contract",settlement:"Physical/Cash",clearing:"CME Clearing",rfqMethod:"Globex/EFP",
+    priceTrans:"Transparent (Globex)",creditTerms:"CME margin (5-10%)",reporting:"Official",
+    fees:{spread:"0.5-2 bps",commission:"$0.50-2/contract",clearing:"$0.85-1.50/contract",fx:"0-0.2%",total:"2-5 bps"},
+    tech:{api:true,algo:true,block:true,postTrade:true,compliance:true,mobile:true,score:9},
+    features:["Globex electronic","Block trading (EFP)","Options","Clearing","Price reporting"]
+  },
+  {
+    id:"shfe",name:"SHFE",tier:"tier3",type:"Exchange",color:"#f85149",
+    desc:"Shanghai Futures Exchange. China's primary metals exchange.",
+    metals:["Au","Ag","Cu","Al","Zn","Ni","Sn","Pb"],
+    minTrade:"1 lot",settlement:"Physical",clearing:"SHFE Clearing",rfqMethod:"Electronic",
+    priceTrans:"Transparent",creditTerms:"SHFE margin (7-15%)",reporting:"Official",
+    fees:{spread:"1-3 bps",commission:"0.005-0.02%",clearing:"0.002-0.01%",fx:"2-4%",total:"5-15 bps"},
+    tech:{api:true,algo:true,block:true,postTrade:true,compliance:true,mobile:true,score:7},
+    features:["Electronic trading","Physical delivery","Chinese market access","Night session"]
+  },
+  {
+    id:"lbma",name:"LBMA",tier:"tier3",type:"Association",color:"#ffd700",
+    desc:"London Bullion Market Association. Gold & silver spot/forward benchmark.",
+    metals:["Au","Ag"],
+    minTrade:"400 oz (Au), 20K oz (Ag)",settlement:"T+2",clearing:"OTC (vault)",rfqMethod:"Member OTC",
+    priceTrans:"LBMA Fix (twice daily)",creditTerms:"Member credit",reporting:"Official Fix",
+    fees:{spread:"0.5-1.5 bps",commission:"$0.50-1.50/oz",clearing:"$0.50-2/oz",fx:"0-0.5%",total:"2-5 bps"},
+    tech:{api:true,algo:false,block:true,postTrade:true,compliance:true,mobile:false,score:6},
+    features:["AM/PM Fix","Good delivery","Vault network","Assay standards","Market statistics"]
+  },
+  {
+    id:"cme",name:"CME (Lithium)",tier:"tier3",type:"Exchange",color:"#98fb98",
+    desc:"CME Lithium futures. Newer contract for battery-grade lithium hydroxide.",
+    metals:["Li"],
+    minTrade:"1 contract (1 ton)",settlement:"Cash-settled",clearing:"CME Clearing",rfqMethod:"Globex",
+    priceTrans:"Transparent (Globex)",creditTerms:"CME margin",reporting:"Official",
+    fees:{spread:"5-15 bps",commission:"$1-3/contract",clearing:"$0.50-1/contract",fx:"0-0.2%",total:"8-20 bps"},
+    tech:{api:true,algo:true,block:true,postTrade:true,compliance:true,mobile:true,score:8},
+    features:["Cash settlement","Price transparency","Options available","Clearing"]
+  }
+];
+
+let activeFilter = 'all';
+
+function renderFeatureTable(){
+  const tbody = document.getElementById('featureBody');
+  const filtered = activeFilter === 'all' ? PROVIDERS : PROVIDERS.filter(p => p.tier === activeFilter || (activeFilter === 'specialty' && p.tier === 'specialty'));
+  
+  tbody.innerHTML = filtered.map(p => `
+    <tr style="border-left:3px solid ${p.color}">
+      <td><strong>${p.name}</strong><br><span style="font-size:.62rem;color:var(--m)">${p.type}</span></td>
+      <td><span class="tag" style="background:${p.color}22;color:${p.color}">${p.tier.replace('tier','T')}</span></td>
+      <td>${p.minTrade}</td>
+      <td>${p.settlement}</td>
+      <td>${p.clearing}</td>
+      <td style="font-size:.65rem">${p.metals.slice(0,5).join(', ')}${p.metals.length > 5 ? '...' : ''}</td>
+      <td>${p.rfqMethod}</td>
+      <td>${p.priceTrans}</td>
+      <td style="font-size:.68rem">${p.creditTerms}</td>
+      <td>${p.reporting}</td>
+    </tr>
+  `).join('');
+}
+
+function renderProviderCards(){
+  const container = document.getElementById('providerCards');
+  const filtered = activeFilter === 'all' ? PROVIDERS : PROVIDERS.filter(p => p.tier === activeFilter || (activeFilter === 'specialty' && p.tier === 'specialty'));
+  
+  container.innerHTML = filtered.map(p => `
+    <div class="provider-card" style="border-color:${p.color}">
+      <h3>
+        <span style="color:${p.color}">${p.name}</span>
+        <span class="tag" style="background:${p.color}22;color:${p.color}">${p.type}</span>
+      </h3>
+      <p style="font-size:.75rem;color:var(--m);margin-bottom:8px">${p.desc}</p>
+      <div class="feat-grid">
+        ${p.features.map(f => `<div class="feat-item"><div class="label">${f}</div></div>`).join('')}
+      </div>
+      <div style="margin-top:10px">
+        <span style="font-size:.7rem;color:var(--m)">Tech Score:</span>
+        <div class="score-dot${p.tech.score >= 1 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 2 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 3 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 4 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 5 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 6 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 7 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 8 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 9 ? ' filled' : ''}" style="display:inline-block"></div>
+        <div class="score-dot${p.tech.score >= 10 ? ' filled' : ''}" style="display:inline-block"></div>
+        <span style="font-size:.68rem;color:var(--m);margin-left:6px">${p.tech.score}/10</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCostTable(){
+  const tbody = document.getElementById('costBody');
+  tbody.innerHTML = PROVIDERS.map(p => `
+    <tr>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.fees.spread}</td>
+      <td>${p.fees.commission}</td>
+      <td>${p.fees.clearing}</td>
+      <td>${p.fees.fx}</td>
+      <td><strong>${p.fees.total}</strong></td>
+    </tr>
+  `).join('');
+}
+
+function renderCoverageTable(){
+  const tbody = document.getElementById('coverageBody');
+  const allMetals = ["Au","Ag","Pt","Pd","Cu","Co","Li","NdPr","REE"];
+  
+  tbody.innerHTML = PROVIDERS.map(p => {
+    const cells = allMetals.map(m => {
+      if(p.metals.includes(m)) return `<td class="check">✓</td>`;
+      if(m === "REE" && p.metals.some(x => ["NdPr","Ter","Dy","Ge","Ga","In"].includes(x))) return `<td class="check">✓</td>`;
+      return `<td class="cross">—</td>`;
+    }).join('');
+    return `<tr><td><strong>${p.name}</strong></td>${cells}</tr>`;
+  }).join('');
+}
+
+function renderTechTable(){
+  const tbody = document.getElementById('techBody');
+  const techKeys = ["api","algo","block","postTrade","compliance","mobile"];
+  
+  tbody.innerHTML = PROVIDERS.map(p => {
+    const cells = techKeys.map(k => {
+      return p.tech[k] ? `<td class="check">✓</td>` : `<td class="cross">✗</td>`;
+    }).join('');
+    return `<tr><td><strong>${p.name}</strong></td>${cells}<td><strong>${p.tech.score}/10</strong></td></tr>`;
+  }).join('');
+}
+
+function refresh(){
+  renderFeatureTable();
+  renderProviderCards();
+  renderCostTable();
+  renderCoverageTable();
+  renderTechTable();
+}
+
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeFilter = tab.dataset.filter;
+    refresh();
+  });
+});
+
+refresh();
+</script>
+</body>
+</html>

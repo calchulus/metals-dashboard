@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metals Trading Dashboard — Unified View</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+<style>
+:root{--bg:#0d1117;--s:#161b22;--b:#30363d;--t:#e6edf3;--m:#8b949e;--a:#58a6ff;--g:#3fb950;--o:#d29922;--r:#f85149;--p:#bc8cff;--c:#39d2c0;--pk:#f778ba}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t);line-height:1.5}
+.app{display:flex;height:100vh}
+.sidebar{width:220px;background:var(--s);border-right:1px solid var(--b);padding:16px 0;flex-shrink:0;overflow-y:auto}
+.sidebar h1{font-size:1rem;padding:0 16px 12px;border-bottom:1px solid var(--b);margin-bottom:8px}
+.sidebar .logo{font-size:.7rem;color:var(--m);padding:0 16px 12px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:.8rem;color:var(--m);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(88,166,255,.08);color:var(--t)}
+.nav-item.active{background:rgba(88,166,255,.12);color:var(--a);border-left-color:var(--a)}
+.nav-item .icon{width:18px;text-align:center}
+.nav-section{font-size:.65rem;color:var(--m);text-transform:uppercase;letter-spacing:1px;padding:16px 16px 6px;font-weight:600}
+.main{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}
+.page.active{display:block}
+.page-header{margin-bottom:20px}
+.page-header h2{font-size:1.4rem;margin-bottom:4px}
+.page-header .sub{color:var(--m);font-size:.85rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1200px){.grid{grid-template-columns:1fr}}
+.card{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:16px}
+.card h3{font-size:.82rem;color:var(--m);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.full{grid-column:1/-1}
+.chart-box{position:relative;height:300px;width:100%}
+.chart-box canvas{max-height:100%}
+
+table{width:100%;border-collapse:collapse;font-size:.72rem}
+th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--b)}
+th{color:var(--m);font-weight:500;text-transform:uppercase;font-size:.65rem;letter-spacing:.5px;position:sticky;top:0;background:var(--s)}
+tr:hover{background:rgba(88,166,255,.04)}
+.table-scroll{max-height:350px;overflow-y:auto}
+
+.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:.62rem;font-weight:600}
+.badge-g{background:rgba(63,185,80,.15);color:var(--g)}
+.badge-r{background:rgba(248,81,73,.15);color:var(--r)}
+.badge-o{background:rgba(210,153,34,.15);color:var(--o)}
+.badge-a{background:rgba(88,166,255,.15);color:var(--a)}
+.badge-p{background:rgba(188,140,255,.15);color:var(--p)}
+
+.stat-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.stat-box{flex:1;min-width:100px;background:var(--bg);border-radius:8px;padding:12px;text-align:center}
+.stat-val{font-size:1.3rem;font-weight:700}
+.stat-label{font-size:.65rem;color:var(--m);text-transform:uppercase;letter-spacing:.5px}
+
+.heatmap{display:grid;grid-template-columns:100px repeat(24,1fr);gap:1px;font-size:.6rem}
+.hm-label{color:var(--m);text-align:right;padding:4px 6px;font-size:.68rem}
+.hm-cell{height:22px;border-radius:2px;position:relative;cursor:pointer}
+.hm-cell:hover{transform:scaleY(1.5);z-index:10}
+.hm-dead{background:#161b22;border:1px dashed #30363d}
+.hm-thin{background:rgba(248,81,73,.3)}
+.hm-med{background:rgba(210,153,34,.4)}
+.hm-high{background:rgba(63,185,80,.4)}
+.hm-peak{background:rgba(63,185,80,.7)}
+.hm-overlap{background:rgba(88,166,255,.5)}
+
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+.feat-item{background:var(--bg);border-radius:6px;padding:8px;text-align:center;font-size:.68rem}
+.feat-item .label{color:var(--m);margin-bottom:2px}
+
+.provider-row{display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg);border-radius:6px;margin-bottom:6px}
+.provider-row .name{font-weight:500;min-width:120px}
+.provider-row .tags{display:flex;gap:4px;flex-wrap:wrap}
+.provider-row .tag{padding:2px 6px;border-radius:10px;font-size:.6rem;background:var(--b);color:var(--m)}
+
+.cost-stack{display:flex;gap:2px;height:20px;border-radius:4px;overflow:hidden;margin-top:4px}
+.cost-seg{display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#fff}
+
+.tactic-item{background:var(--bg);border-radius:6px;padding:10px;margin-bottom:6px;border-left:3px solid var(--a)}
+.tactic-item h4{font-size:.78rem;color:var(--a);margin-bottom:4px}
+.tactic-item p{font-size:.68rem;color:var(--m)}
+
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+<h1>Metals Dashboard</h1>
+<div class="logo">Unified Trading Analytics</div>
+
+<div class="nav-section">Overview</div>
+<div class="nav-item active" data-page="overview"><span class="icon">📊</span>Dashboard</div>
+
+<div class="nav-section">Volatility</div>
+<div class="nav-item" data-page="volatility"><span class="icon">📈</span>Realized Vol</div>
+<div class="nav-item" data-page="spreads"><span class="icon">📉</span>Spread Analysis</div>
+
+<div class="nav-section">Liquidity</div>
+<div class="nav-item" data-page="sessions"><span class="icon">🕐</span>Trading Sessions</div>
+<div class="nav-item" data-page="overlaps"><span class="icon">🔄</span>Overlap Windows</div>
+<div class="nav-item" data-page="gaps"><span class="icon">⚠️</span>Gap Risk</div>
+
+<div class="nav-section">Costs</div>
+<div class="nav-item" data-page="fees"><span class="icon">💰</span>Exchange Fees</div>
+<div class="nav-item" data-page="fx"><span class="icon">💱</span>FX Risk</div>
+
+<div class="nav-section">Execution</div>
+<div class="nav-item" data-page="rfq"><span class="icon">📋</span>RFQ Providers</div>
+<div class="nav-item" data-page="tactics"><span class="icon">🎯</span>Tactics</div>
+</div>
+
+<div class="main">
+
+<!-- OVERVIEW -->
+<div class="page active" id="page-overview">
+<div class="page-header">
+<h2>Dashboard Overview</h2>
+<div class="sub">Key metrics across 25 metals, 6 exchanges, and 12 RFQ providers</div>
+</div>
+
+<div class="stat-row">
+<div class="stat-box"><div class="stat-val" style="color:var(--a)">25</div><div class="stat-label">Metals Tracked</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--g)">6</div><div class="stat-label">Exchanges</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--o)">12</div><div class="stat-label">RFQ Providers</div></div>
+<div class="stat-box"><div class="stat-val" style="color:var(--p)">8</div><div class="stat-label">Overlap Windows</div></div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h3>Volatility Snapshot</h3>
+<div class="chart-box" style="height:200px"><canvas id="overviewVol"></canvas></div>
+</div>
+<div class="card">
+<h3>Spread Ranges</h3>
+<div class="table-scroll" style="max-height:220px">
+<table>
+<thead><tr><th>Metal</th><th>Tight</th><th>Normal</th><th>Wide</th></tr></thead>
+<tbody id="overviewSpread"></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<h3>Top Overlaps</h3>
+<div id="overviewOverlaps"></div>
+</div>
+<div class="card">
+<h3>Exchange Fees</h3>
+<div class="table-scroll" style="max-height:220px">
+<table>
+<thead><tr><th>Exchange</th><th>Spread</th><th>Total</th></tr></thead>
+<tbody id="overviewFees"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- VOLATILITY -->
+<div class="page" id="page-volatility">
+<div class="page-header">
+<h2>Realized Historical Volatility</h2>
+<div class="sub">Annualized standard deviation of daily log-returns</div>
+</div>
+<div class="grid">
+<div class="card full">
+<h3>Volatility Time Series</h3>
+<div class="chart-box"><canvas id="volChart"></canvas></div>
+</div>
+<div class="card">
+<h3>Volatility Rankings</h3>
+<div class="table-scroll" style="max-height:400px">
+<table>
+<thead><tr><th>#</th><th>Metal</th><th>Vol</th><th>Range</th><th>Volume</th></tr></thead>
+<tbody id="volRank"></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<h3>Vol by Category</h3>
+<div class="chart-box"><canvas id="volCategory"></canvas></div>
+</div>
+</div>
+</div>
+
+<!-- SPREADS -->
+<div class="page" id="page-spreads">
+<div class="page-header">
+<h2>Spread Analysis</h2>
+<div class="sub">Basis points, 10th-90th percentile ranges</div>
+</div>
+<div class="grid">
+<div class="card full">
+<h3>Intraday Spread Patterns</h3>
+<div class="chart-box"><canvas id="spreadChart"></canvas></div>
+</div>
+<div class="card full">
+<h3>Spread by Metal & Exchange</h3>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Metal</th><th>Exchange</th><th>Tight</th><th>Normal</th><th>Wide</th><th>Range %</th></tr></thead>
+<tbody id="spreadTable"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SESSIONS -->
+<div class="page" id="page-sessions">
+<div class="page-header">
+<h2>Trading Sessions</h2>
+<div class="sub">24-hour liquidity by exchange (UTC)</div>
+</div>
+<div class="card full">
+<h3>Liquidity Heatmap</h3>
+<div style="margin-bottom:8px;font-size:.65rem;color:var(--m)">Peak = Green · Normal = Light Green · Thin = Orange · Closed = Dark</div>
+<div class="heatmap" id="sessionHeatmap"></div>
+</div>
+</div>
+
+<!-- OVERLAPS -->
+<div class="page" id="page-overlaps">
+<div class="page-header">
+<h2>Overlap Windows</h2>
+<div class="sub">Cross-exchange arbitrage opportunities</div>
+</div>
+<div class="grid">
+<div class="card full">
+<h3>All Overlaps — Ranked</div>
+<div class="table-scroll" style="max-height:400px">
+<table>
+<thead><tr><th>#</th><th>Pair</th><th>Window (UTC)</th><th>Duration</th><th>Spread</th><th>Metals</th></tr></thead>
+<tbody id="overlapTable"></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<h3>Overlap Value by Metal Type</h3>
+<div class="chart-box"><canvas id="overlapChart"></canvas></div>
+</div>
+<div class="card">
+<h3>Price Discovery</h3>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Metal</th><th>Primary</th><th>Window</th></tr></thead>
+<tbody id="priceDiscovery"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- GAPS -->
+<div class="page" id="page-gaps">
+<div class="page-header">
+<h2>Gap Risk Analysis</h2>
+<div class="sub">Dead zones and liquidity gaps by exchange</div>
+</div>
+<div class="grid">
+<div class="card full">
+<h3>Dead Zones by Exchange</h3>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Exchange</th><th>Dead Zone (UTC)</th><th>Hours</th><th>Risk</th><th>Impact</th></tr></thead>
+<tbody id="gapTable"></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<h3>Cost by Holding Period</h3>
+<div class="chart-box"><canvas id="holdingCost"></canvas></div>
+</div>
+<div class="card">
+<h3>Spread vs Hedge Cost</h3>
+<div class="chart-box"><canvas id="hedgeVsSpread"></canvas></div>
+</div>
+</div>
+</div>
+
+<!-- FEES -->
+<div class="page" id="page-fees">
+<div class="page-header">
+<h2>Exchange Fees & Costs</h2>
+<div class="sub">Trading, clearing, commission, and total cost</div>
+</div>
+<div class="grid">
+<div class="card full">
+<h3>Fee Comparison</h3>
+<div class="table-scroll">
+<table>
+<thead><tr><th>Exchange</th><th>Currency</th><th>Trading</th><th>Clearing</th><th>Commission</th><th>Spread</th><th>Total Est.</th></tr></thead>
+<tbody id="feeTable"></tbody>
+</table>
+</div>
+</div>
+<div class="card full">
+<h3>Cost Stack Visualization</h3>
+<div id="costStack"></div>
+</div>
+</div>
+</div>
+
+<!-- FX -->
+<div class="page" id="page-fx">
+<div class="page-header">
+<h2>FX Risk</h2>
+<div class="sub">Currency denomination impact by exchange</div>
+</div>
+<div class="grid">
+<div class="card">
+<h3>Currency Risk Summary</h3>
+<table>
+<thead><tr><th>Currency</th><th>Annual Vol</th><th>Hedge Cost</th><th>Impact</th></tr></thead>
+<tbody id="fxTable"></tbody>
+</table>
+</div>
+<div class="card">
+<h3>FX Impact by Exchange</h3>
+<div id="fxExchange"></div>
+</div>
+</div>
+</div>
+
+<!-- RFQ -->
+<div class="page" id="page-rfq">
+<div class="page-header">
+<h2>RFQ Providers</h2>
+<div class="sub">12 providers for illiquid metals</div>
+</div>
+<div class="card full">
+<div class="table-scroll" style="max-height:500px">
+<table>
+<thead><tr><th>Provider</th><th>Type</th><th>Min Trade</th><th>Settlement</th><th>Metals</th><th>Spread Est.</th><th>Features</th></tr></thead>
+<tbody id="rfqTable"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- TACTICS -->
+<div class="page" id="page-tactics">
+<div class="page-header">
+<h2>Execution Tactics</h2>
+<div class="sub">Reduce spread and transaction costs</div>
+</div>
+<div class="grid">
+<div class="card">
+<h3>High Impact</h3>
+<div id="tacticsHigh"></div>
+</div>
+<div class="card">
+<h3>Medium Impact</h3>
+<div id="tacticsMed"></div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+const METALS = [
+  {sym:"XAU",name:"Gold",cat:"precious",vol:13.8,range:"0.8-1.2%",vol24:"$80B+",ba:"0.1-0.3%",exchange:"LBMA/COMEX"},
+  {sym:"XAG",name:"Silver",cat:"precious",vol:25.4,range:"1.5-2.5%",vol24:"$5B+",ba:"0.2-0.5%",exchange:"LBMA/COMEX"},
+  {sym:"XPT",name:"Platinum",cat:"precious",vol:21.8,range:"1.2-1.8%",vol24:"$1B+",ba:"0.3-0.6%",exchange:"LBMA/NYMEX"},
+  {sym:"XPD",name:"Palladium",cat:"precious",vol:32.8,range:"2.0-3.0%",vol24:"$800M+",ba:"0.4-0.8%",exchange:"LBMA/NYMEX"},
+  {sym:"RHO",name:"Rhodium",cat:"precious",vol:41.5,range:"3-5%",vol24:"$50M+",ba:"1-3%",exchange:"OTC"},
+  {sym:"HG",name:"Copper",cat:"base",vol:18.6,range:"0.8-1.2%",vol24:"$20B+",ba:"0.1-0.3%",exchange:"LME/COMEX"},
+  {sym:"AL",name:"Aluminum",cat:"base",vol:16.4,range:"0.6-1.0%",vol24:"$15B+",ba:"0.15-0.4%",exchange:"LME/SHFE"},
+  {sym:"ZS",name:"Zinc",cat:"base",vol:19.5,range:"0.9-1.4%",vol24:"$8B+",ba:"0.2-0.5%",exchange:"LME/SHFE"},
+  {sym:"NI",name:"Nickel",cat:"base",vol:24.1,range:"1.2-2.0%",vol24:"$6B+",ba:"0.3-0.7%",exchange:"LME/SHFE"},
+  {sym:"SN",name:"Tin",cat:"base",vol:17.9,range:"1.0-1.5%",vol24:"$3B+",ba:"0.2-0.5%",exchange:"LME/SHFE"},
+  {sym:"PB",name:"Lead",cat:"base",vol:16.8,range:"0.7-1.1%",vol24:"$4B+",ba:"0.2-0.4%",exchange:"LME/SHFE"},
+  {sym:"COB",name:"Cobalt",cat:"industrial",vol:30.8,range:"2-4%",vol24:"$200M+",ba:"0.5-1.5%",exchange:"LME"},
+  {sym:"LIT",name:"Lithium",cat:"industrial",vol:44.8,range:"3-5%",vol24:"$500M+",ba:"0.8-2%",exchange:"CME"},
+  {sym:"MOL",name:"Molybdenum",cat:"industrial",vol:21.5,range:"1.5-2.5%",vol24:"$300M+",ba:"0.5-1%",exchange:"LME"},
+  {sym:"WOL",name:"Tungsten",cat:"industrial",vol:23.1,range:"2-3%",vol24:"$150M+",ba:"0.8-1.5%",exchange:"LME"},
+  {sym:"VAN",name:"Vanadium",cat:"industrial",vol:26.4,range:"2-4%",vol24:"$100M+",ba:"1-2%",exchange:"LME"},
+  {sym:"NDP",name:"NdPr Oxide",cat:"rare",vol:28.6,range:"2-4%",vol24:"$200M+",ba:"1-2%",exchange:"Shanghai"},
+  {sym:"TER",name:"Terbium",cat:"rare",vol:25.3,range:"2-3%",vol24:"$100M+",ba:"1.5-3%",exchange:"Shanghai"},
+  {sym:"DYS",name:"Dysprosium",cat:"rare",vol:24.5,range:"2-3%",vol24:"$150M+",ba:"1-2%",exchange:"Shanghai"},
+  {sym:"IND",name:"Indium",cat:"rare",vol:24.0,range:"1.5-2.5%",vol24:"$50M+",ba:"1-2%",exchange:"LME"},
+  {sym:"GAL",name:"Gallium",cat:"rare",vol:21.4,range:"1.5-2%",vol24:"$30M+",ba:"1-2%",exchange:"LME"},
+  {sym:"GER",name:"Germanium",cat:"rare",vol:20.2,range:"1-2%",vol24:"$40M+",ba:"1-1.5%",exchange:"LME"},
+  {sym:"TEL",name:"Tellurium",cat:"rare",vol:27.1,range:"2-4%",vol24:"$20M+",ba:"2-4%",exchange:"OTC"},
+  {sym:"SEL",name:"Selenium",cat:"rare",vol:25.3,range:"2-3%",vol24:"$25M+",ba:"2-3%",exchange:"OTC"},
+  {sym:"BIS",name:"Bismuth",cat:"rare",vol:16.1,range:"1-2%",vol24:"$15M+",ba:"1.5-3%",exchange:"OTC"}
+];
+
+const SPREADS = {
+  XAU:[{ex:"LBMA",t:0.8,n:1.5,w:3.2},{ex:"COMEX",t:0.5,n:1.2,w:2.8},{ex:"SHFE",t:1.2,n:2.5,w:5.0}],
+  XAG:[{ex:"LBMA",t:2.5,n:5.0,w:12.0},{ex:"COMEX",t:1.8,n:3.5,w:8.0}],
+  HG:[{ex:"COMEX",t:0.8,n:1.5,w:3.5},{ex:"LME",t:1.0,n:2.0,w:4.5}],
+  AL:[{ex:"LME",t:1.2,n:2.5,w:5.0}],
+  NI:[{ex:"LME",t:2.0,n:4.0,w:9.0},{ex:"SHFE",t:2.5,n:5.0,w:12.0}],
+  ZS:[{ex:"LME",t:1.5,n:3.0,w:6.5}],
+  XPT:[{ex:"LBMA",t:3.0,n:6.0,w:14.0}],
+  XPD:[{ex:"LBMA",t:4.0,n:8.0,w:18.0}],
+  COB:[{ex:"LME",t:5.0,n:10.0,w:25.0}],
+  LIT:[{ex:"CME",t:8.0,n:15.0,w:35.0}]
+};
+
+const EXCHANGES = [
+  {id:"lbma",name:"LBMA",city:"London",open:8,close:16.5,peak:[10,15],color:"#ffd700"},
+  {id:"comex",name:"COMEX",city:"New York",open:6,close:17,peak:[9,14],color:"#e87d4f"},
+  {id:"lme",name:"LME",city:"London",open:8,close:20,peak:[10,16],color:"#58a6ff"},
+  {id:"shfe",name:"SHFE",city:"Shanghai",open:9,close:15.5,peak:[10,14],color:"#f85149"},
+  {id:"mcx",name:"MCX",city:"Mumbai",open:9,close:23.5,peak:[11,21],color:"#bc8cff"},
+  {id:"sgx",name:"SGX",city:"Singapore",open:8,close:19,peak:[9,17],color:"#39d2c0"}
+];
+
+const OVERLAPS = [
+  {name:"London ↔ New York",win:"10:00-15:00",dur:5,spread:"0.5-1.5 bps",metals:"Gold, Silver, Platinum"},
+  {name:"LME ↔ Shanghai",win:"09:00-15:30",dur:6.5,spread:"1.5-3 bps",metals:"Cu, Al, Zn, Ni"},
+  {name:"COMEX ↔ Shanghai",win:"06:00-09:00",dur:3,spread:"2-4 bps",metals:"Copper, Gold"},
+  {name:"LBMA ↔ LME",win:"08:00-16:30",dur:8.5,spread:"0.8-2 bps",metals:"All"},
+  {name:"LBMA ↔ Mumbai",win:"08:00-16:30",dur:8.5,spread:"3-5 bps",metals:"Gold, Silver"},
+  {name:"SGX ↔ LME",win:"08:00-16:00",dur:8,spread:"2-4 bps",metals:"Nickel, Iron Ore"}
+];
+
+const FEES = [
+  {ex:"LBMA",cur:"USD",trad:"0.03%",clear:"$1.00/oz",comm:"$1.00/oz",spread:1.5,total:3.5,fxRisk:"low"},
+  {ex:"COMEX",cur:"USD",trad:"$2.00/ct",clear:"$1.20/ct",comm:"$1.00/ct",spread:1.2,total:3.4,fxRisk:"low"},
+  {ex:"LME",cur:"USD",trad:"$0.50/ton",clear:"$0.25/ton",comm:"$0.50/ton",spread:2.0,total:2.75,fxRisk:"low"},
+  {ex:"SHFE",cur:"CNY",trad:"0.01%",clear:"0.005%",comm:"0.01%",spread:2.5,total:6.25,fxRisk:"high"},
+  {ex:"MCX",cur:"INR",trad:"₹25/lot",clear:"₹5/lot",comm:"₹10/lot",spread:3.5,total:9.0,fxRisk:"high"},
+  {ex:"SGX",cur:"USD",trad:"$0.80/ct",clear:"$0.50/ct",comm:"$0.50/ct",spread:1.5,total:3.25,fxRisk:"low"}
+];
+
+const FX_DATA = [
+  {cur:"USD",vol:8,hedge:"0.5-1.0%",impact:"Low"},
+  {cur:"CNY",vol:15,hedge:"2.0-4.0%",impact:"High — 5-10% erode"},
+  {cur:"INR",vol:22,hedge:"3.0-6.0%",impact:"Very high — significant"},
+  {cur:"EUR",vol:10,hedge:"0.8-1.5%",impact:"Moderate"},
+  {cur:"JPY",vol:12,hedge:"1.0-2.0%",impact:"Moderate"}
+];
+
+const RFQ = [
+  {name:"Traxys",type:"Physical Trader",min:"$500K-$2M",settle:"T+2",metals:"Co, Li, REE, W, Ta",spread:"5-15 bps"},
+  {name:"Trafigura",type:"Physical Trader",min:"$1M-$5M",settle:"T+2",metals:"Cu, Ni, Co, Li",spread:"3-10 bps"},
+  {name:"Glencore",type:"Physical Trader",min:"$1M-$10M",settle:"T+2",metals:"Cu, Zn, Ni, Co, Ag",spread:"2-8 bps"},
+  {name:"Marex",type:"Broker",min:"$100K-$500K",settle:"T+2",metals:"Cu, Al, Zn, Ni, Au",spread:"1-5 bps"},
+  {name:"INTL FCStone",type:"Broker/Dealer",min:"$50K-$250K",settle:"T+2",metals:"Au, Ag, Cu, Al",spread:"1-4 bps"},
+  {name:"MKS PAMP",type:"Bullion",min:"$100K-$1M",settle:"T+2",metals:"Au, Ag, Pt, Pd",spread:"0.5-2 bps"},
+  {name:"Goldberg",type:"Specialty",min:"$50K-$500K",settle:"T+2-T+30",metals:"NdPr, Ter, Dy, W",spread:"10-30 bps"},
+  {name:"LME",type:"Exchange",min:"1 lot (25t)",settle:"T+2",metals:"Cu, Al, Zn, Ni, Co",spread:"1-3 bps"},
+  {name:"COMEX",type:"Exchange",min:"1 contract",settle:"Physical",metals:"Au, Ag, Cu, Pt",spread:"0.5-2 bps"},
+  {name:"SHFE",type:"Exchange",min:"1 lot",settle:"Physical",metals:"Au, Ag, Cu, Al",spread:"1-3 bps"},
+  {name:"LBMA",type:"Association",min:"400 oz Au",settle:"T+2",metals:"Au, Ag",spread:"0.5-1.5 bps"},
+  {name:"CME Li",type:"Exchange",min:"1 contract",settle:"Cash",metals:"Li",spread:"5-15 bps"}
+];
+
+const TACTICS = [
+  {t:"Trade During Overlap",d:"10:00-15:00 UTC. 30-50% spread reduction.",impact:"high"},
+  {t:"Use Limit Orders",d:"Passive execution captures 50-80% of spread.",impact:"high"},
+  {t:"Monitor Vol Regime",d:"Avoid FOMC/NFP. Spreads blow out 3-5x.",impact:"high"},
+  {t:"Use RFQ for Illiquids",d:"40-60% spread reduction for REE/Co/Li.",impact:"high"},
+  {t:"Avoid Thin Hours",d:"21:00-06:00 UTC. 2-3x wider spreads.",impact:"med"},
+  {t:"Choose Right Exchange",d:"COMEX/LBMA for precious. LME for base.",impact:"med"},
+  {t:"Batch Orders",d:"Block trades negotiate 20-40% tighter.",impact:"med"},
+  {t:"Time Settlement",d:"T+2 vs physical affects capital efficiency.",impact:"low"}
+];
+
+function getSession(ex,h){
+  if(h>=ex.peak[0]&&h<=ex.peak[1])return'peak';
+  if(h>=ex.open&&h<=ex.close)return'high';
+  return'dead';
+}
+
+function renderOverview(){
+  new Chart(document.getElementById('overviewVol'),{
+    type:'bar',
+    data:{labels:METALS.slice(0,10).map(m=>m.sym),datasets:[{data:METALS.slice(0,10).map(m=>m.vol),backgroundColor:METALS.slice(0,10).map(m=>m.cat==='precious'?'#ffd70088':m.cat==='base'?'#e87d4f88':m.cat==='industrial'?'#5f9ea088':'#bc8cff88'),borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Vol %',color:'#8b949e'}}}}
+  });
+
+  const spreadTbody=document.getElementById('overviewSpread');
+  let spreadRows=[];
+  Object.entries(SPREADS).forEach(([sym,data])=>{data.forEach(d=>{spreadRows.push({sym,n:d.n,t:d.t,w:d.w})})});
+  spreadRows.sort((a,b)=>a.n-b.n);
+  spreadTbody.innerHTML=spreadRows.slice(0,10).map(r=>`<tr><td>${r.sym}</td><td style="color:var(--g)">${r.t}</td><td>${r.n}</td><td style="color:var(--r)">${r.w}</td></tr>`).join('');
+
+  document.getElementById('overviewOverlaps').innerHTML=OVERLAPS.slice(0,4).map(o=>`<div style="padding:6px 0;border-bottom:1px solid var(--b);font-size:.72rem"><div style="color:var(--a)">${o.name}</div><div style="color:var(--m)">${o.win} UTC · ${o.dur}h</div></div>`).join('');
+
+  document.getElementById('overviewFees').innerHTML=FEES.map(f=>`<tr><td>${f.ex}</td><td>${f.spread} bps</td><td><strong>${f.total} bps</strong></td></tr>`).join('');
+}
+
+function renderVolatility(){
+  const sorted=[...METALS].sort((a,b)=>b.vol-a.vol);
+  document.getElementById('volRank').innerHTML=sorted.map((m,i)=>`<tr><td>${i+1}</td><td>${m.name}</td><td><strong>${m.vol}%</strong></td><td>${m.range}</td><td style="font-size:.65rem">${m.vol24}</td></tr>`).join('');
+
+  new Chart(document.getElementById('volCategory'),{
+    type:'doughnut',
+    data:{labels:['Precious','Base','Industrial','Rare Earths'],datasets:[{data:[METALS.filter(m=>m.cat==='precious').length,METALS.filter(m=>m.cat==='base').length,METALS.filter(m=>m.cat==='industrial').length,METALS.filter(m=>m.cat==='rare').length],backgroundColor:['#ffd70088','#e87d4f88','#5f9ea088','#bc8cff88']}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b949e'}}}}
+  });
+}
+
+function renderSpreads(){
+  let rows=[];
+  Object.entries(SPREADS).forEach(([sym,data])=>{data.forEach(d=>{rows.push({sym,ex:d.ex,t:d.t,n:d.n,w:d.w,range:((d.w-d.t)/d.n*100).toFixed(0)})})});
+  rows.sort((a,b)=>a.n-b.n);
+  document.getElementById('spreadTable').innerHTML=rows.map(r=>`<tr><td>${r.sym}</td><td>${r.ex}</td><td style="color:var(--g)">${r.t}</td><td>${r.n}</td><td style="color:var(--r)">${r.w}</td><td>${r.range}%</td></tr>`).join('');
+}
+
+function renderSessions(){
+  const hm=document.getElementById('sessionHeatmap');
+  let html='<div></div>';
+  for(let h=0;h<24;h++)html+=`<div style="text-align:center;color:var(--m);font-size:.6rem">${String(h).padStart(2,'0')}</div>`;
+  EXCHANGES.forEach(ex=>{
+    html+=`<div class="hm-label">${ex.name}</div>`;
+    for(let h=0;h<24;h++){
+      const s=getSession(ex,h);
+      html+=`<div class="hm-cell hm-${s}"></div>`;
+    }
+  });
+  hm.innerHTML=html;
+}
+
+function renderOverlaps(){
+  document.getElementById('overlapTable').innerHTML=OVERLAPS.map((o,i)=>`<tr><td><span class="badge badge-a">#${i+1}</span></td><td><strong>${o.name}</strong></td><td>${o.win} UTC</td><td>${o.dur}h</td><td>${o.spread}</td><td style="font-size:.65rem">${o.metals}</td></tr>`).join('');
+
+  new Chart(document.getElementById('overlapChart'),{
+    type:'bar',
+    data:{labels:['London-NY','LME-SHFE','COMEX-SHFE','LBMA-LME','LBMA-MCX','SGX-LME'],datasets:[{label:'Precious',data:[95,40,30,80,50,30],backgroundColor:'#ffd70066'},{label:'Base',data:[30,85,70,40,40,50],backgroundColor:'#58a6ff66'},{label:'Industrial',data:[20,80,30,30,20,60],backgroundColor:'#39d2c066'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},max:100}}}
+  });
+
+  document.getElementById('priceDiscovery').innerHTML=[
+    {m:"Gold",v:"LBMA/COMEX",w:"10:00-15:00"},
+    {m:"Silver",v:"LBMA/COMEX",w:"10:00-14:00"},
+    {m:"Copper",v:"LME/SHFE",w:"10:00-16:00"},
+    {m:"Nickel",v:"LME/SGX",w:"10:00-16:00"},
+    {m:"Iron Ore",v:"SGX",w:"09:00-17:00"}
+  ].map(r=>`<tr><td><strong>${r.m}</strong></td><td>${r.v}</td><td>${r.w} UTC</td></tr>`).join('');
+}
+
+function renderGaps(){
+  document.getElementById('gapTable').innerHTML=[
+    {ex:"SHFE",zone:"16:00-08:00",hrs:16,risk:"HIGH",impact:"Price dislocation"},
+    {ex:"LBMA",zone:"17:00-07:00",hrs:14,risk:"HIGH",impact:"Wider spreads"},
+    {ex:"COMEX",zone:"18:00-05:00",hrs:11,risk:"HIGH",impact:"Thin liquidity"},
+    {ex:"LME",zone:"21:00-07:00",hrs:10,risk:"MED",impact:"Limited arb"},
+    {ex:"MCX",zone:"00:00-08:00",hrs:8,risk:"LOW",impact:"Follows LBMA"}
+  ].map(r=>`<tr><td><strong>${r.ex}</strong></td><td>${r.zone} UTC</td><td>${r.hrs}h</td><td><span class="badge badge-${r.risk==='HIGH'?'r':r.risk==='MED'?'o':'g'}">${r.risk}</span></td><td style="font-size:.68rem">${r.impact}</td></tr>`).join('');
+}
+
+function renderFees(){
+  document.getElementById('feeTable').innerHTML=FEES.map(f=>`<tr><td><strong>${f.ex}</strong></td><td><span class="badge badge-${f.fxRisk==='low'?'g':'r'}">${f.cur}</span></td><td>${f.trad}</td><td>${f.clear}</td><td>${f.comm}</td><td>${f.spread} bps</td><td><strong>${f.total} bps</strong></td></tr>`).join('');
+
+  document.getElementById('costStack').innerHTML=FEES.map(f=>{
+    const spread=f.spread/15*100;
+    const other=(f.total-f.spread)/15*100;
+    return `<div style="margin-bottom:8px"><div style="font-size:.72rem;margin-bottom:4px">${f.ex}</div><div class="cost-stack"><div class="cost-seg" style="width:${spread}%;background:var(--r)">Spread</div><div class="cost-seg" style="width:${other}%;background:var(--o)">Other</div></div></div>`;
+  }).join('');
+}
+
+function renderFX(){
+  document.getElementById('fxTable').innerHTML=FX_DATA.map(f=>`<tr><td><strong>${f.cur}</strong></td><td>${f.vol}%</td><td>${f.hedge}</td><td style="font-size:.68rem">${f.impact}</td></tr>`).join('');
+
+  document.getElementById('fxExchange').innerHTML=FEES.map(f=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b);font-size:.75rem"><span>${f.ex}</span><span class="badge badge-${f.fxRisk==='low'?'g':'r'}">${f.cur} · ${f.fxRisk} risk</span></div>`).join('');
+}
+
+function renderRFQ(){
+  document.getElementById('rfqTable').innerHTML=RFQ.map(r=>`<tr><td><strong>${r.name}</strong></td><td><span class="badge badge-a">${r.type}</span></td><td style="font-size:.68rem">${r.min}</td><td>${r.settle}</td><td style="font-size:.65rem">${r.metals}</td><td>${r.spread}</td><td style="font-size:.65rem">See detail</td></tr>`).join('');
+}
+
+function renderTactics(){
+  const high=TACTICS.filter(t=>t.impact==='high');
+  const med=TACTICS.filter(t=>t.impact!=='high');
+  document.getElementById('tacticsHigh').innerHTML=high.map(t=>`<div class="tactic-item"><h4>${t.t}</h4><p>${t.d}</p></div>`).join('');
+  document.getElementById('tacticsMed').innerHTML=med.map(t=>`<div class="tactic-item" style="border-color:var(--o)"><h4>${t.t}</h4><p>${t.d}</p></div>`).join('');
+}
+
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('page-'+item.dataset.page).classList.add('active');
+  });
+});
+
+renderOverview();renderVolatility();renderSpreads();renderSessions();renderOverlaps();renderGaps();renderFees();renderFX();renderRFQ();renderTactics();
+</script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Exchange Overlaps & Arbitrage Windows</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0d1117;--s:#161b22;--b:#30363d;--t:#e6edf3;--m:#8b949e;--a:#58a6ff;--g:#3fb950;--o:#d29922;--r:#f85149;--p:#bc8cff;--c:#39d2c0;--pk:#f778ba}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t);line-height:1.5}
+.ct{max-width:1600px;margin:0 auto;padding:24px}
+h1{font-size:1.7rem;margin-bottom:4px}
+.sub{color:var(--m);margin-bottom:24px;font-size:.9rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+.card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:18px}
+.card h2{font-size:.95rem;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.full{grid-column:1/-1}
+.note{background:rgba(210,153,34,.1);border-left:3px solid var(--o);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.8rem;color:var(--m);margin-top:14px}
+.note strong{color:var(--o)}
+.src{text-align:center;color:var(--m);font-size:.7rem;margin-top:22px;padding-top:14px;border-top:1px solid var(--b)}
+
+.heatmap-grid{display:grid;grid-template-columns:160px repeat(24,1fr);gap:1px;font-size:.65rem}
+.hm-header{color:var(--m);text-align:center;padding:4px 0;border-bottom:1px solid var(--b)}
+.hm-exchange{color:var(--t);padding:6px 8px;text-align:right;border-bottom:1px solid var(--b);white-space:nowrap;font-size:.72rem}
+.hm-cell{height:28px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:transparent;transition:all .15s;cursor:pointer}
+.hm-cell:hover{transform:scaleY(1.4);z-index:10;color:#fff}
+.hm-cell:hover .hm-tip{display:block}
+.hm-tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#1c2128;border:1px solid var(--b);border-radius:6px;padding:6px 10px;font-size:.7rem;white-space:nowrap;z-index:100;color:var(--t);pointer-events:none}
+
+.hm-dead{background:#161b22;border:1px dashed #30363d}
+.hm-thin{background:#f8514940}
+.hm-low{background:#f8514966}
+.hm-med{background:#d2992266}
+.hm-high{background:#3fb95066}
+.hm-peak{background:#3fb95099}
+.hm-overlap-2{background:#58a6ff88}
+.hm-overlap-3{background:#bc8cff88}
+.hm-overlap-4{background:#39d2c088}
+
+.overlap-card{background:var(--bg);border-radius:10px;padding:16px;margin-bottom:12px;border-left:4px solid;transition:all .2s}
+.overlap-card:hover{transform:translateX(4px)}
+.overlap-card h3{font-size:.88rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.overlap-card .tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:600}
+.overlap-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.overlap-stat{font-size:.72rem}
+.overlap-stat .label{color:var(--m)}
+.overlap-stat .val{color:var(--t);font-weight:500}
+
+.rank-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:.68rem;font-weight:600}
+.rank-1{background:rgba(63,185,80,.2);color:var(--g)}
+.rank-2{background:rgba(88,166,255,.2);color:var(--a)}
+.rank-3{background:rgba(210,153,34,.2);color:var(--o)}
+.rank-4{background:rgba(188,140,255,.15);color:var(--p)}
+.rank-5{background:rgba(248,81,73,.15);color:var(--r)}
+
+table{width:100%;border-collapse:collapse;font-size:.75rem}
+th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--b)}
+th{color:var(--m);font-weight:500;text-transform:uppercase;font-size:.68rem;letter-spacing:.5px}
+tr:hover{background:rgba(88,166,255,.04)}
+
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;padding:10px;background:var(--bg);border-radius:8px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--m)}
+.legend-swatch{width:14px;height:14px;border-radius:3px}
+
+.chart-box{position:relative;height:320px;width:100%}
+.chart-box canvas{max-height:100%}
+
+.insight-box{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(57,210,192,.08));border:1px solid var(--a);border-radius:10px;padding:16px;margin-top:14px}
+.insight-box h3{font-size:.9rem;color:var(--a);margin-bottom:8px}
+.insight-box p{font-size:.78rem;color:var(--t);line-height:1.5}
+.insight-box ul{margin-top:8px;padding-left:16px}
+.insight-box li{font-size:.75rem;color:var(--m);margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="ct">
+<h1>Global Exchange Overlaps & Arbitrage Windows</h1>
+<p class="sub">All timezone overlaps · Relative importance by metal type · Price discovery windows · Cross-exchange arbitrage</p>
+
+<div class="grid">
+
+<!-- FULL HEATMAP WITH OVERLAPS -->
+<div class="card full">
+<h2>24-Hour Session Map with Overlap Zones (UTC)</h2>
+<div class="legend">
+<div class="legend-item"><div class="legend-swatch hm-peak"></div>Peak</div>
+<div class="legend-item"><div class="legend-swatch hm-high"></div>Normal</div>
+<div class="legend-item"><div class="legend-swatch hm-med"></div>Thin</div>
+<div class="legend-item"><div class="legend-swatch hm-dead" style="border:1px dashed #30363d"></div>Closed</div>
+<div class="legend-item"><div class="legend-swatch hm-overlap-2"></div>2 Exchanges</div>
+<div class="legend-item"><div class="legend-swatch hm-overlap-3"></div>3 Exchanges</div>
+<div class="legend-item"><div class="legend-swatch hm-overlap-4"></div>4+ Exchanges</div>
+</div>
+<div class="heatmap-grid" id="heatmap"></div>
+</div>
+
+<!-- OVERLAP RANKINGS -->
+<div class="card">
+<h2>All Overlaps — Ranked by Importance</h2>
+<div style="max-height:600px;overflow-y:auto" id="overlapList"></div>
+</div>
+
+<!-- OVERLAP VALUE BY METAL TYPE -->
+<div class="card">
+<h2>Overlap Value by Metal Type</h2>
+<div class="chart-box"><canvas id="overlapValueChart"></canvas></div>
+</div>
+
+<!-- PRICE DISCOVERY WINDOWS -->
+<div class="card full">
+<h2>Price Discovery Windows — Who Sets the Price?</h2>
+<table>
+<thead><tr><th>Metal</th><th>Primary Venue</th><th>Price Setter</th><th>Discovery Window (UTC)</th><th>Follower Venues</th></tr></thead>
+<tbody id="priceDiscovery"></tbody>
+</table>
+</div>
+
+<!-- CROSS-EXCHANGE ARB OPPORTUNITIES -->
+<div class="card full">
+<h2>Cross-Exchange Arbitrage Heatmap</h2>
+<div class="chart-box"><canvas id="arbChart"></canvas></div>
+</div>
+
+<!-- KEY INSIGHTS -->
+<div class="card full">
+<div class="insight-box">
+<h3>Does It Matter? Yes — Here's Why</h3>
+<p>Different overlaps serve different functions depending on the metal:</p>
+<ul>
+<li><strong>London-NY (10:00-15:00 UTC):</strong> Dominant for gold/silver. This is where benchmark prices (LBMA Fix, COMEX settlement) are determined. Spread is tightest here.</li>
+<li><strong>Shanghai-London (08:00-15:30 UTC):</strong> Critical for base metals (Cu, Al, Zn). SHFE closes set Asian direction; LME continues. Gap risk highest at SHFE close (07:30 UTC).</li>
+<li><strong>Singapore-London (08:00-16:00 UTC):</strong> Important for nickel and iron ore. SGX contracts reference LME pricing.</li>
+<li><strong>Mumbai-London (08:00-16:30 UTC):</strong> Relevant for gold in INR terms. MCX prices track LBMA but with FX lag.</li>
+<li><strong>New York-Shanghai (06:00-09:00 UTC):</strong> Brief but critical for overnight copper/steel. USPM data released here moves SHFE opening.</li>
+</ul>
+<p style="margin-top:12px"><strong>Key takeaway:</strong> For precious metals, London-NY is everything. For base metals, Shanghai-London matters more. For industrial metals with thin liquidity, any overlap helps.</p>
+</div>
+</div>
+
+</div>
+
+<div class="src">Data: LBMA, COMEX/NYMEX, LME, SHFE, MCX, SGX, TOCOM · Exchange session schedules · Volume analysis</div>
+</div>
+
+<script>
+const EXCHANGES = [
+  {id:"lbma",name:"LBMA",city:"London",tz:"GMT",offset:0,open:8,close:16.5,peak:[10,15],color:"#ffd700",
+   metals:{precious:0.95,base:0.3,industrial:0.2,rare:0.1}},
+  {id:"comex",name:"COMEX",city:"New York",tz:"ET",offset:-5,open:6,close:17,peak:[9,14],color:"#e87d4f",
+   metals:{precious:0.90,base:0.7,industrial:0.3,rare:0.1}},
+  {id:"lme",name:"LME",city:"London",tz:"GMT",offset:0,open:8,close:20,peak:[10,16],color:"#58a6ff",
+   metals:{precious:0.4,base:0.95,industrial:0.8,rare:0.3}},
+  {id:"shfe",name:"SHFE",city:"Shanghai",tz:"CST",offset:8,open:9,close:15.5,peak:[10,14],color:"#f85149",
+   metals:{precious:0.6,base:0.85,industrial:0.7,rare:0.5}},
+  {id:"mcx",name:"MCX",city:"Mumbai",tz:"IST",offset:5.5,open:9,close:23.5,peak:[11,21],color:"#bc8cff",
+   metals:{precious:0.5,base:0.4,industrial:0.2,rare:0.1}},
+  {id:"sgx",name:"SGX",city:"Singapore",tz:"SGT",offset:8,open:8,close:19,peak:[9,17],color:"#39d2c0",
+   metals:{precious:0.3,base:0.5,industrial:0.6,rare:0.2}},
+  {id:"tocom",name:"TOCOM",city:"Tokyo",tz:"JST",offset:9,open:8,close:15,peak:[9,14],color:"#d29922",
+   metals:{precious:0.4,base:0.3,industrial:0.2,rare:0.1}}
+];
+
+const OVERLAPS = [
+  {ex1:"lbma",ex2:"comex",name:"London ↔ New York",hours:"10:00-15:00",dur:5,rank:1,
+   metals:["Gold","Silver","Platinum"],type:"precious",importance:"Benchmark price discovery",
+   spread:"Tightest (0.5-1.5 bps)",arb:"LBMA Fix vs COMEX settlement",notes:"Deepest liquidity globally. 70%+ of gold volume."},
+  {ex1:"lme",ex2:"shfe",name:"LME ↔ Shanghai",hours:"09:00-15:30",dur:6.5,rank:2,
+   metals:["Copper","Aluminum","Zinc","Nickel"],type:"base",importance:"Base metals corridor",
+   spread:"Moderate (1.5-3 bps)",arb:"SHFE night vs LME day",notes:"SHFE close sets Asia tone. LME continues European session."},
+  {ex1:"comex",ex2:"shfe",name:"COMEX ↔ Shanghai",hours:"06:00-09:00",dur:3,rank:3,
+   metals:["Copper","Gold"],type:"base",importance:"Overnight gap fill",
+   spread:"Wider (2-4 bps)",arb:"USPM data → SHFE open",notes:"Brief but critical for overnight copper/steel. US economic data releases here."},
+  {ex1:"lbma",ex2:"lme",name:"LBMA ↔ LME",hours:"08:00-16:30",dur:8.5,rank:4,
+   metals:["Gold","Silver","Copper","Aluminum"],type:"precious",importance:"London deep session",
+   spread:"Very tight (0.8-2 bps)",arb:"Spot vs 3-month",notes:"Same city, different contracts. Spot (LBMA) vs futures (LME)."},
+  {ex1:"lbma",ex2:"mcx",name:"LBMA ↔ Mumbai",hours:"08:00-16:30",dur:8.5,rank:5,
+   metals:["Gold","Silver"],type:"precious",importance:"INR gold pricing",
+   spread:"Wide (3-5 bps)",arb:"USD gold → INR conversion",notes:"MCX follows LBMA with FX lag. INR volatility adds 2-4% cost."},
+  {ex1:"sgx",ex2:"lme",name:"Singapore ↔ LME",hours:"08:00-16:00",dur:8,rank:6,
+   metals:["Nickel","Iron Ore"],type:"industrial",importance:"Asia metals hub",
+   spread:"Moderate (2-4 bps)",arb:"SGX NIO vs LME Ni",notes:"SGX references LME. Important for Indonesian nickel flows."},
+  {ex1:"comex",ex2:"mcx",name:"COMEX ↔ Mumbai",hours:"06:00-09:00",dur:3,rank:7,
+   metals:["Gold","Silver"],type:"precious",importance:"Minimal direct arb",
+   spread:"Wide (4-6 bps)",arb:"Limited — FX dominated",notes:"Low overlap value. MCX more driven by LBMA than COMEX."},
+  {ex1:"tocom",ex2:"lbma",name:"Tokyo ↔ London",hours:"08:00-09:00",dur:1,rank:8,
+   metals:["Gold","Platinum"],type:"precious",importance:"Brief handoff",
+   spread:"N/A (thin)",arb:"Minimal",notes:"1-hour overlap. TOCOM closing → London opening. Limited arbitrage value."}
+];
+
+function getSession(exchange, hour){
+  const h = hour % 24;
+  if(h >= exchange.peak[0] && h <= exchange.peak[1]) return 'peak';
+  if(h >= exchange.open && h <= exchange.close) return 'normal';
+  return 'dead';
+}
+
+function countOverlaps(hour){
+  let count = 0;
+  EXCHANGES.forEach(ex => {
+    if(getSession(ex, hour) !== 'dead') count++;
+  });
+  return count;
+}
+
+function renderHeatmap(){
+  const container = document.getElementById('heatmap');
+  let html = '<div class="hm-header" style="border-bottom:1px solid var(--b)"></div>';
+  
+  for(let h=0; h<24; h++){
+    html += `<div class="hm-header">${String(h).padStart(2,'0')}</div>`;
+  }
+
+  EXCHANGES.forEach(ex => {
+    html += `<div class="hm-exchange">${ex.name}<br><span style="font-size:.6rem;color:var(--m)">${ex.city}</span></div>`;
+    for(let h=0; h<24; h++){
+      const session = getSession(ex, h);
+      const overlapCount = countOverlaps(h);
+      
+      let cls = 'hm-dead';
+      if(session === 'peak') cls = 'hm-peak';
+      else if(session === 'normal') cls = 'hm-high';
+      
+      if(session !== 'dead' && overlapCount >= 4) cls = 'hm-overlap-4';
+      else if(session !== 'dead' && overlapCount >= 3) cls = 'hm-overlap-3';
+      else if(session !== 'dead' && overlapCount >= 2) cls = 'hm-overlap-2';
+      
+      const activeExchanges = EXCHANGES.filter(e => getSession(e, h) !== 'dead').map(e => e.name).join(', ');
+      
+      html += `<div class="hm-cell ${cls}" style="position:relative">
+        <div class="hm-tip">${ex.name}: ${String(h).padStart(2,'0')}:00 UTC<br>Session: ${session.toUpperCase()}<br>Overlapping: ${activeExchanges || 'None'}</div>
+      </div>`;
+    }
+  });
+
+  container.innerHTML = html;
+}
+
+function renderOverlapList(){
+  const container = document.getElementById('overlapList');
+  const sorted = [...OVERLAPS].sort((a,b) => a.rank - b.rank);
+  
+  container.innerHTML = sorted.map(o => {
+    const ex1 = EXCHANGES.find(e => e.id === o.ex1);
+    const ex2 = EXCHANGES.find(e => e.id === o.ex2);
+    const rankCls = o.rank <= 2 ? 'rank-1' : o.rank <= 4 ? 'rank-2' : o.rank <= 6 ? 'rank-3' : 'rank-4';
+    
+    return `<div class="overlap-card" style="border-color:${ex1.color}">
+      <h3>
+        <span class="rank-badge ${rankCls}">#${o.rank}</span>
+        ${o.name}
+      </h3>
+      <div style="font-size:.75rem;color:var(--m);margin-bottom:6px">${o.importance}</div>
+      <div class="overlap-meta">
+        <div class="overlap-stat"><span class="label">Window:</span> <span class="val">${o.hours} UTC</span></div>
+        <div class="overlap-stat"><span class="label">Duration:</span> <span class="val">${o.dur}h</span></div>
+        <div class="overlap-stat"><span class="label">Spread:</span> <span class="val">${o.spread}</span></div>
+        <div class="overlap-stat"><span class="label">Arb:</span> <span class="val" style="font-size:.68rem">${o.arb}</span></div>
+      </div>
+      <div style="margin-top:8px;font-size:.7rem;color:var(--m)">${o.notes}</div>
+      <div style="margin-top:6px">${o.metals.map(m => `<span class="tag" style="background:var(--b);color:var(--t);margin-right:4px">${m}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderOverlapValueChart(){
+  const categories = ['Precious','Base','Industrial','Rare Earths'];
+  const overlaps = ['London-NY','LME-SHFE','COMEX-SHFE','LBMA-LME','LBMA-MCX','SGX-LME'];
+  
+  const data = {
+    'Precious': [95, 40, 30, 80, 50, 30],
+    'Base': [30, 85, 70, 40, 40, 50],
+    'Industrial': [20, 80, 30, 30, 20, 60],
+    'Rare Earths': [10, 50, 20, 30, 10, 20]
+  };
+
+  const colors = ['#ffd700','#58a6ff','#39d2c0','#bc8cff'];
+
+  new Chart(document.getElementById('overlapValueChart'), {
+    type: 'bar',
+    data: {
+      labels: overlaps,
+      datasets: categories.map((cat, i) => ({
+        label: cat,
+        data: data[cat],
+        backgroundColor: colors[i] + '66',
+        borderColor: colors[i],
+        borderWidth: 1
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {position:'top', labels:{color:'#8b949e', usePointStyle:true, padding:16}},
+        tooltip: {callbacks: {label: c => `${c.dataset.label}: ${c.parsed.y}% value`}}
+      },
+      scales: {
+        x: {ticks:{color:'#8b949e'}, grid:{display:false}},
+        y: {title:{display:true,text:'Relative Value (%)',color:'#8b949e'}, ticks:{color:'#8b949e'}, grid:{color:'#30363d44'}, max:100}
+      }
+    }
+  });
+}
+
+function renderPriceDiscovery(){
+  const tbody = document.getElementById('priceDiscovery');
+  const metals = [
+    {metal:"Gold",venue:"LBMA/COMEX",setter:"London AM/PM Fix + COMEX Settlement",window:"10:00-15:00 UTC",followers:"SHFE, MCX, SGX"},
+    {metal:"Silver",venue:"LBMA/COMEX",setter:"LBMA Fix + COMEX settlement",window:"10:00-14:00 UTC",followers:"SHFE, MCX"},
+    {metal:"Platinum",venue:"LBMA/NYMEX",setter:"LBMA fixing",window:"10:00-12:00 UTC",followers:"TOCOM, NYMEX"},
+    {metal:"Copper",venue:"LME/COMEX/SHFE",setter:"LME Ring + SHFE close",window:"10:00-16:00 UTC",followers:"COMEX follows LME"},
+    {metal:"Aluminum",venue:"LME/SHFE",setter:"LME Ring + SHFE",window:"10:00-14:00 UTC",followers:"COMEX (limited)"},
+    {metal:"Nickel",venue:"LME/SHFE/SGX",setter:"LME Ring",window:"10:00-16:00 UTC",followers:"SGX NIO, SHFE"},
+    {metal:"Zinc",venue:"LME/SHFE",setter:"LME Ring",window:"10:00-16:00 UTC",followers:"SHFE"},
+    {metal:"Iron Ore",venue:"SGX/LME",setter:"SGX 62% Fe",window:"09:00-17:00 UTC",followers:"LME, SHFE (limited)"}
+  ];
+
+  tbody.innerHTML = metals.map(m => `
+    <tr>
+      <td><strong>${m.metal}</strong></td>
+      <td>${m.venue}</td>
+      <td style="font-size:.7rem">${m.setter}</td>
+      <td>${m.window}</td>
+      <td style="font-size:.7rem;color:var(--m)">${m.followers}</td>
+    </tr>
+  `).join('');
+}
+
+function renderArbChart(){
+  const pairs = ['LBMA-','COMEX-','LME-','SHFE-','MCX-'];
+  const vs = ['LBMA','COMEX','LME','SHFE','MCX','SGX'];
+  
+  const arbMatrix = [
+    [0, 0.95, 0.4, 0.3, 0.5, 0.2],
+    [0.95, 0, 0.5, 0.6, 0.3, 0.3],
+    [0.4, 0.5, 0, 0.85, 0.3, 0.6],
+    [0.3, 0.6, 0.85, 0, 0.2, 0.5],
+    [0.5, 0.3, 0.3, 0.2, 0, 0.2],
+    [0.2, 0.3, 0.6, 0.5, 0.2, 0]
+  ];
+
+  const labels = ['LBMA','COMEX','LME','SHFE','MCX','SGX'];
+  
+  const datasets = labels.map((label, i) => ({
+    label,
+    data: arbMatrix[i],
+    backgroundColor: [
+      '#ffd70066','#e87d4f66','#58a6ff66','#f8514966','#bc8cff66','#39d2c066'
+    ][i],
+    borderColor: ['#ffd700','#e87d4f','#58a6ff','#f85149','#bc8cff','#39d2c0'][i],
+    borderWidth: 1
+  }));
+
+  new Chart(document.getElementById('arbChart'), {
+    type: 'bar',
+    data: {labels: labels.slice(0,5), datasets},
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: {
+        legend: {position:'top', labels:{color:'#8b949e', usePointStyle:true, padding:12}},
+        tooltip: {callbacks: {label: c => `${c.dataset.label} → ${labels[c.dataIndex]}: ${(c.parsed.x*100).toFixed(0)}% arb potential`}}
+      },
+      scales: {
+        x: {title:{display:true,text:'Arbitrage Potential (%)',color:'#8b949e'}, ticks:{color:'#8b949e'}, grid:{color:'#30363d44'}, max:100},
+        y: {ticks:{color:'#8b949e'}, grid:{display:false}}
+      }
+    }
+  });
+}
+
+function refresh(){
+  renderHeatmap();
+  renderOverlapList();
+  renderOverlapValueChart();
+  renderPriceDiscovery();
+  renderArbChart();
+}
+
+refresh();
+</script>
+</body>
+</html>
