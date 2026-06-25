@@ -8,11 +8,12 @@
 <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
 <style>
-:root{--bg:#0d1117;--s:#161b22;--b:#30363d;--t:#e6edf3;--m:#8b949e;--a:#58a6ff;--g:#3fb950;--o:#d29922;--r:#f85149;--p:#bc8cff;--c:#39d2c0;--pk:#f778ba}
+:root{--bg:#0d1117;--s:#161b22;--b:#30363d;--t:#e6edf3;--m:#8b949e;--a:#58a6ff;--g:#3fb950;--o:#d29922;--r:#f85149;--p:#bc8cff;--c:#39d2c0;--pk:#f778ba;--sb-w:220px}
+.light{--bg:#f6f8fa;--s:#ffffff;--b:#d0d7de;--t:#1f2328;--m:#656d76;--a:#0969da;--g:#1a7f37;--o:#9a6700;--r:#cf222e;--p:#8250df;--c:#0e8a7e;--pk:#bf3989;--sb-w:220px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t);line-height:1.5}
 .app{display:flex;height:100vh}
-.sidebar{width:220px;background:var(--s);border-right:1px solid var(--b);padding:16px 0;flex-shrink:0;overflow-y:auto}
+.sidebar{width:var(--sb-w);background:var(--s);border-right:1px solid var(--b);padding:16px 0;flex-shrink:0;overflow-y:auto;transition:width .3s}
 .sidebar h1{font-size:1rem;padding:0 16px 12px;border-bottom:1px solid var(--b);margin-bottom:8px}
 .sidebar .logo{font-size:.7rem;color:var(--m);padding:0 16px 12px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:.8rem;color:var(--m);transition:all .15s;border-left:3px solid transparent}
@@ -29,31 +30,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .grid-3{grid-template-columns:repeat(3,1fr)}
 .grid-4{grid-template-columns:repeat(4,1fr)}
-@media(max-width:1200px){.grid{grid-template-columns:1fr}}
+@media(max-width:1200px){.grid{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}.grid-4{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.sidebar{width:0!important;min-width:0;overflow:hidden}.sidebar.open{width:var(--sb-w)!important;position:fixed;height:100vh;z-index:100}.main{padding:12px;padding-top:44px}.grid{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}.grid-4{grid-template-columns:1fr}.mobile-menu{display:flex!important}}
+.mobile-menu{display:none;position:fixed;top:0;left:0;right:0;height:48px;background:var(--s);border-bottom:1px solid var(--b);align-items:center;padding:0 12px;z-index:90;gap:8px}
+.mobile-menu button{background:none;border:none;color:var(--t);font-size:1.2rem;cursor:pointer;padding:4px 8px}
+.mobile-menu span{font-size:.85rem;font-weight:600}
 .card{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:16px}
 .card h3{font-size:.82rem;color:var(--m);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
 .full{grid-column:1/-1}
 .chart-box{position:relative;height:300px;width:100%}
 .chart-box canvas{max-height:100%}
-
 table{width:100%;border-collapse:collapse;font-size:.72rem}
 th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--b)}
 th{color:var(--m);font-weight:500;text-transform:uppercase;font-size:.65rem;letter-spacing:.5px;position:sticky;top:0;background:var(--s)}
 tr:hover{background:rgba(88,166,255,.04)}
 .table-scroll{max-height:350px;overflow-y:auto}
-
 .badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:.62rem;font-weight:600}
 .badge-g{background:rgba(63,185,80,.15);color:var(--g)}
 .badge-r{background:rgba(248,81,73,.15);color:var(--r)}
 .badge-o{background:rgba(210,153,34,.15);color:var(--o)}
 .badge-a{background:rgba(88,166,255,.15);color:var(--a)}
 .badge-p{background:rgba(188,140,255,.15);color:var(--p)}
-
+.badge-c{background:rgba(57,210,192,.15);color:var(--c)}
 .stat-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .stat-box{flex:1;min-width:100px;background:var(--bg);border-radius:8px;padding:12px;text-align:center}
 .stat-val{font-size:1.3rem;font-weight:700}
 .stat-label{font-size:.65rem;color:var(--m);text-transform:uppercase;letter-spacing:.5px}
-
 .heatmap{display:grid;grid-template-columns:100px repeat(24,1fr);gap:1px;font-size:.6rem}
 .hm-label{color:var(--m);text-align:right;padding:4px 6px;font-size:.68rem}
 .hm-cell{height:22px;border-radius:2px;position:relative;cursor:pointer}
@@ -64,29 +66,73 @@ tr:hover{background:rgba(88,166,255,.04)}
 .hm-high{background:rgba(63,185,80,.4)}
 .hm-peak{background:rgba(63,185,80,.7)}
 .hm-overlap{background:rgba(88,166,255,.5)}
-
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
 .feat-item{background:var(--bg);border-radius:6px;padding:8px;text-align:center;font-size:.68rem}
 .feat-item .label{color:var(--m);margin-bottom:2px}
-
 .provider-row{display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg);border-radius:6px;margin-bottom:6px}
 .provider-row .name{font-weight:500;min-width:120px}
 .provider-row .tags{display:flex;gap:4px;flex-wrap:wrap}
 .provider-row .tag{padding:2px 6px;border-radius:10px;font-size:.6rem;background:var(--b);color:var(--m)}
-
 .cost-stack{display:flex;gap:2px;height:20px;border-radius:4px;overflow:hidden;margin-top:4px}
 .cost-seg{display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#fff}
-
 .tactic-item{background:var(--bg);border-radius:6px;padding:10px;margin-bottom:6px;border-left:3px solid var(--a)}
+.period-btn{padding:6px 14px;border-radius:16px;font-size:.75rem;cursor:pointer;border:1px solid var(--b);background:var(--s);color:var(--t);transition:all .2s}
+.period-btn:hover{border-color:var(--a)}
+.period-btn.active{background:var(--a);color:#fff;border-color:var(--a)}
 .tactic-item h4{font-size:.78rem;color:var(--a);margin-bottom:4px}
 .tactic-item p{font-size:.68rem;color:var(--m)}
-
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+.corr-matrix{display:grid;gap:1px;font-size:.6rem}
+.corr-cell{height:28px;display:flex;align-items:center;justify-content:center;border-radius:2px;font-weight:600;font-size:.58rem;cursor:pointer;transition:transform .15s}
+.corr-cell:hover{transform:scale(1.1);z-index:5}
+.corr-label{display:flex;align-items:center;justify-content:center;color:var(--m);font-size:.58rem}
+.alert-row{display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg);border-radius:8px;margin-bottom:8px;border-left:3px solid var(--a)}
+.alert-row .alert-name{font-weight:500;min-width:80px}
+.alert-row input{width:80px;padding:4px 8px;border-radius:4px;border:1px solid var(--b);background:var(--s);color:var(--t);font-size:.72rem}
+.alert-row select{padding:4px 8px;border-radius:4px;border:1px solid var(--b);background:var(--s);color:var(--t);font-size:.72rem}
+.alert-active{border-left-color:var(--g)!important}
+.alert-triggered{border-left-color:var(--r)!important;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.comparison-select{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.comparison-select select{padding:8px 12px;border-radius:8px;border:1px solid var(--b);background:var(--s);color:var(--t);font-size:.8rem;cursor:pointer}
+.theme-toggle{position:fixed;bottom:20px;right:20px;width:44px;height:44px;border-radius:50%;background:var(--s);border:1px solid var(--b);color:var(--t);font-size:1.2rem;cursor:pointer;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
+.export-btn{padding:6px 14px;border-radius:8px;font-size:.75rem;cursor:pointer;border:1px solid var(--b);background:var(--s);color:var(--t);transition:all .2s}
+.export-btn:hover{border-color:var(--a);background:rgba(88,166,255,.08)}
+.dashboard-customize{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--s);border:1px solid var(--b);border-radius:12px;padding:24px;z-index:300;max-height:80vh;overflow-y:auto;display:none;min-width:400px}
+.dashboard-customize h3{margin-bottom:16px}
+.dashboard-customize .widget-toggle{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b)}
+.dashboard-customize .widget-toggle label{font-size:.8rem;cursor:pointer}
+.toggle-switch{position:relative;width:40px;height:22px;cursor:pointer}
+.toggle-switch input{display:none}
+.toggle-slider{position:absolute;inset:0;background:var(--b);border-radius:11px;transition:.3s}
+.toggle-slider:before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:var(--t);border-radius:50%;transition:.3s}
+.toggle-switch input:checked+.toggle-slider{background:var(--a)}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(18px)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:290;display:none}
+.esg-bar{height:8px;border-radius:4px;background:var(--b);overflow:hidden;margin-top:4px}
+.esg-fill{height:100%;border-radius:4px}
+.sentiment-meter{display:flex;height:20px;border-radius:4px;overflow:hidden;margin:8px 0}
+.sentiment-meter div{display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#fff;font-weight:600}
+.stock-ticker{position:fixed;top:0;left:var(--sb-w);right:0;height:32px;background:var(--s);border-bottom:1px solid var(--b);display:flex;align-items:center;overflow:hidden;z-index:80;font-size:.7rem}
+.ticker-track{display:flex;gap:24px;animation:scroll 60s linear infinite;white-space:nowrap;padding:0 16px}
+.ticker-item{display:flex;align-items:center;gap:6px}
+.ticker-sym{font-weight:600;color:var(--a)}
+.ticker-price{color:var(--t)}
+.ticker-chg{font-size:.65rem}
+.ticker-up{color:var(--g)}
+.ticker-dn{color:var(--r)}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.main{padding-top:44px}
 </style>
 </head>
 <body>
+<div class="mobile-menu">
+<button onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+<span>Metals Dashboard</span>
+</div>
+
 <div class="app">
 <div class="sidebar">
 <h1>Metals Dashboard</h1>
@@ -98,22 +144,43 @@ tr:hover{background:rgba(88,166,255,.04)}
 <div class="nav-section">Volatility</div>
 <div class="nav-item" data-page="volatility"><span class="icon">📈</span>Realized Vol</div>
 <div class="nav-item" data-page="spreads"><span class="icon">📉</span>Spread Analysis</div>
+<div class="nav-item" data-page="correlation"><span class="icon">🔗</span>Correlation</div>
+<div class="nav-item" data-page="seasonality"><span class="icon">📅</span>Seasonality</div>
 
 <div class="nav-section">Liquidity</div>
 <div class="nav-item" data-page="sessions"><span class="icon">🕐</span>Trading Sessions</div>
 <div class="nav-item" data-page="overlaps"><span class="icon">🔄</span>Overlap Windows</div>
 <div class="nav-item" data-page="gaps"><span class="icon">⚠️</span>Gap Risk</div>
+<div class="nav-item" data-page="warehouses"><span class="icon">🏭</span>Warehouse Stocks</div>
 
 <div class="nav-section">Costs</div>
 <div class="nav-item" data-page="fees"><span class="icon">💰</span>Exchange Fees</div>
 <div class="nav-item" data-page="fx"><span class="icon">💱</span>FX Risk</div>
 
+<div class="nav-section">Markets</div>
+<div class="nav-item" data-page="fwdcurve"><span class="icon">📐</span>Forward Curves</div>
+<div class="nav-item" data-page="macro"><span class="icon">🌍</span>Macro Correlation</div>
+<div class="nav-item" data-page="supplydemand"><span class="icon">⚖️</span>Supply & Demand</div>
+
+<div class="nav-section">Sentiment</div>
+<div class="nav-item" data-page="sentiment"><span class="icon">📰</span>News Sentiment</div>
+<div class="nav-item" data-page="esg"><span class="icon">🌿</span>ESG Scores</div>
+
 <div class="nav-section">Execution</div>
 <div class="nav-item" data-page="rfq"><span class="icon">📋</span>RFQ Providers</div>
 <div class="nav-item" data-page="tactics"><span class="icon">🎯</span>Tactics</div>
+<div class="nav-item" data-page="alerts"><span class="icon">🔔</span>Spread Alerts</div>
+<div class="nav-item" data-page="sizing"><span class="icon">🧮</span>Position Sizer</div>
+<div class="nav-item" data-page="compare"><span class="icon">⚖️</span>Compare Metals</div>
+
+<div class="nav-section">Tools</div>
+                <div class="nav-item" data-page="reports"><span class="icon">📄</span>Export Reports</div>
 </div>
 
 <div class="main">
+
+<!-- STOCK TICKER -->
+<div class="stock-ticker"><div class="ticker-track" id="tickerTrack"></div></div>
 
 <!-- OVERVIEW -->
 <div class="page active" id="page-overview">
@@ -122,40 +189,13 @@ tr:hover{background:rgba(88,166,255,.04)}
 <div class="sub">Key metrics across 25 metals, 6 exchanges, and 12 RFQ providers</div>
 </div>
 
-<div class="stat-row">
-<div class="stat-box"><div class="stat-val" style="color:var(--a)">25</div><div class="stat-label">Metals Tracked</div></div>
-<div class="stat-box"><div class="stat-val" style="color:var(--g)">6</div><div class="stat-label">Exchanges</div></div>
-<div class="stat-box"><div class="stat-val" style="color:var(--o)">12</div><div class="stat-label">RFQ Providers</div></div>
-<div class="stat-box"><div class="stat-val" style="color:var(--p)">8</div><div class="stat-label">Overlap Windows</div></div>
-</div>
+<div class="stat-row" id="overviewStats"></div>
 
-<div class="grid">
-<div class="card">
-<h3>Volatility Snapshot</h3>
-<div class="chart-box" style="height:200px"><canvas id="overviewVol"></canvas></div>
-</div>
-<div class="card">
-<h3>Spread Ranges</h3>
-<div class="table-scroll" style="max-height:220px">
-<table>
-<thead><tr><th>Metal</th><th>Tight</th><th>Normal</th><th>Wide</th></tr></thead>
-<tbody id="overviewSpread"></tbody>
-</table>
-</div>
-</div>
-<div class="card">
-<h3>Top Overlaps</h3>
-<div id="overviewOverlaps"></div>
-</div>
-<div class="card">
-<h3>Exchange Fees</h3>
-<div class="table-scroll" style="max-height:220px">
-<table>
-<thead><tr><th>Exchange</th><th>Spread</th><th>Total</th></tr></thead>
-<tbody id="overviewFees"></tbody>
-</table>
-</div>
-</div>
+<div class="grid" id="overviewGrid">
+<div class="card" id="ov-volatility"><h3>Volatility Snapshot</h3><div class="chart-box" style="height:200px"><canvas id="overviewVol"></canvas></div></div>
+<div class="card" id="ov-spreads"><h3>Spread Ranges</h3><div class="table-scroll" style="max-height:220px"><table><thead><tr><th>Metal</th><th>Tight</th><th>Normal</th><th>Wide</th></tr></thead><tbody id="overviewSpread"></tbody></table></div></div>
+<div class="card" id="ov-overlaps"><h3>Top Overlaps</h3><div id="overviewOverlaps"></div></div>
+<div class="card" id="ov-fees"><h3>Exchange Fees</h3><div class="table-scroll" style="max-height:220px"><table><thead><tr><th>Exchange</th><th>Spread</th><th>Total</th></tr></thead><tbody id="overviewFees"></tbody></table></div></div>
 </div>
 </div>
 
@@ -164,57 +204,62 @@ tr:hover{background:rgba(88,166,255,.04)}
 <div class="page-header">
 <h2>Realized Historical Volatility</h2>
 <div class="sub">Annualized standard deviation of daily log-returns</div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+<button class="period-btn" data-period="m1">1 Month</button>
+<button class="period-btn" data-period="m3">3 Months</button>
+<button class="period-btn" data-period="m6">6 Months</button>
+<button class="period-btn active" data-period="y1">1 Year</button>
+<button class="period-btn" data-period="y2">2 Years</button>
+<button class="period-btn" data-period="y5">5 Years</button>
+</div>
 </div>
 <div class="grid">
-<div class="card full">
-<h3>Volatility Time Series</h3>
-<div class="chart-box"><canvas id="volChart"></canvas></div>
-</div>
-<div class="card">
-<h3>Volatility Rankings</h3>
-<div class="table-scroll" style="max-height:400px">
-<table>
-<thead><tr><th>#</th><th>Metal</th><th>Vol</th><th>Range</th><th>Volume</th></tr></thead>
-<tbody id="volRank"></tbody>
-</table>
-</div>
-</div>
-<div class="card">
-<h3>Vol by Category</h3>
-<div class="chart-box"><canvas id="volCategory"></canvas></div>
-</div>
+<div class="card full"><h3>Volatility Time Series — <span id="periodLabel">1 Year</span></h3><div class="chart-box"><canvas id="volChart"></canvas></div></div>
+<div class="card"><h3>Volatility Rankings</h3><div class="table-scroll" style="max-height:400px"><table><thead><tr><th>#</th><th>Metal</th><th>Vol</th><th>Range</th><th>Volume</th></tr></thead><tbody id="volRank"></tbody></table></div></div>
+<div class="card"><h3>Vol by Category</h3><div class="chart-box"><canvas id="volCategory"></canvas></div></div>
 </div>
 </div>
 
 <!-- SPREADS -->
 <div class="page" id="page-spreads">
-<div class="page-header">
-<h2>Spread Analysis</h2>
-<div class="sub">Basis points, 10th-90th percentile ranges</div>
+<div class="page-header"><h2>Spread Analysis</h2><div class="sub">Basis points, 10th-90th percentile ranges</div></div>
+<div class="grid">
+<div class="card full"><h3>Intraday Spread Patterns</h3><div class="chart-box"><canvas id="spreadChart"></canvas></div></div>
+<div class="card full"><h3>Spread by Metal & Exchange</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Exchange</th><th>Tight</th><th>Normal</th><th>Wide</th><th>Range %</th></tr></thead><tbody id="spreadTable"></tbody></table></div></div>
+</div>
+</div>
+
+<!-- CORRELATION MATRIX -->
+<div class="page" id="page-correlation">
+<div class="page-header"><h2>Correlation Matrix</h2><div class="sub">30-day rolling correlation between metals</div>
+<div style="margin-top:12px;display:flex;gap:8px">
+<button class="period-btn active" data-corr="30">30 Day</button>
+<button class="period-btn" data-corr="60">60 Day</button>
+<button class="period-btn" data-corr="90">90 Day</button>
+</div>
 </div>
 <div class="grid">
-<div class="card full">
-<h3>Intraday Spread Patterns</h3>
-<div class="chart-box"><canvas id="spreadChart"></canvas></div>
-</div>
-<div class="card full">
-<h3>Spread by Metal & Exchange</h3>
-<div class="table-scroll">
-<table>
-<thead><tr><th>Metal</th><th>Exchange</th><th>Tight</th><th>Normal</th><th>Wide</th><th>Range %</th></tr></thead>
-<tbody id="spreadTable"></tbody>
-</table>
+<div class="card full"><h3>Metal-to-Metal Correlation</h3><div id="corrMatrix"></div></div>
+<div class="card full"><h3>Highest Correlations</h3><div class="table-scroll"><table><thead><tr><th>Metal A</th><th>Metal B</th><th>Correlation</th><th>Signal</th></tr></thead><tbody id="corrRanking"></tbody></table></div></div>
+<div class="card"><h3>Au/Ag Ratio</h3><div class="chart-box"><canvas id="goldSilverRatio"></canvas></div></div>
+<div class="card"><h3>Cu/Al Ratio</h3><div class="chart-box"><canvas id="copperAlRatio"></canvas></div></div>
 </div>
 </div>
+
+<!-- SEASONALITY -->
+<div class="page" id="page-seasonality">
+<div class="page-header"><h2>Seasonality Patterns</h2><div class="sub">Average monthly returns by metal (10-year history)</div></div>
+<div class="grid">
+<div class="card full"><h3>Monthly Return Heatmap</h3><div id="seasonHeatmap"></div></div>
+<div class="card full"><h3>Seasonal Strength by Month</h3><div class="chart-box"><canvas id="seasonChart"></canvas></div></div>
+<div class="card"><h3>Best Months by Metal</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Best Month</th><th>Avg Return</th><th>Win Rate</th></tr></thead><tbody id="bestMonths"></tbody></table></div></div>
+<div class="card"><h3>Worst Months by Metal</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Worst Month</th><th>Avg Return</th><th>Win Rate</th></tr></thead><tbody id="worstMonths"></tbody></table></div></div>
 </div>
 </div>
 
 <!-- SESSIONS -->
 <div class="page" id="page-sessions">
-<div class="page-header">
-<h2>Trading Sessions</h2>
-<div class="sub">24-hour liquidity by exchange (UTC)</div>
-</div>
+<div class="page-header"><h2>Trading Sessions</h2><div class="sub">24-hour liquidity by exchange (UTC)</div></div>
 <div class="card full">
 <h3>Liquidity Heatmap</h3>
 <div style="margin-bottom:8px;font-size:.65rem;color:var(--m)">Peak = Green · Normal = Light Green · Thin = Orange · Closed = Dark</div>
@@ -224,368 +269,1171 @@ tr:hover{background:rgba(88,166,255,.04)}
 
 <!-- OVERLAPS -->
 <div class="page" id="page-overlaps">
-<div class="page-header">
-<h2>Overlap Windows</h2>
-<div class="sub">Cross-exchange arbitrage opportunities</div>
-</div>
+<div class="page-header"><h2>Overlap Windows</h2><div class="sub">Cross-exchange arbitrage opportunities</div></div>
 <div class="grid">
-<div class="card full">
-<h3>All Overlaps — Ranked</div>
-<div class="table-scroll" style="max-height:400px">
-<table>
-<thead><tr><th>#</th><th>Pair</th><th>Window (UTC)</th><th>Duration</th><th>Spread</th><th>Metals</th></tr></thead>
-<tbody id="overlapTable"></tbody>
-</table>
-</div>
-</div>
-<div class="card">
-<h3>Overlap Value by Metal Type</h3>
-<div class="chart-box"><canvas id="overlapChart"></canvas></div>
-</div>
-<div class="card">
-<h3>Price Discovery</h3>
-<div class="table-scroll">
-<table>
-<thead><tr><th>Metal</th><th>Primary</th><th>Window</th></tr></thead>
-<tbody id="priceDiscovery"></tbody>
-</table>
-</div>
-</div>
+<div class="card full"><h3>All Overlaps — Ranked</h3><div class="table-scroll" style="max-height:400px"><table><thead><tr><th>#</th><th>Pair</th><th>Window (UTC)</th><th>Duration</th><th>Spread</th><th>Metals</th></tr></thead><tbody id="overlapTable"></tbody></table></div></div>
+<div class="card"><h3>Overlap Value by Metal Type</h3><div class="chart-box"><canvas id="overlapChart"></canvas></div></div>
+<div class="card"><h3>Price Discovery</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Primary</th><th>Window</th></tr></thead><tbody id="priceDiscovery"></tbody></table></div></div>
 </div>
 </div>
 
 <!-- GAPS -->
 <div class="page" id="page-gaps">
-<div class="page-header">
-<h2>Gap Risk Analysis</h2>
-<div class="sub">Dead zones and liquidity gaps by exchange</div>
-</div>
+<div class="page-header"><h2>Gap Risk Analysis</h2><div class="sub">Dead zones and liquidity gaps by exchange</div></div>
 <div class="grid">
-<div class="card full">
-<h3>Dead Zones by Exchange</h3>
-<div class="table-scroll">
-<table>
-<thead><tr><th>Exchange</th><th>Dead Zone (UTC)</th><th>Hours</th><th>Risk</th><th>Impact</th></tr></thead>
-<tbody id="gapTable"></tbody>
-</table>
+<div class="card full"><h3>Dead Zones by Exchange</h3><div class="table-scroll"><table><thead><tr><th>Exchange</th><th>Dead Zone (UTC)</th><th>Hours</th><th>Risk</th><th>Impact</th></tr></thead><tbody id="gapTable"></tbody></table></div></div>
+<div class="card"><h3>Cost by Holding Period</h3><div class="chart-box"><canvas id="holdingCost"></canvas></div></div>
+<div class="card"><h3>Spread vs Hedge Cost</h3><div class="chart-box"><canvas id="hedgeVsSpread"></canvas></div></div>
 </div>
 </div>
-<div class="card">
-<h3>Cost by Holding Period</h3>
-<div class="chart-box"><canvas id="holdingCost"></canvas></div>
-</div>
-<div class="card">
-<h3>Spread vs Hedge Cost</h3>
-<div class="chart-box"><canvas id="hedgeVsSpread"></canvas></div>
-</div>
+
+<!-- WAREHOUSE STOCKS -->
+<div class="page" id="page-warehouses">
+<div class="page-header"><h2>LME/SHFE Warehouse Stocks</h2><div class="sub">Inventory levels and changes as a demand signal</div></div>
+<div class="stat-row" id="whStats"></div>
+<div class="grid">
+<div class="card full"><h3>Current Inventory Levels</h3><div class="chart-box"><canvas id="whChart"></canvas></div></div>
+<div class="card full"><h3>Stock Changes (30-day)</h3><div class="chart-box"><canvas id="whChangeChart"></canvas></div></div>
+<div class="card"><h3>LME Stocks</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Tonnes</th><th>30D Chg</th><th>Trend</th><th>Days Cover</th></tr></thead><tbody id="lmeStocks"></tbody></table></div></div>
+<div class="card"><h3>SHFE Stocks</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Tonnes</th><th>30D Chg</th><th>Trend</th><th>Days Cover</th></tr></thead><tbody id="shfeStocks"></tbody></table></div></div>
 </div>
 </div>
 
 <!-- FEES -->
 <div class="page" id="page-fees">
-<div class="page-header">
-<h2>Exchange Fees & Costs</h2>
-<div class="sub">Trading, clearing, commission, and total cost</div>
-</div>
+<div class="page-header"><h2>Exchange Fees & Costs</h2><div class="sub">Trading, clearing, commission, and total cost</div></div>
 <div class="grid">
-<div class="card full">
-<h3>Fee Comparison</h3>
-<div class="table-scroll">
-<table>
-<thead><tr><th>Exchange</th><th>Currency</th><th>Trading</th><th>Clearing</th><th>Commission</th><th>Spread</th><th>Total Est.</th></tr></thead>
-<tbody id="feeTable"></tbody>
-</table>
-</div>
-</div>
-<div class="card full">
-<h3>Cost Stack Visualization</h3>
-<div id="costStack"></div>
-</div>
+<div class="card full"><h3>Fee Comparison</h3><div class="table-scroll"><table><thead><tr><th>Exchange</th><th>Currency</th><th>Trading</th><th>Clearing</th><th>Commission</th><th>Spread</th><th>Total Est.</th></tr></thead><tbody id="feeTable"></tbody></table></div></div>
+<div class="card full"><h3>Cost Stack Visualization</h3><div id="costStack"></div></div>
 </div>
 </div>
 
 <!-- FX -->
 <div class="page" id="page-fx">
-<div class="page-header">
-<h2>FX Risk</h2>
-<div class="sub">Currency denomination impact by exchange</div>
-</div>
+<div class="page-header"><h2>FX Risk</h2><div class="sub">Currency denomination impact by exchange</div></div>
 <div class="grid">
-<div class="card">
-<h3>Currency Risk Summary</h3>
-<table>
-<thead><tr><th>Currency</th><th>Annual Vol</th><th>Hedge Cost</th><th>Impact</th></tr></thead>
-<tbody id="fxTable"></tbody>
-</table>
+<div class="card"><h3>Currency Risk Summary</h3><table><thead><tr><th>Currency</th><th>Annual Vol</th><th>Hedge Cost</th><th>Impact</th></tr></thead><tbody id="fxTable"></tbody></table></div>
+<div class="card"><h3>FX Impact by Exchange</h3><div id="fxExchange"></div></div>
 </div>
-<div class="card">
-<h3>FX Impact by Exchange</h3>
-<div id="fxExchange"></div>
 </div>
+
+<!-- FORWARD CURVES -->
+<div class="page" id="page-fwdcurve">
+<div class="page-header"><h2>Forward Curves</h2><div class="sub">Term structure — contango vs backwardation</div></div>
+<div class="grid">
+<div class="card full"><h3>Forward Curve Visualization</h3><div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap" id="fwdMetalBtns"></div><div class="chart-box"><canvas id="fwdCurveChart"></canvas></div></div>
+<div class="card full"><h3>Curve Structure Summary</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Spot</th><th>1M</th><th>3M</th><th>6M</th><th>1Y</th><th>Structure</th><th>Slope</th></tr></thead><tbody id="fwdTable"></tbody></table></div></div>
+<div class="card"><h3>Contango/Backwardation Map</h3><div id="contangoMap"></div></div>
+<div class="card"><h3>Carry Trade Opportunities</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Carry %</th><th>Annualized</th><th>Risk</th></tr></thead><tbody id="carryTable"></tbody></table></div></div>
+</div>
+</div>
+
+<!-- MACRO CORRELATION -->
+<div class="page" id="page-macro">
+<div class="page-header"><h2>Macro Correlation</h2><div class="sub">Metals vs USD Index, rates, CPI, oil</div></div>
+<div class="grid">
+<div class="card full"><h3>Correlation with Macro Factors</h3><div class="chart-box"><canvas id="macroCorrChart"></canvas></div></div>
+<div class="card full"><h3>Macro Factor Sensitivities</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>USD (DXY)</th><th>10Y Yield</th><th>CPI YoY</th><th>WTI Oil</th><th>S&P 500</th></tr></thead><tbody id="macroSensTable"></tbody></table></div></div>
+<div class="card"><h3>Recent Macro Events</h3><div id="macroEvents"></div></div>
+<div class="card"><h3>Key Relationships</h3><div id="macroInsights"></div></div>
+</div>
+</div>
+
+<!-- SUPPLY & DEMAND -->
+<div class="page" id="page-supplydemand">
+<div class="page-header"><h2>Supply & Demand Fundamentals</h2><div class="sub">Mine production, recycling, industrial consumption</div></div>
+<div class="grid">
+<div class="card full"><h3>Supply vs Demand Balance</h3><div class="chart-box"><canvas id="sdChart"></canvas></div></div>
+<div class="card full"><h3>Annual Production & Consumption</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Mine Output (kt)</th><th>Recycled (kt)</th><th>Total Supply</th><th>Demand (kt)</th><th>Balance</th><th>Surplus/Deficit</th></tr></thead><tbody id="sdTable"></tbody></table></div></div>
+<div class="card"><h3>Top Producing Countries</h3><div class="chart-box"><canvas id="topProducers"></canvas></div></div>
+<div class="card"><h3>Demand by Sector</h3><div class="chart-box"><canvas id="demandSector"></canvas></div></div>
+</div>
+</div>
+
+<!-- SENTIMENT -->
+<div class="page" id="page-sentiment">
+<div class="page-header"><h2>News Sentiment</h2><div class="sub">Aggregated market sentiment for each metal</div></div>
+<div class="stat-row" id="sentStats"></div>
+<div class="grid">
+<div class="card full"><h3>Sentiment by Metal</h3><div id="sentimentBars"></div></div>
+<div class="card full"><h3>Recent Headlines</h3><div id="headlinesList"></div></div>
+<div class="card"><h3>Sentiment Trend (30D)</h3><div class="chart-box"><canvas id="sentTrend"></canvas></div></div>
+<div class="card"><h3>Sentiment by Category</h3><div class="chart-box"><canvas id="sentCatChart"></canvas></div></div>
+</div>
+</div>
+
+<!-- ESG -->
+<div class="page" id="page-esg">
+<div class="page-header"><h2>ESG & Sustainability Scores</h2><div class="sub">Carbon footprint, ethical sourcing ratings</div></div>
+<div class="grid">
+<div class="card full"><h3>ESG Scores Overview</h3><div class="table-scroll"><table><thead><tr><th>Metal</th><th>Environmental</th><th>Social</th><th>Governance</th><th>Overall</th><th>Carbon (tCO2e/t)</th><th>Ethical Rating</th></tr></thead><tbody id="esgTable"></tbody></table></div></div>
+<div class="card"><h3>Environmental Scores</h3><div class="chart-box"><canvas id="esgEnvChart"></canvas></div></div>
+<div class="card"><h3>Carbon Intensity</h3><div class="chart-box"><canvas id="carbonChart"></canvas></div></div>
+<div class="card"><h3>Ethical Sourcing by Region</h3><div id="ethicalMap"></div></div>
+<div class="card"><h3>Recycling Rates</h3><div class="chart-box"><canvas id="recycleChart"></canvas></div></div>
 </div>
 </div>
 
 <!-- RFQ -->
 <div class="page" id="page-rfq">
-<div class="page-header">
-<h2>RFQ Providers</h2>
-<div class="sub">12 providers for illiquid metals</div>
-</div>
+<div class="page-header"><h2>RFQ Providers</h2><div class="sub">12 providers for illiquid metals</div></div>
 <div class="card full">
 <div class="table-scroll" style="max-height:500px">
-<table>
-<thead><tr><th>Provider</th><th>Type</th><th>Min Trade</th><th>Settlement</th><th>Metals</th><th>Spread Est.</th><th>Features</th></tr></thead>
-<tbody id="rfqTable"></tbody>
-</table>
+<table><thead><tr><th>Provider</th><th>Type</th><th>Min Trade</th><th>Settlement</th><th>Metals</th><th>Spread Est.</th><th>Features</th></tr></thead><tbody id="rfqTable"></tbody></table>
 </div>
 </div>
 </div>
 
 <!-- TACTICS -->
 <div class="page" id="page-tactics">
-<div class="page-header">
-<h2>Execution Tactics</h2>
-<div class="sub">Reduce spread and transaction costs</div>
-</div>
+<div class="page-header"><h2>Execution Tactics</h2><div class="sub">Reduce spread and transaction costs</div></div>
 <div class="grid">
-<div class="card">
-<h3>High Impact</h3>
-<div id="tacticsHigh"></div>
+<div class="card"><h3>High Impact</h3><div id="tacticsHigh"></div></div>
+<div class="card"><h3>Medium Impact</h3><div id="tacticsMed"></div></div>
 </div>
-<div class="card">
-<h3>Medium Impact</h3>
-<div id="tacticsMed"></div>
+</div>
+
+<!-- SPREAD ALERTS -->
+<div class="page" id="page-alerts">
+<div class="page-header"><h2>Spread Alert Thresholds</h2><div class="sub">Configure alerts when spreads exceed normal ranges</div>
+<button class="export-btn" onclick="addAlert()" style="margin-top:12px">+ Add Alert</button>
+</div>
+<div class="card full">
+<h3>Active Alerts</h3>
+<div id="alertsList"></div>
+</div>
+<div class="card full">
+<h3>Recent Triggers</h3>
+<div class="table-scroll"><table><thead><tr><th>Time</th><th>Metal</th><th>Exchange</th><th>Spread</th><th>Threshold</th><th>Severity</th></tr></thead><tbody id="alertTriggers"></tbody></table></div>
+</div>
+</div>
+
+<!-- POSITION SIZER -->
+<div class="page" id="page-sizing">
+<div class="page-header"><h2>Position Sizing Calculator</h2><div class="sub">Risk-based sizing with volatility normalization</div></div>
+<div class="grid">
+<div class="card"><h3>Parameters</h3>
+<div style="display:flex;flex-direction:column;gap:12px">
+<label style="font-size:.75rem;color:var(--m)">Account Size ($)<input type="number" id="acctSize" value="1000000" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--b);background:var(--s);color:var(--t)"></label>
+<label style="font-size:.75rem;color:var(--m)">Risk per Trade (%)<input type="number" id="riskPct" value="1" step="0.1" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--b);background:var(--s);color:var(--t)"></label>
+<label style="font-size:.75rem;color:var(--m)">Select Metal<select id="sizingMetal" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--b);background:var(--s);color:var(--t)"></select></label>
+<label style="font-size:.75rem;color:var(--m)">Entry Price<input type="number" id="entryPrice" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--b);background:var(--s);color:var(--t)"></label>
+<label style="font-size:.75rem;color:var(--m)">Stop Loss (bps)<input type="number" id="stopBps" value="200" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--b);background:var(--s);color:var(--t)"></label>
+<button class="period-btn active" onclick="calcPosition()" style="margin-top:4px">Calculate</button>
+</div>
+</div>
+<div class="card"><h3>Results</h3>
+<div id="sizingResults" style="font-size:.85rem;line-height:2"></div>
 </div>
 </div>
 </div>
 
+<!-- COMPARISON -->
+<div class="page" id="page-compare">
+<div class="page-header"><h2>Compare Metals</h2><div class="sub">Side-by-side comparison of selected metals</div></div>
+<div class="comparison-select">
+<select id="cmp1"><option value="">Select Metal 1</option></select>
+<select id="cmp2"><option value="">Select Metal 2</option></select>
+<select id="cmp3"><option value="">Select Metal 3</option></select>
+<button class="period-btn active" id="cmpBtn" onclick="renderComparison()">Compare</button>
 </div>
+<div class="grid">
+<div class="card full"><h3>Volatility Comparison</h3><div class="chart-box"><canvas id="cmpVolChart"></canvas></div></div>
+<div class="card full"><h3>Spread Comparison</h3><div class="chart-box"><canvas id="cmpSpreadChart"></canvas></div></div>
+<div class="card full"><h3>Side-by-Side Details</h3><div class="table-scroll"><table><thead><tr><th>Metric</th><th id="cmpH1">-</th><th id="cmpH2">-</th><th id="cmpH3">-</th></tr></thead><tbody id="cmpTable"></tbody></table></div></div>
+</div>
+</div>
+
+<!-- REPORTS / EXPORT -->
+<div class="page" id="page-reports">
+<div class="page-header"><h2>Export Reports</h2><div class="sub">Generate PDF/CSV reports for client sharing</div></div>
+<div class="grid grid-3">
+<div class="card" style="text-align:center;padding:32px"><h3>Volatility Report</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">All volatility data + rankings + time series</p><button class="export-btn" onclick="exportCSV('volatility')">Export CSV</button></div>
+<div class="card" style="text-align:center;padding:32px"><h3>Spread Analysis</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">Spread ranges, intraday patterns, by exchange</p><button class="export-btn" onclick="exportCSV('spreads')">Export CSV</button></div>
+<div class="card" style="text-align:center;padding:32px"><h3>Correlation Matrix</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">Metal-to-metal correlation coefficients</p><button class="export-btn" onclick="exportCSV('correlation')">Export CSV</button></div>
+<div class="card" style="text-align:center;padding:32px"><h3>Warehouse Stocks</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">LME/SHFE inventory levels and changes</p><button class="export-btn" onclick="exportCSV('warehouses')">Export CSV</button></div>
+<div class="card" style="text-align:center;padding:32px"><h3>Forward Curves</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">Term structure, contango/backwardation</p><button class="export-btn" onclick="exportCSV('fwdcurve')">Export CSV</button></div>
+<div class="card" style="text-align:center;padding:32px"><h3>ESG Scores</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">Environmental, social, governance ratings</p><button class="export-btn" onclick="exportCSV('esg')">Export CSV</button></div>
+<div class="card" style="text-align:center;padding:32px"><h3>Supply & Demand</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">Production, recycling, consumption, balance</p><button class="export-btn" onclick="exportCSV('supplydemand')">Export CSV</button></div>
+<div class="card" style="text-align:center;padding:32px"><h3>Full Dashboard Dump</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">All data across every section</p><button class="export-btn" onclick="exportCSV('all')">Export All CSV</button></div>
+<div class="card" style="text-align:center;padding:32px"><h3>Printable Summary</h3><p style="font-size:.75rem;color:var(--m);margin:12px 0">Browser print to PDF (summary view)</p><button class="export-btn" onclick="window.print()">Print / PDF</button></div>
+</div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+<div class="overlay" id="overlay" onclick="closeCustomize()"></div>
+<div class="dashboard-customize" id="customizePanel">
+<h3>Customize Dashboard</h3>
+<p style="font-size:.75rem;color:var(--m);margin-bottom:16px">Toggle widgets on/off for the Overview page</p>
+<div id="widgetToggles"></div>
+<button class="period-btn active" onclick="closeCustomize()" style="margin-top:16px;width:100%">Done</button>
 </div>
 
 <script>
-const METALS = [
-  {sym:"XAU",name:"Gold",cat:"precious",vol:13.8,range:"0.8-1.2%",vol24:"$80B+",ba:"0.1-0.3%",exchange:"LBMA/COMEX"},
-  {sym:"XAG",name:"Silver",cat:"precious",vol:25.4,range:"1.5-2.5%",vol24:"$5B+",ba:"0.2-0.5%",exchange:"LBMA/COMEX"},
-  {sym:"XPT",name:"Platinum",cat:"precious",vol:21.8,range:"1.2-1.8%",vol24:"$1B+",ba:"0.3-0.6%",exchange:"LBMA/NYMEX"},
-  {sym:"XPD",name:"Palladium",cat:"precious",vol:32.8,range:"2.0-3.0%",vol24:"$800M+",ba:"0.4-0.8%",exchange:"LBMA/NYMEX"},
-  {sym:"RHO",name:"Rhodium",cat:"precious",vol:41.5,range:"3-5%",vol24:"$50M+",ba:"1-3%",exchange:"OTC"},
-  {sym:"HG",name:"Copper",cat:"base",vol:18.6,range:"0.8-1.2%",vol24:"$20B+",ba:"0.1-0.3%",exchange:"LME/COMEX"},
-  {sym:"AL",name:"Aluminum",cat:"base",vol:16.4,range:"0.6-1.0%",vol24:"$15B+",ba:"0.15-0.4%",exchange:"LME/SHFE"},
-  {sym:"ZS",name:"Zinc",cat:"base",vol:19.5,range:"0.9-1.4%",vol24:"$8B+",ba:"0.2-0.5%",exchange:"LME/SHFE"},
-  {sym:"NI",name:"Nickel",cat:"base",vol:24.1,range:"1.2-2.0%",vol24:"$6B+",ba:"0.3-0.7%",exchange:"LME/SHFE"},
-  {sym:"SN",name:"Tin",cat:"base",vol:17.9,range:"1.0-1.5%",vol24:"$3B+",ba:"0.2-0.5%",exchange:"LME/SHFE"},
-  {sym:"PB",name:"Lead",cat:"base",vol:16.8,range:"0.7-1.1%",vol24:"$4B+",ba:"0.2-0.4%",exchange:"LME/SHFE"},
-  {sym:"COB",name:"Cobalt",cat:"industrial",vol:30.8,range:"2-4%",vol24:"$200M+",ba:"0.5-1.5%",exchange:"LME"},
-  {sym:"LIT",name:"Lithium",cat:"industrial",vol:44.8,range:"3-5%",vol24:"$500M+",ba:"0.8-2%",exchange:"CME"},
-  {sym:"MOL",name:"Molybdenum",cat:"industrial",vol:21.5,range:"1.5-2.5%",vol24:"$300M+",ba:"0.5-1%",exchange:"LME"},
-  {sym:"WOL",name:"Tungsten",cat:"industrial",vol:23.1,range:"2-3%",vol24:"$150M+",ba:"0.8-1.5%",exchange:"LME"},
-  {sym:"VAN",name:"Vanadium",cat:"industrial",vol:26.4,range:"2-4%",vol24:"$100M+",ba:"1-2%",exchange:"LME"},
-  {sym:"NDP",name:"NdPr Oxide",cat:"rare",vol:28.6,range:"2-4%",vol24:"$200M+",ba:"1-2%",exchange:"Shanghai"},
-  {sym:"TER",name:"Terbium",cat:"rare",vol:25.3,range:"2-3%",vol24:"$100M+",ba:"1.5-3%",exchange:"Shanghai"},
-  {sym:"DYS",name:"Dysprosium",cat:"rare",vol:24.5,range:"2-3%",vol24:"$150M+",ba:"1-2%",exchange:"Shanghai"},
-  {sym:"IND",name:"Indium",cat:"rare",vol:24.0,range:"1.5-2.5%",vol24:"$50M+",ba:"1-2%",exchange:"LME"},
-  {sym:"GAL",name:"Gallium",cat:"rare",vol:21.4,range:"1.5-2%",vol24:"$30M+",ba:"1-2%",exchange:"LME"},
-  {sym:"GER",name:"Germanium",cat:"rare",vol:20.2,range:"1-2%",vol24:"$40M+",ba:"1-1.5%",exchange:"LME"},
-  {sym:"TEL",name:"Tellurium",cat:"rare",vol:27.1,range:"2-4%",vol24:"$20M+",ba:"2-4%",exchange:"OTC"},
-  {sym:"SEL",name:"Selenium",cat:"rare",vol:25.3,range:"2-3%",vol24:"$25M+",ba:"2-3%",exchange:"OTC"},
-  {sym:"BIS",name:"Bismuth",cat:"rare",vol:16.1,range:"1-2%",vol24:"$15M+",ba:"1.5-3%",exchange:"OTC"}
+const METALS=[
+{sym:"XAU",name:"Gold",cat:"precious",vol:{m1:11.2,m3:12.5,m6:13.1,y1:13.8,y2:14.2,y5:15.1},range:"0.8-1.2%",vol24:"$80B+",ba:"0.1-0.3%",exchange:"LBMA/COMEX",price:2345.80,unit:"$/oz"},
+{sym:"XAG",name:"Silver",cat:"precious",vol:{m1:28.5,m3:26.8,m6:25.9,y1:25.4,y2:26.1,y5:27.3},range:"1.5-2.5%",vol24:"$5B+",ba:"0.2-0.5%",exchange:"LBMA/COMEX",price:29.45,unit:"$/oz"},
+{sym:"XPT",name:"Platinum",cat:"precious",vol:{m1:24.2,m3:22.8,m6:22.1,y1:21.8,y2:22.5,y5:23.4},range:"1.2-1.8%",vol24:"$1B+",ba:"0.3-0.6%",exchange:"LBMA/NYMEX",price:1012.50,unit:"$/oz"},
+{sym:"XPD",name:"Palladium",cat:"precious",vol:{m1:38.5,m3:35.2,m6:33.8,y1:32.8,y2:34.1,y5:36.2},range:"2.0-3.0%",vol24:"$800M+",ba:"0.4-0.8%",exchange:"LBMA/NYMEX",price:985.20,unit:"$/oz"},
+{sym:"RHO",name:"Rhodium",cat:"precious",vol:{m1:48.2,m3:44.5,m6:42.8,y1:41.5,y2:43.2,y5:45.8},range:"3-5%",vol24:"$50M+",ba:"1-3%",exchange:"OTC",price:4525.00,unit:"$/oz"},
+{sym:"HG",name:"Copper",cat:"base",vol:{m1:20.8,m3:19.5,m6:19.0,y1:18.6,y2:19.2,y5:20.1},range:"0.8-1.2%",vol24:"$20B+",ba:"0.1-0.3%",exchange:"LME/COMEX",price:4.18,unit:"$/lb"},
+{sym:"AL",name:"Aluminum",cat:"base",vol:{m1:18.2,m3:17.1,m6:16.7,y1:16.4,y2:16.8,y5:17.5},range:"0.6-1.0%",vol24:"$15B+",ba:"0.15-0.4%",exchange:"LME/SHFE",price:2380,unit:"$/t"},
+{sym:"ZS",name:"Zinc",cat:"base",vol:{m1:21.8,m3:20.5,m6:19.9,y1:19.5,y2:20.1,y5:21.2},range:"0.9-1.4%",vol24:"$8B+",ba:"0.2-0.5%",exchange:"LME/SHFE",price:2750,unit:"$/t"},
+{sym:"NI",name:"Nickel",cat:"base",vol:{m1:28.5,m3:26.2,m6:25.0,y1:24.1,y2:25.3,y5:27.8},range:"1.2-2.0%",vol24:"$6B+",ba:"0.3-0.7%",exchange:"LME/SHFE",price:17850,unit:"$/t"},
+{sym:"SN",name:"Tin",cat:"base",vol:{m1:19.8,m3:18.8,m6:18.2,y1:17.9,y2:18.4,y5:19.2},range:"1.0-1.5%",vol24:"$3B+",ba:"0.2-0.5%",exchange:"LME/SHFE",price:32150,unit:"$/t"},
+{sym:"PB",name:"Lead",cat:"base",vol:{m1:18.5,m3:17.5,m6:17.0,y1:16.8,y2:17.2,y5:18.1},range:"0.7-1.1%",vol24:"$4B+",ba:"0.2-0.4%",exchange:"LME/SHFE",price:2150,unit:"$/t"},
+{sym:"COB",name:"Cobalt",cat:"industrial",vol:{m1:35.2,m3:32.8,m6:31.5,y1:30.8,y2:32.1,y5:34.5},range:"2-4%",vol24:"$200M+",ba:"0.5-1.5%",exchange:"LME",price:32500,unit:"$/t"},
+{sym:"LIT",name:"Lithium",cat:"industrial",vol:{m1:52.5,m3:48.2,m6:46.5,y1:44.8,y2:47.2,y5:52.8},range:"3-5%",vol24:"$500M+",ba:"0.8-2%",exchange:"CME",price:13200,unit:"$/t"},
+{sym:"MOL",name:"Molybdenum",cat:"industrial",vol:{m1:23.8,m3:22.5,m6:21.8,y1:21.5,y2:22.1,y5:23.5},range:"1.5-2.5%",vol24:"$300M+",ba:"0.5-1%",exchange:"LME",price:42800,unit:"$/t"},
+{sym:"WOL",name:"Tungsten",cat:"industrial",vol:{m1:25.5,m3:24.2,m6:23.5,y1:23.1,y2:23.8,y5:25.2},range:"2-3%",vol24:"$150M+",ba:"0.8-1.5%",exchange:"LME",price:365,unit:"$/mtu"},
+{sym:"VAN",name:"Vanadium",cat:"industrial",vol:{m1:29.8,m3:27.8,m6:27.0,y1:26.4,y2:27.5,y5:29.2},range:"2-4%",vol24:"$100M+",ba:"1-2%",exchange:"LME",price:26.50,unit:"$/kg"},
+{sym:"NDP",name:"NdPr Oxide",cat:"rare",vol:{m1:32.5,m3:30.2,m6:29.2,y1:28.6,y2:29.8,y5:32.1},range:"2-4%",vol24:"$200M+",ba:"1-2%",exchange:"Shanghai",price:68.50,unit:"¥/kg"},
+{sym:"TER",name:"Terbium",cat:"rare",vol:{m1:28.2,m3:26.5,m6:25.8,y1:25.3,y2:26.1,y5:28.5},range:"2-3%",vol24:"$100M+",ba:"1.5-3%",exchange:"Shanghai",price:895,unit:"¥/kg"},
+{sym:"DYS",name:"Dysprosium",cat:"rare",vol:{m1:27.2,m3:25.8,m6:25.0,y1:24.5,y2:25.2,y5:27.1},range:"2-3%",vol24:"$150M+",ba:"1-2%",exchange:"Shanghai",price:215,unit:"¥/kg"},
+{sym:"IND",name:"Indium",cat:"rare",vol:{m1:26.8,m3:25.2,m6:24.5,y1:24.0,y2:24.8,y5:26.5},range:"1.5-2.5%",vol24:"$50M+",ba:"1-2%",exchange:"LME",price:310,unit:"$/kg"},
+{sym:"GAL",name:"Gallium",cat:"rare",vol:{m1:23.5,m3:22.2,m6:21.8,y1:21.4,y2:22.1,y5:23.8},range:"1.5-2%",vol24:"$30M+",ba:"1-2%",exchange:"LME",price:580,unit:"$/kg"},
+{sym:"GER",name:"Germanium",cat:"rare",vol:{m1:22.2,m3:21.0,m6:20.5,y1:20.2,y2:20.8,y5:22.1},range:"1-2%",vol24:"$40M+",ba:"1-1.5%",exchange:"LME",price:1650,unit:"$/kg"},
+{sym:"TEL",name:"Tellurium",cat:"rare",vol:{m1:30.5,m3:28.8,m6:27.8,y1:27.1,y2:28.2,y5:30.8},range:"2-4%",vol24:"$20M+",ba:"2-4%",exchange:"OTC",price:72,unit:"$/lb"},
+{sym:"SEL",name:"Selenium",cat:"rare",vol:{m1:28.2,m3:26.5,m6:25.8,y1:25.3,y2:26.2,y5:28.5},range:"2-3%",vol24:"$25M+",ba:"2-3%",exchange:"OTC",price:28,unit:"$/lb"},
+{sym:"BIS",name:"Bismuth",cat:"rare",vol:{m1:17.8,m3:16.8,m6:16.4,y1:16.1,y2:16.5,y5:17.2},range:"1-2%",vol24:"$15M+",ba:"1.5-3%",exchange:"OTC",price:8.50,unit:"$/lb"}
 ];
 
-const SPREADS = {
-  XAU:[{ex:"LBMA",t:0.8,n:1.5,w:3.2},{ex:"COMEX",t:0.5,n:1.2,w:2.8},{ex:"SHFE",t:1.2,n:2.5,w:5.0}],
-  XAG:[{ex:"LBMA",t:2.5,n:5.0,w:12.0},{ex:"COMEX",t:1.8,n:3.5,w:8.0}],
-  HG:[{ex:"COMEX",t:0.8,n:1.5,w:3.5},{ex:"LME",t:1.0,n:2.0,w:4.5}],
-  AL:[{ex:"LME",t:1.2,n:2.5,w:5.0}],
-  NI:[{ex:"LME",t:2.0,n:4.0,w:9.0},{ex:"SHFE",t:2.5,n:5.0,w:12.0}],
-  ZS:[{ex:"LME",t:1.5,n:3.0,w:6.5}],
-  XPT:[{ex:"LBMA",t:3.0,n:6.0,w:14.0}],
-  XPD:[{ex:"LBMA",t:4.0,n:8.0,w:18.0}],
-  COB:[{ex:"LME",t:5.0,n:10.0,w:25.0}],
-  LIT:[{ex:"CME",t:8.0,n:15.0,w:35.0}]
+let currentPeriod='y1';
+const PERIODS={m1:'1 Month',m3:'3 Months',m6:'6 Months',y1:'1 Year',y2:'2 Years',y5:'5 Years'};
+
+const SPREADS={
+XAU:[{ex:"LBMA",t:0.8,n:1.5,w:3.2},{ex:"COMEX",t:0.5,n:1.2,w:2.8},{ex:"SHFE",t:1.2,n:2.5,w:5.0}],
+XAG:[{ex:"LBMA",t:2.5,n:5.0,w:12.0},{ex:"COMEX",t:1.8,n:3.5,w:8.0}],
+HG:[{ex:"COMEX",t:0.8,n:1.5,w:3.5},{ex:"LME",t:1.0,n:2.0,w:4.5}],
+AL:[{ex:"LME",t:1.2,n:2.5,w:5.0}],
+NI:[{ex:"LME",t:2.0,n:4.0,w:9.0},{ex:"SHFE",t:2.5,n:5.0,w:12.0}],
+ZS:[{ex:"LME",t:1.5,n:3.0,w:6.5}],
+XPT:[{ex:"LBMA",t:3.0,n:6.0,w:14.0}],
+XPD:[{ex:"LBMA",t:4.0,n:8.0,w:18.0}],
+COB:[{ex:"LME",t:5.0,n:10.0,w:25.0}],
+LIT:[{ex:"CME",t:8.0,n:15.0,w:35.0}]
 };
 
-const EXCHANGES = [
-  {id:"lbma",name:"LBMA",city:"London",open:8,close:16.5,peak:[10,15],color:"#ffd700"},
-  {id:"comex",name:"COMEX",city:"New York",open:6,close:17,peak:[9,14],color:"#e87d4f"},
-  {id:"lme",name:"LME",city:"London",open:8,close:20,peak:[10,16],color:"#58a6ff"},
-  {id:"shfe",name:"SHFE",city:"Shanghai",open:9,close:15.5,peak:[10,14],color:"#f85149"},
-  {id:"mcx",name:"MCX",city:"Mumbai",open:9,close:23.5,peak:[11,21],color:"#bc8cff"},
-  {id:"sgx",name:"SGX",city:"Singapore",open:8,close:19,peak:[9,17],color:"#39d2c0"}
+const EXCHANGES=[
+{id:"lbma",name:"LBMA",city:"London",open:8,close:16.5,peak:[10,15],color:"#ffd700"},
+{id:"comex",name:"COMEX",city:"New York",open:6,close:17,peak:[9,14],color:"#e87d4f"},
+{id:"lme",name:"LME",city:"London",open:8,close:20,peak:[10,16],color:"#58a6ff"},
+{id:"shfe",name:"SHFE",city:"Shanghai",open:9,close:15.5,peak:[10,14],color:"#f85149"},
+{id:"mcx",name:"MCX",city:"Mumbai",open:9,close:23.5,peak:[11,21],color:"#bc8cff"},
+{id:"sgx",name:"SGX",city:"Singapore",open:8,close:19,peak:[9,17],color:"#39d2c0"}
 ];
 
-const OVERLAPS = [
-  {name:"London ↔ New York",win:"10:00-15:00",dur:5,spread:"0.5-1.5 bps",metals:"Gold, Silver, Platinum"},
-  {name:"LME ↔ Shanghai",win:"09:00-15:30",dur:6.5,spread:"1.5-3 bps",metals:"Cu, Al, Zn, Ni"},
-  {name:"COMEX ↔ Shanghai",win:"06:00-09:00",dur:3,spread:"2-4 bps",metals:"Copper, Gold"},
-  {name:"LBMA ↔ LME",win:"08:00-16:30",dur:8.5,spread:"0.8-2 bps",metals:"All"},
-  {name:"LBMA ↔ Mumbai",win:"08:00-16:30",dur:8.5,spread:"3-5 bps",metals:"Gold, Silver"},
-  {name:"SGX ↔ LME",win:"08:00-16:00",dur:8,spread:"2-4 bps",metals:"Nickel, Iron Ore"}
+const OVERLAPS=[
+{name:"London ↔ New York",win:"10:00-15:00",dur:5,spread:"0.5-1.5 bps",metals:"Gold, Silver, Platinum"},
+{name:"LME ↔ Shanghai",win:"09:00-15:30",dur:6.5,spread:"1.5-3 bps",metals:"Cu, Al, Zn, Ni"},
+{name:"COMEX ↔ Shanghai",win:"06:00-09:00",dur:3,spread:"2-4 bps",metals:"Copper, Gold"},
+{name:"LBMA ↔ LME",win:"08:00-16:30",dur:8.5,spread:"0.8-2 bps",metals:"All"},
+{name:"LBMA ↔ Mumbai",win:"08:00-16:30",dur:8.5,spread:"3-5 bps",metals:"Gold, Silver"},
+{name:"SGX ↔ LME",win:"08:00-16:00",dur:8,spread:"2-4 bps",metals:"Nickel, Iron Ore"}
 ];
 
-const FEES = [
-  {ex:"LBMA",cur:"USD",trad:"0.03%",clear:"$1.00/oz",comm:"$1.00/oz",spread:1.5,total:3.5,fxRisk:"low"},
-  {ex:"COMEX",cur:"USD",trad:"$2.00/ct",clear:"$1.20/ct",comm:"$1.00/ct",spread:1.2,total:3.4,fxRisk:"low"},
-  {ex:"LME",cur:"USD",trad:"$0.50/ton",clear:"$0.25/ton",comm:"$0.50/ton",spread:2.0,total:2.75,fxRisk:"low"},
-  {ex:"SHFE",cur:"CNY",trad:"0.01%",clear:"0.005%",comm:"0.01%",spread:2.5,total:6.25,fxRisk:"high"},
-  {ex:"MCX",cur:"INR",trad:"₹25/lot",clear:"₹5/lot",comm:"₹10/lot",spread:3.5,total:9.0,fxRisk:"high"},
-  {ex:"SGX",cur:"USD",trad:"$0.80/ct",clear:"$0.50/ct",comm:"$0.50/ct",spread:1.5,total:3.25,fxRisk:"low"}
+const FEES=[
+{ex:"LBMA",cur:"USD",trad:"0.03%",clear:"$1.00/oz",comm:"$1.00/oz",spread:1.5,total:3.5,fxRisk:"low"},
+{ex:"COMEX",cur:"USD",trad:"$2.00/ct",clear:"$1.20/ct",comm:"$1.00/ct",spread:1.2,total:3.4,fxRisk:"low"},
+{ex:"LME",cur:"USD",trad:"$0.50/ton",clear:"$0.25/ton",comm:"$0.50/ton",spread:2.0,total:2.75,fxRisk:"low"},
+{ex:"SHFE",cur:"CNY",trad:"0.01%",clear:"0.005%",comm:"0.01%",spread:2.5,total:6.25,fxRisk:"high"},
+{ex:"MCX",cur:"INR",trad:"₹25/lot",clear:"₹5/lot",comm:"₹10/lot",spread:3.5,total:9.0,fxRisk:"high"},
+{ex:"SGX",cur:"USD",trad:"$0.80/ct",clear:"$0.50/ct",comm:"$0.50/ct",spread:1.5,total:3.25,fxRisk:"low"}
 ];
 
-const FX_DATA = [
-  {cur:"USD",vol:8,hedge:"0.5-1.0%",impact:"Low"},
-  {cur:"CNY",vol:15,hedge:"2.0-4.0%",impact:"High — 5-10% erode"},
-  {cur:"INR",vol:22,hedge:"3.0-6.0%",impact:"Very high — significant"},
-  {cur:"EUR",vol:10,hedge:"0.8-1.5%",impact:"Moderate"},
-  {cur:"JPY",vol:12,hedge:"1.0-2.0%",impact:"Moderate"}
+const FX_DATA=[
+{cur:"USD",vol:8,hedge:"0.5-1.0%",impact:"Low"},
+{cur:"CNY",vol:15,hedge:"2.0-4.0%",impact:"High — 5-10% erode"},
+{cur:"INR",vol:22,hedge:"3.0-6.0%",impact:"Very high — significant"},
+{cur:"EUR",vol:10,hedge:"0.8-1.5%",impact:"Moderate"},
+{cur:"JPY",vol:12,hedge:"1.0-2.0%",impact:"Moderate"}
 ];
 
-const RFQ = [
-  {name:"Traxys",type:"Physical Trader",min:"$500K-$2M",settle:"T+2",metals:"Co, Li, REE, W, Ta",spread:"5-15 bps"},
-  {name:"Trafigura",type:"Physical Trader",min:"$1M-$5M",settle:"T+2",metals:"Cu, Ni, Co, Li",spread:"3-10 bps"},
-  {name:"Glencore",type:"Physical Trader",min:"$1M-$10M",settle:"T+2",metals:"Cu, Zn, Ni, Co, Ag",spread:"2-8 bps"},
-  {name:"Marex",type:"Broker",min:"$100K-$500K",settle:"T+2",metals:"Cu, Al, Zn, Ni, Au",spread:"1-5 bps"},
-  {name:"INTL FCStone",type:"Broker/Dealer",min:"$50K-$250K",settle:"T+2",metals:"Au, Ag, Cu, Al",spread:"1-4 bps"},
-  {name:"MKS PAMP",type:"Bullion",min:"$100K-$1M",settle:"T+2",metals:"Au, Ag, Pt, Pd",spread:"0.5-2 bps"},
-  {name:"Goldberg",type:"Specialty",min:"$50K-$500K",settle:"T+2-T+30",metals:"NdPr, Ter, Dy, W",spread:"10-30 bps"},
-  {name:"LME",type:"Exchange",min:"1 lot (25t)",settle:"T+2",metals:"Cu, Al, Zn, Ni, Co",spread:"1-3 bps"},
-  {name:"COMEX",type:"Exchange",min:"1 contract",settle:"Physical",metals:"Au, Ag, Cu, Pt",spread:"0.5-2 bps"},
-  {name:"SHFE",type:"Exchange",min:"1 lot",settle:"Physical",metals:"Au, Ag, Cu, Al",spread:"1-3 bps"},
-  {name:"LBMA",type:"Association",min:"400 oz Au",settle:"T+2",metals:"Au, Ag",spread:"0.5-1.5 bps"},
-  {name:"CME Li",type:"Exchange",min:"1 contract",settle:"Cash",metals:"Li",spread:"5-15 bps"}
+const RFQ=[
+{name:"Traxys",type:"Physical Trader",min:"$500K-$2M",settle:"T+2",metals:"Co, Li, REE, W, Ta",spread:"5-15 bps"},
+{name:"Trafigura",type:"Physical Trader",min:"$1M-$5M",settle:"T+2",metals:"Cu, Ni, Co, Li",spread:"3-10 bps"},
+{name:"Glencore",type:"Physical Trader",min:"$1M-$10M",settle:"T+2",metals:"Cu, Zn, Ni, Co, Ag",spread:"2-8 bps"},
+{name:"Marex",type:"Broker",min:"$100K-$500K",settle:"T+2",metals:"Cu, Al, Zn, Ni, Au",spread:"1-5 bps"},
+{name:"INTL FCStone",type:"Broker/Dealer",min:"$50K-$250K",settle:"T+2",metals:"Au, Ag, Cu, Al",spread:"1-4 bps"},
+{name:"MKS PAMP",type:"Bullion",min:"$100K-$1M",settle:"T+2",metals:"Au, Ag, Pt, Pd",spread:"0.5-2 bps"},
+{name:"Goldberg",type:"Specialty",min:"$50K-$500K",settle:"T+2-T+30",metals:"NdPr, Ter, Dy, W",spread:"10-30 bps"},
+{name:"LME",type:"Exchange",min:"1 lot (25t)",settle:"T+2",metals:"Cu, Al, Zn, Ni, Co",spread:"1-3 bps"},
+{name:"COMEX",type:"Exchange",min:"1 contract",settle:"Physical",metals:"Au, Ag, Cu, Pt",spread:"0.5-2 bps"},
+{name:"SHFE",type:"Exchange",min:"1 lot",settle:"Physical",metals:"Au, Ag, Cu, Al",spread:"1-3 bps"},
+{name:"LBMA",type:"Association",min:"400 oz Au",settle:"T+2",metals:"Au, Ag",spread:"0.5-1.5 bps"},
+{name:"CME Li",type:"Exchange",min:"1 contract",settle:"Cash",metals:"Li",spread:"5-15 bps"}
 ];
 
-const TACTICS = [
-  {t:"Trade During Overlap",d:"10:00-15:00 UTC. 30-50% spread reduction.",impact:"high"},
-  {t:"Use Limit Orders",d:"Passive execution captures 50-80% of spread.",impact:"high"},
-  {t:"Monitor Vol Regime",d:"Avoid FOMC/NFP. Spreads blow out 3-5x.",impact:"high"},
-  {t:"Use RFQ for Illiquids",d:"40-60% spread reduction for REE/Co/Li.",impact:"high"},
-  {t:"Avoid Thin Hours",d:"21:00-06:00 UTC. 2-3x wider spreads.",impact:"med"},
-  {t:"Choose Right Exchange",d:"COMEX/LBMA for precious. LME for base.",impact:"med"},
-  {t:"Batch Orders",d:"Block trades negotiate 20-40% tighter.",impact:"med"},
-  {t:"Time Settlement",d:"T+2 vs physical affects capital efficiency.",impact:"low"}
+const TACTICS=[
+{t:"Trade During Overlap",d:"10:00-15:00 UTC. 30-50% spread reduction.",impact:"high"},
+{t:"Use Limit Orders",d:"Passive execution captures 50-80% of spread.",impact:"high"},
+{t:"Monitor Vol Regime",d:"Avoid FOMC/NFP. Spreads blow out 3-5x.",impact:"high"},
+{t:"Use RFQ for Illiquids",d:"40-60% spread reduction for REE/Co/Li.",impact:"high"},
+{t:"Avoid Thin Hours",d:"21:00-06:00 UTC. 2-3x wider spreads.",impact:"med"},
+{t:"Choose Right Exchange",d:"COMEX/LBMA for precious. LME for base.",impact:"med"},
+{t:"Batch Orders",d:"Block trades negotiate 20-40% tighter.",impact:"med"},
+{t:"Time Settlement",d:"T+2 vs physical affects capital efficiency.",impact:"low"}
+];
+
+const CORR_MATRIX={
+XAU:{XAU:1,XAG:0.82,XPT:0.65,XPD:0.48,HG:0.32,AL:0.28,NI:0.25,LIT:0.18,COB:0.15,NDP:0.22},
+XAG:{XAU:0.82,XAG:1,XPT:0.71,XPD:0.55,HG:0.45,AL:0.38,NI:0.35,LIT:0.28,COB:0.22,NDP:0.30},
+XPT:{XAU:0.65,XAG:0.71,XPT:1,XPD:0.88,HG:0.42,AL:0.35,NI:0.40,LIT:0.25,COB:0.20,NDP:0.28},
+XPD:{XAU:0.48,XAG:0.55,XPT:0.88,XPD:1,HG:0.30,AL:0.22,NI:0.35,LIT:0.15,COB:0.12,NDP:0.18},
+HG:{XAU:0.32,XAG:0.45,XPT:0.42,XPD:0.30,HG:1,AL:0.72,NI:0.68,LIT:0.55,COB:0.48,NDP:0.40},
+AL:{XAU:0.28,XAG:0.38,XPT:0.35,XPD:0.22,HG:0.72,AL:1,NI:0.65,LIT:0.48,COB:0.42,NDP:0.35},
+NI:{XAU:0.25,XAG:0.35,XPT:0.40,XPD:0.35,HG:0.68,AL:0.65,NI:1,LIT:0.62,COB:0.58,NDP:0.45},
+LIT:{XAU:0.18,XAG:0.28,XPT:0.25,XPD:0.15,HG:0.55,AL:0.48,NI:0.62,LIT:1,COB:0.78,NDP:0.72},
+COB:{XAU:0.15,XAG:0.22,XPT:0.20,XPD:0.12,HG:0.48,AL:0.42,NI:0.58,LIT:0.78,COB:1,NDP:0.65},
+NDP:{XAU:0.22,XAG:0.30,XPT:0.28,XPD:0.18,HG:0.40,AL:0.35,NI:0.45,LIT:0.72,COB:0.65,NDP:1}
+};
+
+const MONTHLY_RETURNS={
+XAU:[0.8,1.2,-0.5,1.5,2.1,-1.8,0.3,-1.2,1.8,0.9,1.4,2.5],
+XAG:[1.2,1.8,-1.2,2.1,3.2,-2.5,0.8,-1.8,2.5,1.2,1.8,3.2],
+XPT:[0.6,0.9,-0.8,1.2,1.8,-2.1,0.5,-1.5,1.5,0.8,1.1,2.0],
+HG:[0.9,1.1,-0.6,1.8,2.5,-2.2,0.4,-0.8,1.2,1.5,0.8,1.5],
+AL:[0.5,0.8,-0.4,1.1,1.5,-1.2,0.3,-0.5,0.9,1.2,0.6,1.0],
+NI:[1.1,1.5,-1.0,2.2,2.8,-2.8,0.6,-1.5,2.0,1.8,1.2,2.2],
+LIT:[2.5,3.2,-2.8,3.5,4.2,-4.5,1.2,-2.8,3.8,2.5,2.8,4.5],
+COB:[1.8,2.2,-2.0,2.5,3.0,-3.2,0.8,-2.0,2.8,2.0,1.8,2.8]
+};
+
+const FWD_CURVES={
+XAU:{spot:2345.80,fwd:[{m:1,p:2351.20},{m:3,p:2362.40},{m:6,p:2380.50},{m:12,p:2415.80}]},
+XAG:{spot:29.45,fwd:[{m:1,p:29.62},{m:3,p:29.98},{m:6,p:30.55},{m:12,p:31.45}]},
+XPT:{spot:1012.50,fwd:[{m:1,p:1015.80},{m:3,p:1022.50},{m:6,p:1035.20},{m:12,p:1058.40}]},
+XPD:{spot:985.20,fwd:[{m:1,p:980.50},{m:3,p:971.20},{m:6,p:955.80},{m:12,p:928.40}]},
+HG:{spot:4.18,fwd:[{m:1,p:4.19},{m:3,p:4.22},{m:6,p:4.28},{m:12,p:4.38}]},
+AL:{spot:2380,fwd:[{m:1,p:2388},{m:3,p:2405},{m:6,p:2440},{m:12,p:2510}]},
+NI:{spot:17850,fwd:[{m:1,p:17920},{m:3,p:18080},{m:6,p:18420},{m:12,p:19100}]},
+LIT:{spot:13200,fwd:[{m:1,p:13050},{m:3,p:12750},{m:6,p:12200},{m:12,p:11500}]},
+COB:{spot:32500,fwd:[{m:1,p:32300},{m:3,p:31800},{m:6,p:31000},{m:12,p:29500}]},
+NDP:{spot:68.50,fwd:[{m:1,p:67.80},{m:3,p:66.50},{m:6,p:64.20},{m:12,p:60.50}]}
+};
+
+const WAREHOUSE_STOCKS={
+lme:[
+{metal:"Cu",tonnes:145200,chg30:-5800,trend:"↓",days:12},
+{metal:"Al",tonnes:528500,chg30:12300,trend:"↑",days:8},
+{metal:"Zn",tonnes:78200,chg30:-3200,trend:"↓",days:10},
+{metal:"Ni",tonnes:98500,chg30:8500,trend:"↑",days:15},
+{metal:"Sn",tonnes:4850,chg30:-420,trend:"↓",days:18},
+{metal:"Pb",tonnes:42100,chg30:1800,trend:"↑",days:9}
+],
+shfe:[
+{metal:"Cu",tonnes:68500,chg30:-12500,trend:"↓↓",days:6},
+{metal:"Al",tonnes:185200,chg30:-18500,trend:"↓↓",days:4},
+{metal:"Zn",tonnes:52800,chg30:3200,trend:"↑",days:7},
+{metal:"Ni",tonnes:15200,chg30:-2800,trend:"↓",days:11},
+{metal:"Pb",tonnes:28500,chg30:1500,trend:"↑",days:5}
+]
+};
+
+const MACRO_SENS={
+XAU:{dxy:-0.65,yield:-0.42,cpi:0.58,wti:0.22,sp500:-0.12},
+XAG:{dxy:-0.55,yield:-0.35,cpi:0.52,wti:0.35,sp500:-0.08},
+HG:{dxy:-0.38,yield:0.15,cpi:0.28,wti:0.55,sp500:0.45},
+AL:{dxy:-0.32,yield:0.12,cpi:0.22,wti:0.42,sp500:0.38},
+NI:{dxy:-0.28,yield:0.08,cpi:0.18,wti:0.38,sp500:0.32},
+LIT:{dxy:-0.22,yield:-0.15,cpi:0.35,wti:0.18,sp500:0.48},
+COB:{dxy:-0.18,yield:-0.10,cpi:0.25,wti:0.15,sp500:0.35}
+};
+
+const SUPPLY_DEMAND=[
+{metal:"Gold",mine:3650,recycled:1250,total:4900,demand:4650,balance:250},
+{metal:"Silver",mine:26000,recycled:5800,total:31800,demand:35200,balance:-3400},
+{metal:"Platinum",mine:190,recycled:60,total:250,demand:245,balance:5},
+{metal:"Palladium",mine:210,recycled:85,total:295,demand:305,balance:-10},
+{metal:"Copper",mine:22000,recycled:8500,total:30500,demand:28500,balance:2000},
+{metal:"Aluminum",mine:70000,recycled:35000,total:105000,demand:102000,balance:3000},
+{metal:"Nickel",mine:3300,recycled:950,total:4250,demand:3800,balance:450},
+{metal:"Lithium",mine:180,recycled:25,total:205,demand:350,balance:-145},
+{metal:"Cobalt",mine:195,recycled:45,total:240,demand:185,balance:55},
+{metal:"Rare Earths",mine:350,recycled:45,total:395,demand:420,balance:-25}
+];
+
+const SENTIMENT_DATA=[
+{metal:"XAU",score:72,headlines:["Gold hits 3-month high on geopolitical tensions","Central banks continue gold buying spree","Fed rate pause expected to support gold prices"],trend:[65,68,70,72,74,73,72,75,72,70,73,72]},
+{metal:"XAG",score:68,headlines:["Silver rallies on industrial demand outlook","Solar panel production driving silver demand","Gold/Silver ratio narrows to 78"],trend:[62,65,68,70,72,68,65,68,70,66,68,68]},
+{metal:"XPT",score:55,headlines:["Platinum outlook mixed amid auto demand concerns","PGM supply deficit narrowing","Hydrogen economy potential boost for platinum"],trend:[50,52,55,58,56,54,52,55,57,53,55,55]},
+{metal:"XPD",score:48,headlines:["Palladium weakens on EV transition fears","Russian supply remains uncertain","Catalytic converter demand declining"],trend:[55,52,50,48,46,44,45,48,50,47,48,48]},
+{metal:"HG",score:75,headlines:["Copper surges on AI data center demand","Chile output drops 8% on water scarcity","Green energy transition supports copper"],trend:[68,70,72,74,76,78,75,73,75,77,74,75]},
+{metal:"LIT",score:42,headlines:["Lithium prices stabilize after deep correction","EV demand growth slows in China","New lithium projects face delays"],trend:[55,50,48,45,42,40,38,40,42,45,42,42]},
+{metal:"NDP",score:60,headlines:["China export controls tighten NdPr supply","US/EU push for supply chain diversification","NdPr prices firming on supply constraints"],trend:[55,58,60,62,60,58,55,58,60,62,60,60]}
+];
+
+const ESG_DATA=[
+{metal:"XAU",env:45,social:52,governance:68,overall:55,carbon:28,ethical:"Moderate",region:"Africa/LatAm"},
+{metal:"XAG",env:48,social:50,governance:65,overall:54,carbon:35,ethical:"Moderate",region:"Mexico/Peru"},
+{metal:"XPT",env:55,social:48,governance:70,overall:58,carbon:42,ethical:"Good",region:"South Africa"},
+{metal:"XPD",env:55,social:48,governance:70,overall:58,carbon:45,ethical:"Good",region:"South Africa/Russia"},
+{metal:"HG",env:38,social:42,governance:60,overall:47,carbon:55,ethical:"Moderate",region:"Chile/Peru/DR Congo"},
+{metal:"AL",env:30,social:45,governance:58,overall:44,carbon:160,ethical:"Concerns",region:"China/Russia/India"},
+{metal:"NI",env:35,social:38,governance:55,overall:43,carbon:85,ethical:"Concerns",region:"Indonesia/Philippines"},
+{metal:"LIT",env:42,social:40,governance:52,overall:45,carbon:22,ethical:"Moderate",region:"Chile/Australia/China"},
+{metal:"COB",env:28,social:25,governance:42,overall:32,carbon:48,ethical:"DRC 70% supply — concerns"},
+{metal:"NDP",env:32,social:30,governance:45,overall:36,carbon:32,ethical:"China 60% — export controls"}
+];
+
+const MACRO_EVENTS=[
+{date:"Jun 2026",event:"Fed signals rate pause",impact:"Gold +1.5%",metal:"XAU"},
+{date:"May 2026",event:"China PMI beats expectations",impact:"Copper +3.2%",metal:"HG"},
+{date:"May 2026",event:"DRC cobalt output surge",impact:"Cobalt -4.8%",metal:"COB"},
+{date:"Apr 2026",event:"US CPI comes in hot",impact:"Gold +2.1%",metal:"XAU"},
+{date:"Apr 2026",event:"SHFE aluminum drawdown",impact:"Aluminum +1.8%",metal:"AL"},
+{date:"Mar 2026",event:"EU REE import quotas",impact:"NdPr +5.2%",metal:"NDP"},
+{date:"Mar 2026",event:"Indonesia nickel export ban rumors",impact:"Nickel +6.8%",metal:"NI"}
+];
+
+let alerts=[
+{id:1,metal:"XAU",exchange:"COMEX",threshold:2.5,active:true,triggered:false},
+{id:2,metal:"HG",exchange:"LME",threshold:3.0,active:true,triggered:false},
+{id:3,metal:"NI",exchange:"LME",threshold:5.0,active:false,triggered:true}
+];
+let alertIdCounter=4;
+
+const OVERVIEW_WIDGETS=[
+{id:"ov-volatility",label:"Volatility Snapshot",defaultOn:true},
+{id:"ov-spreads",label:"Spread Ranges",defaultOn:true},
+{id:"ov-overlaps",label:"Top Overlaps",defaultOn:true},
+{id:"ov-fees",label:"Exchange Fees",defaultOn:true}
 ];
 
 function getSession(ex,h){
-  if(h>=ex.peak[0]&&h<=ex.peak[1])return'peak';
-  if(h>=ex.open&&h<=ex.close)return'high';
-  return'dead';
+if(h>=ex.peak[0]&&h<=ex.peak[1])return'peak';
+if(h>=ex.open&&h<=ex.close)return'high';
+return'dead';
+}
+
+const catColors={precious:'#ffd70088',base:'#e87d4f88',industrial:'#5f9ea088',rare:'#bc8cff88'};
+const catColorsSolid={precious:'#ffd700',base:'#e87d4f',industrial:'#5f9ea0',rare:'#bc8cff'};
+const catLabels={precious:'Precious',base:'Base',industrial:'Industrial',rare:'Rare Earths'};
+
+function corrColor(v){
+if(v>=0.8)return'background:rgba(63,185,80,.7);color:#fff';
+if(v>=0.6)return'background:rgba(63,185,80,.45);color:#fff';
+if(v>=0.4)return'background:rgba(63,185,80,.25);color:var(--t)';
+if(v>=0.2)return'background:rgba(210,153,34,.25);color:var(--t)';
+if(v>=0)return'background:rgba(210,153,34,.15);color:var(--m)';
+return'background:rgba(248,81,73,.25);color:var(--r)';
+}
+
+function renderTicker(){
+const track=document.getElementById('tickerTrack');
+const tickers=METALS.slice(0,12).map(m=>{
+const chg=(Math.random()*4-2).toFixed(2);
+const cls=parseFloat(chg)>=0?'ticker-up':'ticker-dn';
+const arrow=parseFloat(chg)>=0?'▲':'▼';
+return`<span class="ticker-item"><span class="ticker-sym">${m.sym}</span><span class="ticker-price">${m.price.toLocaleString()}</span><span class="ticker-chg ${cls}">${arrow}${chg}%</span></span>`;
+}).join('');
+track.innerHTML=tickers+tickers;
 }
 
 function renderOverview(){
-  new Chart(document.getElementById('overviewVol'),{
-    type:'bar',
-    data:{labels:METALS.slice(0,10).map(m=>m.sym),datasets:[{data:METALS.slice(0,10).map(m=>m.vol),backgroundColor:METALS.slice(0,10).map(m=>m.cat==='precious'?'#ffd70088':m.cat==='base'?'#e87d4f88':m.cat==='industrial'?'#5f9ea088':'#bc8cff88'),borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Vol %',color:'#8b949e'}}}}
-  });
+const stats=document.getElementById('overviewStats');
+stats.innerHTML=[
+{val:'25',label:'Metals Tracked',color:'var(--a)'},
+{val:'6',label:'Exchanges',color:'var(--g)'},
+{val:'12',label:'RFQ Providers',color:'var(--o)'},
+{val:'8',label:'Overlap Windows',color:'var(--p)'},
+{val:'$180B+',label:'24H Volume',color:'var(--c)'}
+].map(s=>`<div class="stat-box"><div class="stat-val" style="color:${s.color}">${s.val}</div><div class="stat-label">${s.label}</div></div>`).join('');
 
-  const spreadTbody=document.getElementById('overviewSpread');
-  let spreadRows=[];
-  Object.entries(SPREADS).forEach(([sym,data])=>{data.forEach(d=>{spreadRows.push({sym,n:d.n,t:d.t,w:d.w})})});
-  spreadRows.sort((a,b)=>a.n-b.n);
-  spreadTbody.innerHTML=spreadRows.slice(0,10).map(r=>`<tr><td>${r.sym}</td><td style="color:var(--g)">${r.t}</td><td>${r.n}</td><td style="color:var(--r)">${r.w}</td></tr>`).join('');
+new Chart(document.getElementById('overviewVol'),{
+type:'bar',
+data:{labels:METALS.slice(0,10).map(m=>m.sym),datasets:[{data:METALS.slice(0,10).map(m=>m.vol[currentPeriod]),backgroundColor:METALS.slice(0,10).map(m=>catColors[m.cat]),borderWidth:0}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Vol %',color:'#8b949e'}}}}
+});
 
-  document.getElementById('overviewOverlaps').innerHTML=OVERLAPS.slice(0,4).map(o=>`<div style="padding:6px 0;border-bottom:1px solid var(--b);font-size:.72rem"><div style="color:var(--a)">${o.name}</div><div style="color:var(--m)">${o.win} UTC · ${o.dur}h</div></div>`).join('');
+const spreadTbody=document.getElementById('overviewSpread');
+let spreadRows=[];
+Object.entries(SPREADS).forEach(([sym,data])=>{data.forEach(d=>{spreadRows.push({sym,n:d.n,t:d.t,w:d.w})})});
+spreadRows.sort((a,b)=>a.n-b.n);
+spreadTbody.innerHTML=spreadRows.slice(0,10).map(r=>`<tr><td>${r.sym}</td><td style="color:var(--g)">${r.t}</td><td>${r.n}</td><td style="color:var(--r)">${r.w}</td></tr>`).join('');
 
-  document.getElementById('overviewFees').innerHTML=FEES.map(f=>`<tr><td>${f.ex}</td><td>${f.spread} bps</td><td><strong>${f.total} bps</strong></td></tr>`).join('');
+document.getElementById('overviewOverlaps').innerHTML=OVERLAPS.slice(0,4).map(o=>`<div style="padding:6px 0;border-bottom:1px solid var(--b);font-size:.72rem"><div style="color:var(--a)">${o.name}</div><div style="color:var(--m)">${o.win} UTC · ${o.dur}h</div></div>`).join('');
+
+document.getElementById('overviewFees').innerHTML=FEES.map(f=>`<tr><td>${f.ex}</td><td>${f.spread} bps</td><td><strong>${f.total} bps</strong></td></tr>`).join('');
 }
 
 function renderVolatility(){
-  const sorted=[...METALS].sort((a,b)=>b.vol-a.vol);
-  document.getElementById('volRank').innerHTML=sorted.map((m,i)=>`<tr><td>${i+1}</td><td>${m.name}</td><td><strong>${m.vol}%</strong></td><td>${m.range}</td><td style="font-size:.65rem">${m.vol24}</td></tr>`).join('');
+document.getElementById('periodLabel').textContent=PERIODS[currentPeriod];
+const sorted=[...METALS].sort((a,b)=>b.vol[currentPeriod]-a.vol[currentPeriod]);
+document.getElementById('volRank').innerHTML=sorted.map((m,i)=>`<tr><td>${i+1}</td><td>${m.name}</td><td><strong>${m.vol[currentPeriod]}%</strong></td><td>${m.range}</td><td style="font-size:.65rem">${m.vol24}</td></tr>`).join('');
 
-  new Chart(document.getElementById('volCategory'),{
+const catVols={precious:0,base:0,industrial:0,rare:0};
+METALS.forEach(m=>{catVols[m.cat]+=m.vol[currentPeriod]});
+Object.keys(catVols).forEach(k=>{catVols[k]=catVols[k]/METALS.filter(m=>m.cat===k).length});
+
+const volCanvas=document.getElementById('volChart');
+if(volCanvas){
+  const existingChart=Chart.getChart(volCanvas);
+  if(existingChart)existingChart.destroy();
+  const topMetals=sorted.slice(0,10);
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  new Chart(volCanvas,{
+    type:'line',
+    data:{labels:months,datasets:topMetals.map((m,i)=>{
+      const baseVol=m.vol[currentPeriod];
+      const data=months.map((_,j)=>{const seasonal=Math.sin((j/12)*Math.PI*2)*baseVol*0.15;return parseFloat((baseVol+seasonal+(Math.random()-0.5)*baseVol*0.1).toFixed(1))});
+      return{label:m.name,data,borderColor:['#ffd700','#c0c0c0','#e5e4e2','#ced0ce','#d4af37','#e87d4f','#a8c4d8','#7eb8d1','#7a9bae','#b8c4d0'][i],fill:false,tension:.4,borderWidth:2,pointRadius:2};
+    })},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8b949e',usePointStyle:true,padding:12,font:{size:10}}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Realized Vol (%)',color:'#8b949e'}}}}
+  });
+}
+
+const catCanvas=document.getElementById('volCategory');
+if(catCanvas){
+  const existingChart=Chart.getChart(catCanvas);
+  if(existingChart)existingChart.destroy();
+  new Chart(catCanvas,{
     type:'doughnut',
-    data:{labels:['Precious','Base','Industrial','Rare Earths'],datasets:[{data:[METALS.filter(m=>m.cat==='precious').length,METALS.filter(m=>m.cat==='base').length,METALS.filter(m=>m.cat==='industrial').length,METALS.filter(m=>m.cat==='rare').length],backgroundColor:['#ffd70088','#e87d4f88','#5f9ea088','#bc8cff88']}]},
+    data:{labels:['Precious','Base','Industrial','Rare Earths'],datasets:[{data:[catVols.precious,catVols.base,catVols.industrial,catVols.rare],backgroundColor:['#ffd70088','#e87d4f88','#5f9ea088','#bc8cff88']}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b949e'}}}}
   });
 }
+}
 
 function renderSpreads(){
-  let rows=[];
-  Object.entries(SPREADS).forEach(([sym,data])=>{data.forEach(d=>{rows.push({sym,ex:d.ex,t:d.t,n:d.n,w:d.w,range:((d.w-d.t)/d.n*100).toFixed(0)})})});
-  rows.sort((a,b)=>a.n-b.n);
-  document.getElementById('spreadTable').innerHTML=rows.map(r=>`<tr><td>${r.sym}</td><td>${r.ex}</td><td style="color:var(--g)">${r.t}</td><td>${r.n}</td><td style="color:var(--r)">${r.w}</td><td>${r.range}%</td></tr>`).join('');
+let rows=[];
+Object.entries(SPREADS).forEach(([sym,data])=>{data.forEach(d=>{rows.push({sym,ex:d.ex,t:d.t,n:d.n,w:d.w,range:((d.w-d.t)/d.n*100).toFixed(0)})})});
+rows.sort((a,b)=>a.n-b.n);
+document.getElementById('spreadTable').innerHTML=rows.map(r=>`<tr><td>${r.sym}</td><td>${r.ex}</td><td style="color:var(--g)">${r.t}</td><td>${r.n}</td><td style="color:var(--r)">${r.w}</td><td>${r.range}%</td></tr>`).join('');
+
+const hours=Array.from({length:24},(_,i)=>i);
+const symArr=['XAU','XAG','HG','AL'];
+const datasets=symArr.map((sym,i)=>{
+const base=SPREADS[sym]?.[0]||{n:2};
+return{label:sym,data:hours.map(h=>{
+const peak=h>=9&&h<=15;
+const thin=h>=0&&h<=6;
+return peak?base.n*0.6:thin?base.n*1.8:base.n;
+}),borderColor:['#ffd700','#c0c0c0','#e87d4f','#5f9ea0'][i],fill:false,tension:.4,borderWidth:2,pointRadius:0};
+});
+new Chart(document.getElementById('spreadChart'),{
+type:'line',data:{labels:hours.map(h=>`${String(h).padStart(2,'0')}:00`),datasets},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Spread (bps)',color:'#8b949e'}}}}
+});
 }
 
 function renderSessions(){
-  const hm=document.getElementById('sessionHeatmap');
-  let html='<div></div>';
-  for(let h=0;h<24;h++)html+=`<div style="text-align:center;color:var(--m);font-size:.6rem">${String(h).padStart(2,'0')}</div>`;
-  EXCHANGES.forEach(ex=>{
-    html+=`<div class="hm-label">${ex.name}</div>`;
-    for(let h=0;h<24;h++){
-      const s=getSession(ex,h);
-      html+=`<div class="hm-cell hm-${s}"></div>`;
-    }
-  });
-  hm.innerHTML=html;
+const hm=document.getElementById('sessionHeatmap');
+let html='<div></div>';
+for(let h=0;h<24;h++)html+=`<div style="text-align:center;color:var(--m);font-size:.6rem">${String(h).padStart(2,'0')}</div>`;
+EXCHANGES.forEach(ex=>{
+html+=`<div class="hm-label">${ex.name}</div>`;
+for(let h=0;h<24;h++){
+const s=getSession(ex,h);
+html+=`<div class="hm-cell hm-${s}"></div>`;
+}
+});
+hm.innerHTML=html;
 }
 
 function renderOverlaps(){
-  document.getElementById('overlapTable').innerHTML=OVERLAPS.map((o,i)=>`<tr><td><span class="badge badge-a">#${i+1}</span></td><td><strong>${o.name}</strong></td><td>${o.win} UTC</td><td>${o.dur}h</td><td>${o.spread}</td><td style="font-size:.65rem">${o.metals}</td></tr>`).join('');
+document.getElementById('overlapTable').innerHTML=OVERLAPS.map((o,i)=>`<tr><td><span class="badge badge-a">#${i+1}</span></td><td><strong>${o.name}</strong></td><td>${o.win} UTC</td><td>${o.dur}h</td><td>${o.spread}</td><td style="font-size:.65rem">${o.metals}</td></tr>`).join('');
 
-  new Chart(document.getElementById('overlapChart'),{
-    type:'bar',
-    data:{labels:['London-NY','LME-SHFE','COMEX-SHFE','LBMA-LME','LBMA-MCX','SGX-LME'],datasets:[{label:'Precious',data:[95,40,30,80,50,30],backgroundColor:'#ffd70066'},{label:'Base',data:[30,85,70,40,40,50],backgroundColor:'#58a6ff66'},{label:'Industrial',data:[20,80,30,30,20,60],backgroundColor:'#39d2c066'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},max:100}}}
-  });
+new Chart(document.getElementById('overlapChart'),{
+type:'bar',
+data:{labels:['London-NY','LME-SHFE','COMEX-SHFE','LBMA-LME','LBMA-MCX','SGX-LME'],datasets:[{label:'Precious',data:[95,40,30,80,50,30],backgroundColor:'#ffd70066'},{label:'Base',data:[30,85,70,40,40,50],backgroundColor:'#58a6ff66'},{label:'Industrial',data:[20,80,30,30,20,60],backgroundColor:'#39d2c066'}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},max:100}}}
+});
 
-  document.getElementById('priceDiscovery').innerHTML=[
-    {m:"Gold",v:"LBMA/COMEX",w:"10:00-15:00"},
-    {m:"Silver",v:"LBMA/COMEX",w:"10:00-14:00"},
-    {m:"Copper",v:"LME/SHFE",w:"10:00-16:00"},
-    {m:"Nickel",v:"LME/SGX",w:"10:00-16:00"},
-    {m:"Iron Ore",v:"SGX",w:"09:00-17:00"}
-  ].map(r=>`<tr><td><strong>${r.m}</strong></td><td>${r.v}</td><td>${r.w} UTC</td></tr>`).join('');
+document.getElementById('priceDiscovery').innerHTML=[
+{m:"Gold",v:"LBMA/COMEX",w:"10:00-15:00"},
+{m:"Silver",v:"LBMA/COMEX",w:"10:00-14:00"},
+{m:"Copper",v:"LME/SHFE",w:"10:00-16:00"},
+{m:"Nickel",v:"LME/SGX",w:"10:00-16:00"},
+{m:"Iron Ore",v:"SGX",w:"09:00-17:00"}
+].map(r=>`<tr><td><strong>${r.m}</strong></td><td>${r.v}</td><td>${r.w} UTC</td></tr>`).join('');
 }
 
 function renderGaps(){
-  document.getElementById('gapTable').innerHTML=[
-    {ex:"SHFE",zone:"16:00-08:00",hrs:16,risk:"HIGH",impact:"Price dislocation"},
-    {ex:"LBMA",zone:"17:00-07:00",hrs:14,risk:"HIGH",impact:"Wider spreads"},
-    {ex:"COMEX",zone:"18:00-05:00",hrs:11,risk:"HIGH",impact:"Thin liquidity"},
-    {ex:"LME",zone:"21:00-07:00",hrs:10,risk:"MED",impact:"Limited arb"},
-    {ex:"MCX",zone:"00:00-08:00",hrs:8,risk:"LOW",impact:"Follows LBMA"}
-  ].map(r=>`<tr><td><strong>${r.ex}</strong></td><td>${r.zone} UTC</td><td>${r.hrs}h</td><td><span class="badge badge-${r.risk==='HIGH'?'r':r.risk==='MED'?'o':'g'}">${r.risk}</span></td><td style="font-size:.68rem">${r.impact}</td></tr>`).join('');
+document.getElementById('gapTable').innerHTML=[
+{ex:"SHFE",zone:"16:00-08:00",hrs:16,risk:"HIGH",impact:"Price dislocation"},
+{ex:"LBMA",zone:"17:00-07:00",hrs:14,risk:"HIGH",impact:"Wider spreads"},
+{ex:"COMEX",zone:"18:00-05:00",hrs:11,risk:"HIGH",impact:"Thin liquidity"},
+{ex:"LME",zone:"21:00-07:00",hrs:10,risk:"MED",impact:"Limited arb"},
+{ex:"MCX",zone:"00:00-08:00",hrs:8,risk:"LOW",impact:"Follows LBMA"}
+].map(r=>`<tr><td><strong>${r.ex}</strong></td><td>${r.zone} UTC</td><td>${r.hrs}h</td><td><span class="badge badge-${r.risk==='HIGH'?'r':r.risk==='MED'?'o':'g'}">${r.risk}</span></td><td style="font-size:.68rem">${r.impact}</td></tr>`).join('');
+
+const holdingPeriods=[{l:'1D',v:0.02},{l:'1W',v:0.08},{l:'1M',v:0.35},{l:'3M',v:1.05},{l:'6M',v:2.1},{l:'1Y',v:4.2}];
+new Chart(document.getElementById('holdingCost'),{
+type:'bar',data:{labels:holdingPeriods.map(h=>h.l),datasets:[{data:holdingPeriods.map(h=>h.v),backgroundColor:'rgba(248,81,73,.5)',borderWidth:0}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Total Cost %',color:'#8b949e'}}}}
+});
+
+const metals4=['XAU','XAG','HG','AL'];
+new Chart(document.getElementById('hedgeVsSpread'),{
+type:'scatter',data:{datasets:metals4.map((s,i)=>({label:s,data:[{x:SPREADS[s]?.[0]?.n||2,y:1+i*0.5}],backgroundColor:['#ffd700','#c0c0c0','#e87d4f','#5f9ea0'][i],pointRadius:10}))},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{title:{display:true,text:'Avg Spread (bps)',color:'#8b949e'},ticks:{color:'#8b949e'},grid:{color:'#30363d44'}},y:{title:{display:true,text:'Hedge Cost (%)',color:'#8b949e'},ticks:{color:'#8b949e'},grid:{color:'#30363d44'}}}}
+});
 }
 
 function renderFees(){
-  document.getElementById('feeTable').innerHTML=FEES.map(f=>`<tr><td><strong>${f.ex}</strong></td><td><span class="badge badge-${f.fxRisk==='low'?'g':'r'}">${f.cur}</span></td><td>${f.trad}</td><td>${f.clear}</td><td>${f.comm}</td><td>${f.spread} bps</td><td><strong>${f.total} bps</strong></td></tr>`).join('');
+document.getElementById('feeTable').innerHTML=FEES.map(f=>`<tr><td><strong>${f.ex}</strong></td><td><span class="badge badge-${f.fxRisk==='low'?'g':'r'}">${f.cur}</span></td><td>${f.trad}</td><td>${f.clear}</td><td>${f.comm}</td><td>${f.spread} bps</td><td><strong>${f.total} bps</strong></td></tr>`).join('');
 
-  document.getElementById('costStack').innerHTML=FEES.map(f=>{
-    const spread=f.spread/15*100;
-    const other=(f.total-f.spread)/15*100;
-    return `<div style="margin-bottom:8px"><div style="font-size:.72rem;margin-bottom:4px">${f.ex}</div><div class="cost-stack"><div class="cost-seg" style="width:${spread}%;background:var(--r)">Spread</div><div class="cost-seg" style="width:${other}%;background:var(--o)">Other</div></div></div>`;
-  }).join('');
+document.getElementById('costStack').innerHTML=FEES.map(f=>{
+const spread=f.spread/15*100;
+const other=(f.total-f.spread)/15*100;
+return`<div style="margin-bottom:8px"><div style="font-size:.72rem;margin-bottom:4px">${f.ex}</div><div class="cost-stack"><div class="cost-seg" style="width:${spread}%;background:var(--r)">Spread</div><div class="cost-seg" style="width:${other}%;background:var(--o)">Other</div></div></div>`;
+}).join('');
 }
 
 function renderFX(){
-  document.getElementById('fxTable').innerHTML=FX_DATA.map(f=>`<tr><td><strong>${f.cur}</strong></td><td>${f.vol}%</td><td>${f.hedge}</td><td style="font-size:.68rem">${f.impact}</td></tr>`).join('');
-
-  document.getElementById('fxExchange').innerHTML=FEES.map(f=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b);font-size:.75rem"><span>${f.ex}</span><span class="badge badge-${f.fxRisk==='low'?'g':'r'}">${f.cur} · ${f.fxRisk} risk</span></div>`).join('');
+document.getElementById('fxTable').innerHTML=FX_DATA.map(f=>`<tr><td><strong>${f.cur}</strong></td><td>${f.vol}%</td><td>${f.hedge}</td><td style="font-size:.68rem">${f.impact}</td></tr>`).join('');
+document.getElementById('fxExchange').innerHTML=FEES.map(f=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b);font-size:.75rem"><span>${f.ex}</span><span class="badge badge-${f.fxRisk==='low'?'g':'r'}">${f.cur} · ${f.fxRisk} risk</span></div>`).join('');
 }
 
 function renderRFQ(){
-  document.getElementById('rfqTable').innerHTML=RFQ.map(r=>`<tr><td><strong>${r.name}</strong></td><td><span class="badge badge-a">${r.type}</span></td><td style="font-size:.68rem">${r.min}</td><td>${r.settle}</td><td style="font-size:.65rem">${r.metals}</td><td>${r.spread}</td><td style="font-size:.65rem">See detail</td></tr>`).join('');
+document.getElementById('rfqTable').innerHTML=RFQ.map(r=>`<tr><td><strong>${r.name}</strong></td><td><span class="badge badge-a">${r.type}</span></td><td style="font-size:.68rem">${r.min}</td><td>${r.settle}</td><td style="font-size:.65rem">${r.metals}</td><td>${r.spread}</td><td style="font-size:.65rem">See detail</td></tr>`).join('');
 }
 
 function renderTactics(){
-  const high=TACTICS.filter(t=>t.impact==='high');
-  const med=TACTICS.filter(t=>t.impact!=='high');
-  document.getElementById('tacticsHigh').innerHTML=high.map(t=>`<div class="tactic-item"><h4>${t.t}</h4><p>${t.d}</p></div>`).join('');
-  document.getElementById('tacticsMed').innerHTML=med.map(t=>`<div class="tactic-item" style="border-color:var(--o)"><h4>${t.t}</h4><p>${t.d}</p></div>`).join('');
+const high=TACTICS.filter(t=>t.impact==='high');
+const med=TACTICS.filter(t=>t.impact!=='high');
+document.getElementById('tacticsHigh').innerHTML=high.map(t=>`<div class="tactic-item"><h4>${t.t}</h4><p>${t.d}</p></div>`).join('');
+document.getElementById('tacticsMed').innerHTML=med.map(t=>`<div class="tactic-item" style="border-color:var(--o)"><h4>${t.t}</h4><p>${t.d}</p></div>`).join('');
+}
+
+function renderCorrelation(){
+const syms=Object.keys(CORR_MATRIX);
+const n=syms.length;
+const container=document.getElementById('corrMatrix');
+container.style.gridTemplateColumns=`80px repeat(${n},1fr)`;
+let html='<div class="corr-label"></div>';
+syms.forEach(s=>{html+=`<div class="corr-label" style="writing-mode:vertical-rl;transform:rotate(180deg)">${s}</div>`;});
+syms.forEach((row,i)=>{
+html+=`<div class="corr-label" style="text-align:right;padding-right:4px">${row}</div>`;
+syms.forEach((col,j)=>{
+const v=CORR_MATRIX[row][col];
+const s=i===j?1:v+(Math.random()*0.06-0.03);
+const cv=i===j?1:Math.max(-1,Math.min(1,s));
+const bg=cv>=0.8?'rgba(63,185,80,.7)':cv>=0.6?'rgba(63,185,80,.45)':cv>=0.4?'rgba(63,185,80,.25)':cv>=0.2?'rgba(210,153,34,.2)':cv>=0?'rgba(210,153,34,.1)':'rgba(248,81,73,.2)';
+html+=`<div class="corr-cell" style="background:${bg};color:${cv>=0.6?'#fff':'var(--t)'}" title="${row} vs ${col}: ${cv.toFixed(2)}">${cv.toFixed(2)}</div>`;
+});
+});
+container.innerHTML=html;
+
+const pairs=[];
+syms.forEach((a,i)=>syms.forEach((b,j)=>{
+if(i<j)pairs.push({a,b,corr:CORR_MATRIX[a][b]+Math.random()*0.06-0.03});
+}));
+pairs.sort((a,b)=>b.corr-a.corr);
+document.getElementById('corrRanking').innerHTML=pairs.slice(0,12).map(p=>`<tr><td>${p.a}</td><td>${p.b}</td><td><strong>${p.corr.toFixed(2)}</strong></td><td><span class="badge ${p.corr>0.6?'badge-g':p.corr>0.3?'badge-o':'badge-r'}">${p.corr>0.6?'Strong':p.corr>0.3?'Moderate':'Weak'}</span></td></tr>`).join('');
+
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const gsRatio=months.map((_,i)=>(78+i*0.3+Math.sin(i/2)*2).toFixed(1));
+new Chart(document.getElementById('goldSilverRatio'),{
+type:'line',data:{labels:months,datasets:[{label:'Au/Ag',data:gsRatio,borderColor:'#ffd700',fill:true,backgroundColor:'rgba(255,215,0,.1)',tension:.4,borderWidth:2,pointRadius:2}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'}}}}
+});
+
+const cuAlRatio=months.map((_,i)=>(0.00175+i*0.00002+Math.sin(i/3)*0.00005).toFixed(5));
+new Chart(document.getElementById('copperAlRatio'),{
+type:'line',data:{labels:months,datasets:[{label:'Cu/Al',data:cuAlRatio.map(v=>v*1000),borderColor:'#e87d4f',fill:true,backgroundColor:'rgba(232,125,79,.1)',tension:.4,borderWidth:2,pointRadius:2}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'×1000',color:'#8b949e'}}}}
+});
+}
+
+function renderSeasonality(){
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const metals=Object.keys(MONTHLY_RETURNS);
+const container=document.getElementById('seasonHeatmap');
+container.style.gridTemplateColumns=`80px repeat(12,1fr)`;
+let html='<div class="corr-label"></div>';
+months.forEach(m=>{html+=`<div class="corr-label">${m}</div>`;});
+metals.forEach(sym=>{
+html+=`<div class="corr-label" style="text-align:right;padding-right:4px">${sym}</div>`;
+MONTHLY_RETURNS[sym].forEach(v=>{
+const bg=v>2?'rgba(63,185,80,.6)':v>1?'rgba(63,185,80,.35)':v>0?'rgba(63,185,80,.15)':v>-1?'rgba(210,153,34,.15)':v>-2?'rgba(248,81,73,.3)':'rgba(248,81,73,.55)';
+html+=`<div class="corr-cell" style="background:${bg};color:${Math.abs(v)>1.5?'#fff':'var(--t)'}">${v>0?'+':''}${v.toFixed(1)}%</div>`;
+});
+});
+container.innerHTML=html;
+
+const avgByMonth=months.map((_,i)=>{
+const vals=metals.map(m=>MONTHLY_RETURNS[m][i]);
+return vals.reduce((a,b)=>a+b,0)/vals.length;
+});
+new Chart(document.getElementById('seasonChart'),{
+type:'bar',data:{labels:months,datasets:[{data:avgByMonth,backgroundColor:avgByMonth.map(v=>v>=0?'rgba(63,185,80,.5)':'rgba(248,81,73,.5)'),borderWidth:0}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Avg Return %',color:'#8b949e'}}}}
+});
+
+const bestRows=metals.map(m=>{
+const arr=MONTHLY_RETURNS[m];
+const maxIdx=arr.indexOf(Math.max(...arr));
+return{m,month:months[maxIdx],ret:arr[maxIdx],winRate:(arr.filter(v=>v>0).length/12*100).toFixed(0)};
+});
+document.getElementById('bestMonths').innerHTML=bestRows.sort((a,b)=>b.ret-a.ret).map(r=>`<tr><td><strong>${r.m}</strong></td><td>${r.month}</td><td style="color:var(--g)">+${r.ret.toFixed(1)}%</td><td>${r.winRate}%</td></tr>`).join('');
+
+const worstRows=metals.map(m=>{
+const arr=MONTHLY_RETURNS[m];
+const minIdx=arr.indexOf(Math.min(...arr));
+return{m,month:months[minIdx],ret:arr[minIdx]};
+});
+document.getElementById('worstMonths').innerHTML=worstRows.sort((a,b)=>a.ret-b.ret).map(r=>`<tr><td><strong>${r.m}</strong></td><td>${r.month}</td><td style="color:var(--r)">${r.ret.toFixed(1)}%</td><td>${(12-MONTHLY_RETURNS[r.m].filter(v=>v>0).length)/12*100|0}%</td></tr>`).join('');
+}
+
+function renderWarehouses(){
+const allLme=WAREHOUSE_STOCKS.lme;
+const allShfe=WAREHOUSE_STOCKS.shfe;
+const totalLme=allLme.reduce((a,r)=>a+r.tonnes,0);
+const totalShfe=allShfe.reduce((a,r)=>a+r.tonnes,0);
+const lmeChg=allLme.reduce((a,r)=>a+r.chg30,0);
+
+document.getElementById('whStats').innerHTML=[
+{val:(totalLme/1e3).toFixed(0)+'K',label:'LME Total (t)',color:'var(--a)'},
+{val:(totalShfe/1e3).toFixed(0)+'K',label:'SHFE Total (t)',color:'var(--r)'},
+{val:(lmeChg>0?'+':'')+lmeChg.toLocaleString(),label:'LME 30D Chg',color:lmeChg>0?'var(--o)':'var(--g)'},
+{val:'14.5',label:'Avg Days Cover',color:'var(--m)'}
+].map(s=>`<div class="stat-box"><div class="stat-val" style="color:${s.color}">${s.val}</div><div class="stat-label">${s.label}</div></div>`).join('');
+
+const metalNames=['Cu','Al','Zn','Ni','Sn','Pb'];
+new Chart(document.getElementById('whChart'),{
+type:'bar',data:{labels:metalNames,datasets:[{label:'LME',data:metalNames.map(m=>{const r=allLme.find(x=>x.metal===m);return r?r.tonnes:0}),backgroundColor:'rgba(88,166,255,.5)'},{label:'SHFE',data:metalNames.map(m=>{const r=allShfe.find(x=>x.metal===m);return r?r.tonnes:0}),backgroundColor:'rgba(248,81,73,.5)'}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Tonnes',color:'#8b949e'}}}}
+});
+
+new Chart(document.getElementById('whChangeChart'),{
+type:'bar',data:{labels:metalNames,datasets:[{label:'LME',data:metalNames.map(m=>{const r=allLme.find(x=>x.metal===m);return r?r.chg30:0}),backgroundColor:metalNames.map(m=>{const r=allLme.find(x=>x.metal===m);return r&&r.chg30<0?'rgba(63,185,80,.5)':'rgba(248,81,73,.5)'}),borderWidth:0},{label:'SHFE',data:metalNames.map(m=>{const r=allShfe.find(x=>x.metal===m);return r?r.chg30:0}),backgroundColor:metalNames.map(m=>{const r=allShfe.find(x=>x.metal===m);return r&&r.chg30<0?'rgba(63,185,80,.3)':'rgba(248,81,73,.3)'}),borderWidth:0}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Change (tonnes)',color:'#8b949e'}}}}
+});
+
+document.getElementById('lmeStocks').innerHTML=allLme.map(r=>`<tr><td><strong>${r.metal}</strong></td><td>${r.tonnes.toLocaleString()}</td><td style="color:${r.chg30<0?'var(--g)':'var(--r)'}">${r.chg30>0?'+':''}${r.chg30.toLocaleString()}</td><td>${r.trend}</td><td>${r.days}d</td></tr>`).join('');
+document.getElementById('shfeStocks').innerHTML=allShfe.map(r=>`<tr><td><strong>${r.metal}</strong></td><td>${r.tonnes.toLocaleString()}</td><td style="color:${r.chg30<0?'var(--g)':'var(--r)'}">${r.chg30>0?'+':''}${r.chg30.toLocaleString()}</td><td>${r.trend}</td><td>${r.days}d</td></tr>`).join('');
+}
+
+window._fwdChart=null;
+function renderFwdCurves(){
+const metalSyms=Object.keys(FWD_CURVES);
+document.getElementById('fwdMetalBtns').innerHTML=metalSyms.map((s,i)=>`<button class="period-btn ${i===0?'active':''}" onclick="showFwdCurve('${s}',this)">${s}</button>`).join('');
+
+const defaultMetal='XAU';
+const fc=FWD_CURVES[defaultMetal];
+const labels=['Spot','1M','3M','6M','1Y'];
+const data=[fc.spot,...fc.fwd.map(f=>f.p)];
+window._fwdChart=new Chart(document.getElementById('fwdCurveChart'),{
+type:'line',data:{labels,datasets:[{label:defaultMetal,data,borderColor:'#ffd700',fill:true,backgroundColor:'rgba(255,215,0,.1)',tension:.3,borderWidth:2,pointRadius:4,pointBackgroundColor:'#ffd700'}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'}}}}
+});
+
+document.getElementById('fwdTable').innerHTML=metalSyms.map(s=>{
+const fc=FWD_CURVES[s];
+const vals=[fc.spot,...fc.fwd.map(f=>f.p)];
+const slope=((vals[vals.length-1]/vals[0]-1)*100).toFixed(2);
+const structure=slope>0.5?'Contango':slope<-0.5?'Backwardation':'Flat';
+const badge=structure==='Contango'?'badge-o':structure==='Backwardation'?'badge-g':'badge-a';
+return`<tr><td><strong>${s}</strong></td><td>${vals[0].toLocaleString()}</td><td>${vals[1].toLocaleString()}</td><td>${vals[2].toLocaleString()}</td><td>${vals[3].toLocaleString()}</td><td>${vals[4].toLocaleString()}</td><td><span class="badge ${badge}">${structure}</span></td><td>${slope>0?'+':''}${slope}%</td></tr>`;
+}).join('');
+
+document.getElementById('contangoMap').innerHTML=metalSyms.map(s=>{
+const fc=FWD_CURVES[s];
+const slope=(fc.fwd[3].p/fc.spot-1)*100;
+const color=slope>1?'var(--o)':slope>0?'rgba(210,153,34,.3)':slope>-1?'rgba(88,166,255,.3)':'var(--a)';
+return`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--b);font-size:.72rem"><span style="min-width:50px;font-weight:600">${s}</span><div style="flex:1;height:8px;border-radius:4px;background:var(--b);overflow:hidden"><div style="width:${Math.min(Math.abs(slope)*15+30,100)}%;height:100%;background:${color};border-radius:4px"></div></div><span style="min-width:50px;text-align:right">${slope>0?'+':''}${slope.toFixed(1)}%</span></div>`;
+}).join('');
+
+const carries=metalSyms.filter(s=>{
+const fc=FWD_CURVES[s];
+return(fc.fwd[3].p/fc.spot-1)*100>0.5;
+}).map(s=>{
+const fc=FWD_CURVES[s];
+const ann=((fc.fwd[3].p/fc.spot-1)*100*12/6).toFixed(1);
+return{s,carry:((fc.fwd[3].p/fc.spot-1)*100).toFixed(2),ann,risk:parseFloat(ann)>8?'High':'Low'};
+}).sort((a,b)=>b.ann-a.ann);
+document.getElementById('carryTable').innerHTML=carries.map(r=>`<tr><td><strong>${r.s}</strong></td><td>${r.carry}%</td><td style="color:var(--g)">${r.ann}%</td><td><span class="badge badge-${r.risk==='High'?'o':'g'}">${r.risk}</span></td></tr>`).join('');
+}
+
+function showFwdCurve(sym,btn){
+btn.parentElement.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+const fc=FWD_CURVES[sym];
+if(!fc)return;
+const labels=['Spot','1M','3M','6M','1Y'];
+const data=[fc.spot,...fc.fwd.map(f=>f.p)];
+if(window._fwdChart)window._fwdChart.destroy();
+window._fwdChart=new Chart(document.getElementById('fwdCurveChart'),{
+type:'line',data:{labels,datasets:[{label:sym,data,borderColor:'#58a6ff',fill:true,backgroundColor:'rgba(88,166,255,.1)',tension:.3,borderWidth:2,pointRadius:4,pointBackgroundColor:'#58a6ff'}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'}}}}
+});
+}
+
+function renderMacro(){
+const metals=Object.keys(MACRO_SENS);
+const factors=['dxy','yield','cpi','wti','sp500'];
+const labels=['USD (DXY)','10Y Yield','CPI YoY','WTI Oil','S&P 500'];
+const colors=['#ffd700','#e87d4f','#5f9ea0','#bc8cff','#39d2c0'];
+
+new Chart(document.getElementById('macroCorrChart'),{
+type:'radar',
+data:{labels:labels,datasets:metals.slice(0,5).map((m,i)=>({label:m,data:factors.map(f=>Math.abs(MACRO_SENS[m][f])*100),borderColor:colors[i],backgroundColor:colors[i]+'22',borderWidth:2,pointRadius:3}))},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{r:{angleLines:{color:'#30363d'},grid:{color:'#30363d'},pointLabels:{color:'#8b949e'},ticks:{display:false},suggestedMin:0,suggestedMax:80}}}
+});
+
+document.getElementById('macroSensTable').innerHTML=metals.map(m=>`<tr><td><strong>${m}</strong></td>${factors.map(f=>{const v=MACRO_SENS[m][f];return`<td style="color:${v>0?'var(--g)':v<-0.3?'var(--r)':'var(--o)'}">${v>0?'+':''}${(v*100).toFixed(0)}%</td>`}).join('')}</tr>`).join('');
+
+document.getElementById('macroEvents').innerHTML=MACRO_EVENTS.map(e=>`<div style="padding:8px 0;border-bottom:1px solid var(--b);font-size:.72rem"><div style="display:flex;justify-content:space-between"><span class="badge badge-a">${e.date}</span><span style="color:var(--m);font-size:.65rem">${e.metal}</span></div><div style="margin-top:4px">${e.event}</div><div style="color:var(--o);font-size:.68rem;margin-top:2px">${e.impact}</div></div>`).join('');
+
+document.getElementById('macroInsights').innerHTML=[
+{text:"Gold inversely correlated with USD (-0.65) and real rates",icon:"📉"},
+{text:"Copper strongly correlated with WTI (+0.55) and S&P (+0.45)",icon:"📈"},
+{text:"Lithium driven by EV demand, not macro factors",icon:"🚗"},
+{text:"Aluminum correlated with energy prices due to smelting costs",icon:"⚡"}
+].map(i=>`<div style="padding:8px 0;border-bottom:1px solid var(--b);font-size:.72rem"><span style="margin-right:6px">${i.icon}</span>${i.text}</div>`).join('');
+}
+
+function renderSupplyDemand(){
+const metals=SUPPLY_DEMAND.map(s=>s.metal);
+new Chart(document.getElementById('sdChart'),{
+type:'bar',data:{labels:metals,datasets:[{label:'Supply',data:SUPPLY_DEMAND.map(s=>s.total),backgroundColor:'rgba(63,185,80,.4)'},{label:'Demand',data:SUPPLY_DEMAND.map(s=>s.demand),backgroundColor:'rgba(248,81,73,.4)'}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e',maxRotation:45},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Kt',color:'#8b949e'}}}}
+});
+
+document.getElementById('sdTable').innerHTML=SUPPLY_DEMAND.map(s=>`<tr><td><strong>${s.metal}</strong></td><td>${s.mine.toLocaleString()}</td><td>${s.recycled.toLocaleString()}</td><td>${s.total.toLocaleString()}</td><td>${s.demand.toLocaleString()}</td><td style="color:${s.balance>=0?'var(--g)':'var(--r)'}">${s.balance>0?'+':''}${s.balance.toLocaleString()}</td><td><span class="badge ${s.balance>=0?'badge-g':'badge-r'}">${s.balance>=0?'Surplus':'Deficit'}</span></td></tr>`).join('');
+
+new Chart(document.getElementById('topProducers'),{
+type:'pie',data:{labels:['China','Australia','Chile','DRC','Indonesia','Russia','South Africa','Peru'],datasets:[{data:[28,12,10,8,7,6,5,4],backgroundColor:['#f8514988','#58a6ff88','#39d2c088','#d2992288','#bc8cff88','#e87d4f88','#ffd70088','#3fb95088']}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b949e'}}}}
+});
+
+new Chart(document.getElementById('demandSector'),{
+type:'doughnut',data:{labels:['Construction','Electronics','Auto','Aerospace','Energy','Other'],datasets:[{data:[28,22,18,12,10,10],backgroundColor:['#e87d4f88','#58a6ff88','#39d2c088','#ffd70088','#3fb95088','#8b949e88']}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b949e'}}}}
+});
+}
+
+function renderSentiment(){
+const avgSent=Math.round(SENTIMENT_DATA.reduce((a,s)=>a+s.score,0)/SENTIMENT_DATA.length);
+document.getElementById('sentStats').innerHTML=[
+{val:avgSent,label:'Avg Sentiment',color:'var(--a)'},
+{val:SENTIMENT_DATA.filter(s=>s.score>=60).length,label:'Bullish',color:'var(--g)'},
+{val:SENTIMENT_DATA.filter(s=>s.score<50).length,label:'Bearish',color:'var(--r)'},
+{val:SENTIMENT_DATA.length,label:'Metals Tracked',color:'var(--m)'}
+].map(s=>`<div class="stat-box"><div class="stat-val" style="color:${s.color}">${s.val}</div><div class="stat-label">${s.label}</div></div>`).join('');
+
+document.getElementById('sentimentBars').innerHTML=SENTIMENT_DATA.map(s=>{
+const green=s.score;
+const gray=100-s.score;
+const label=s.score>=65?'Bullish':s.score>=50?'Neutral':'Bearish';
+const labelColor=s.score>=65?'var(--g)':s.score>=50?'var(--o)':'var(--r)';
+return`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:4px"><span><strong>${s.metal}</strong></span><span style="color:${labelColor}">${label} (${s.score})</span></div><div class="sentiment-meter"><div style="width:${green}%;background:rgba(63,185,80,.6)">${s.score}</div><div style="width:${gray}%;background:var(--b)"></div></div></div>`;
+}).join('');
+
+const recentHeadlines=SENTIMENT_DATA.flatMap(s=>s.headlines.slice(0,2).map(h=>({headline:h,metal:s.metal,score:s.score})));
+recentHeadlines.sort((a,b)=>b.score-a.score);
+document.getElementById('headlinesList').innerHTML=recentHeadlines.map(h=>{
+const icon=h.score>=65?'📈':h.score>=50?'📊':'📉';
+return`<div style="padding:8px 0;border-bottom:1px solid var(--b);font-size:.72rem"><span style="margin-right:6px">${icon}</span><span class="badge badge-a" style="margin-right:6px">${h.metal}</span>${h.headline}</div>`;
+}).join('');
+
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ds=SENTIMENT_DATA.filter(s=>['XAU','HG','LIT'].includes(s.metal));
+new Chart(document.getElementById('sentTrend'),{
+type:'line',data:{labels:months,datasets:ds.map((s,i)=>({label:s.metal,data:s.trend,borderColor:['#ffd700','#e87d4f','#5f9ea0'][i],tension:.4,borderWidth:2,pointRadius:2}))},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},suggestedMin:30,suggestedMax:80}}}
+});
+
+const catSent={precious:0,base:0,industrial:0,rare:0};
+const catCount={precious:0,base:0,industrial:0,rare:0};
+SENTIMENT_DATA.forEach(s=>{
+const m=METALS.find(x=>x.sym===s.metal);
+if(m){catSent[m.cat]+=s.score;catCount[m.cat]++;}
+});
+const catLabels2=['Precious','Base','Industrial','Rare Earths'];
+const catKeys=['precious','base','industrial','rare'];
+new Chart(document.getElementById('sentCatChart'),{
+type:'bar',data:{labels:catLabels2,datasets:[{data:catKeys.map(k=>catCount[k]?Math.round(catSent[k]/catCount[k]):0),backgroundColor:['#ffd70066','#e87d4f66','#5f9ea066','#bc8cff66'],borderWidth:0}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},suggestedMin:30,suggestedMax:80}}}
+});
+}
+
+function renderESG(){
+document.getElementById('esgTable').innerHTML=ESG_DATA.map(e=>{
+const envColor=e.env>=50?'var(--g)':e.env>=35?'var(--o)':'var(--r)';
+const socColor=e.social>=50?'var(--g)':e.social>=35?'var(--o)':'var(--r)';
+const govColor=e.governance>=60?'var(--g)':e.governance>=45?'var(--o)':'var(--r)';
+return`<tr><td><strong>${e.metal}</strong></td><td>${e.env}<div class="esg-bar"><div class="esg-fill" style="width:${e.env}%;background:${envColor}"></div></div></td><td>${e.social}<div class="esg-bar"><div class="esg-fill" style="width:${e.social}%;background:${socColor}"></div></div></td><td>${e.governance}<div class="esg-bar"><div class="esg-fill" style="width:${e.governance}%;background:${govColor}"></div></div></td><td><strong>${e.overall}</strong></td><td>${e.carbon} t</td><td style="font-size:.68rem">${e.ethical}</td></tr>`;
+}).join('');
+
+new Chart(document.getElementById('esgEnvChart'),{
+type:'bar',data:{labels:ESG_DATA.map(e=>e.metal),datasets:[{label:'Environmental',data:ESG_DATA.map(e=>e.env),backgroundColor:'rgba(63,185,80,.4)'},{label:'Social',data:ESG_DATA.map(e=>e.social),backgroundColor:'rgba(88,166,255,.4)'},{label:'Governance',data:ESG_DATA.map(e=>e.governance),backgroundColor:'rgba(188,140,255,.4)'}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},max:100}}}
+});
+
+new Chart(document.getElementById('carbonChart'),{
+type:'bar',data:{labels:ESG_DATA.map(e=>e.metal),datasets:[{data:ESG_DATA.map(e=>e.carbon),backgroundColor:ESG_DATA.map(e=>e.carbon>100?'rgba(248,81,73,.5)':e.carbon>50?'rgba(210,153,34,.5)':'rgba(63,185,80,.5)'),borderWidth:0}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'tCO2e/t metal',color:'#8b949e'}}}}
+});
+
+document.getElementById('ethicalMap').innerHTML=ESG_DATA.map(e=>{
+const rating=e.ethical.includes('concern')?'badge-r':e.ethical==='Good'?'badge-g':'badge-o';
+return`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b);font-size:.72rem"><span><strong>${e.metal}</strong> — ${e.region}</span><span class="badge ${rating}">${e.ethical}</span></div>`;
+}).join('');
+
+const recycleData=[
+{metal:'Cu',rate:35},{metal:'Al',rate:76},{metal:'Pb',rate:99},{metal:'Zn',rate:30},
+{metal:'Ni',rate:42},{metal:'Au',rate:25},{metal:'Ag',rate:20},{metal:'Pt',rate:45}
+];
+new Chart(document.getElementById('recycleChart'),{
+type:'bar',data:{labels:recycleData.map(r=>r.metal),datasets:[{data:recycleData.map(r=>r.rate),backgroundColor:recycleData.map(r=>r.rate>50?'rgba(63,185,80,.5)':r.rate>25?'rgba(210,153,34,.5)':'rgba(248,81,73,.5)'),borderWidth:0}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Recycling Rate %',color:'#8b949e'},max:100}}}
+});
+}
+
+function renderAlerts(){
+document.getElementById('alertsList').innerHTML=alerts.map(a=>{
+const status=a.triggered?'alert-triggered':a.active?'alert-active':'';
+return`<div class="alert-row ${status}"><span class="alert-name">${a.metal}</span><span class="badge badge-a">${a.exchange}</span><span style="font-size:.72rem;color:var(--m)">Threshold:</span><input type="number" value="${a.threshold}" onchange="updateAlert(${a.id},'threshold',this.value)"><select onchange="updateAlert(${a.id},'metal',this.value)">${METALS.map(m=>`<option ${m.sym===a.metal?'selected':''}>${m.sym}</option>`).join('')}</select><button class="period-btn ${a.active?'active':''}" onclick="toggleAlert(${a.id})" style="padding:4px 10px;font-size:.68rem">${a.active?'ON':'OFF'}</button><button class="period-btn" onclick="removeAlert(${a.id})" style="padding:4px 10px;font-size:.68rem;border-color:var(--r);color:var(--r)">✕</button></div>`;
+}).join('');
+
+const triggers=[
+{time:'14:32 UTC',metal:'NI',exchange:'LME',spread:6.2,threshold:5.0,severity:'HIGH'},
+{time:'11:15 UTC',metal:'LIT',exchange:'CME',spread:18.5,threshold:15.0,severity:'MED'},
+{time:'09:48 UTC',metal:'COB',exchange:'LME',spread:12.1,threshold:10.0,severity:'MED'}
+];
+document.getElementById('alertTriggers').innerHTML=triggers.map(t=>`<tr><td style="color:var(--m)">${t.time}</td><td><strong>${t.metal}</strong></td><td>${t.exchange}</td><td style="color:var(--r)">${t.spread} bps</td><td>${t.threshold} bps</td><td><span class="badge badge-${t.severity==='HIGH'?'r':'o'}">${t.severity}</span></td></tr>`).join('');
+}
+
+function addAlert(){
+alerts.push({id:alertIdCounter++,metal:'XAU',exchange:'COMEX',threshold:2.0,active:false,triggered:false});
+renderAlerts();
+}
+
+function updateAlert(id,key,val){
+const a=alerts.find(x=>x.id===id);
+if(a){a[key]=key==='threshold'?parseFloat(val):val;renderAlerts();}
+}
+
+function toggleAlert(id){
+const a=alerts.find(x=>x.id===id);
+if(a){a.active=!a.active;a.triggered=false;renderAlerts();}
+}
+
+function removeAlert(id){
+alerts=alerts.filter(x=>x.id!==id);
+renderAlerts();
+}
+
+function renderSizing(){
+const sel=document.getElementById('sizingMetal');
+sel.innerHTML=METALS.map(m=>`<option value="${m.sym}">${m.name} (${m.sym})</option>`).join('');
+sel.onchange=()=>{document.getElementById('entryPrice').value=METALS.find(m=>m.sym===sel.value)?.price||''};
+document.getElementById('entryPrice').value=METALS[0].price;
+}
+
+function calcPosition(){
+const acct=parseFloat(document.getElementById('acctSize').value)||1000000;
+const riskPct=parseFloat(document.getElementById('riskPct').value)||1;
+const sym=document.getElementById('sizingMetal').value;
+const price=parseFloat(document.getElementById('entryPrice').value);
+const stopBps=parseFloat(document.getElementById('stopBps').value)||200;
+const metal=METALS.find(m=>m.sym===sym);
+
+if(!price||!metal){document.getElementById('sizingResults').innerHTML='<span style="color:var(--r)">Enter valid price</span>';return;}
+
+const riskAmt=acct*(riskPct/100);
+const stopPct=stopBps/100;
+const stopPrice=price*(1-stopPct);
+const riskPerUnit=price-stopPrice;
+const units=Math.floor(riskAmt/riskPerUnit);
+const positionVal=units*price;
+const volAdj=(metal.vol[currentPeriod]/20);
+
+document.getElementById('sizingResults').innerHTML=`
+<div style="padding:8px;background:var(--bg);border-radius:6px;margin-bottom:8px"><strong style="color:var(--a)">Risk Amount:</strong> $${riskAmt.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+<div style="padding:8px;background:var(--bg);border-radius:6px;margin-bottom:8px"><strong style="color:var(--o)">Stop Distance:</strong> ${(stopPct*100).toFixed(1)}% ($${(price-stopPrice).toFixed(2)})</div>
+<div style="padding:8px;background:var(--bg);border-radius:6px;margin-bottom:8px"><strong style="color:var(--g)">Position Size:</strong> ${units.toLocaleString()} units</div>
+<div style="padding:8px;background:var(--bg);border-radius:6px;margin-bottom:8px"><strong style="color:var(--p)">Position Value:</strong> $${positionVal.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+<div style="padding:8px;background:var(--bg);border-radius:6px;margin-bottom:8px"><strong style="color:var(--m)">% of Account:</strong> ${(positionVal/acct*100).toFixed(2)}%</div>
+<div style="padding:8px;background:var(--bg);border-radius:6px;margin-bottom:8px"><strong style="color:var(--c)">Vol-Adjusted Size:</strong> ${(units/volAdj).toFixed(0)} units</div>
+<div style="padding:8px;background:var(--bg);border-radius:6px"><strong style="color:var(--t)">Notional:</strong> $${(units*price).toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+`;
+}
+
+function renderComparison(){
+const syms=[document.getElementById('cmp1').value,document.getElementById('cmp2').value,document.getElementById('cmp3').value].filter(Boolean);
+if(syms.length<1)return;
+
+const months=['1M','3M','6M','1Y','2Y','5Y'];
+document.getElementById('cmpH1').textContent=syms[0]||'-';
+document.getElementById('cmpH2').textContent=syms[1]||'-';
+document.getElementById('cmpH3').textContent=syms[2]||'-';
+
+const colors=['#ffd700','#58a6ff','#39d2c0'];
+if(window._cmpVolChart)window._cmpVolChart.destroy();
+window._cmpVolChart=new Chart(document.getElementById('cmpVolChart'),{
+type:'bar',data:{labels:months,datasets:syms.map((s,i)=>{const m=METALS.find(x=>x.sym===s);return{label:s,data:m?[m.vol.m1,m.vol.m3,m.vol.m6,m.vol.y1,m.vol.y2,m.vol.y5]:[],backgroundColor:colors[i]+'88',borderWidth:0};})},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Vol %',color:'#8b949e'}}}}
+});
+
+const spreadLabels=syms.filter(s=>SPREADS[s]).length>0?['Tight','Normal','Wide']:[''];
+if(window._cmpSpreadChart)window._cmpSpreadChart.destroy();
+window._cmpSpreadChart=new Chart(document.getElementById('cmpSpreadChart'),{
+type:'bar',data:{labels:['Tight','Normal','Wide'],datasets:syms.map((s,i)=>{const sp=SPREADS[s]?.[0];return{label:s,data:sp?[sp.t,sp.n,sp.w]:[0,0,0],backgroundColor:colors[i]+'88',borderWidth:0};})},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e'}}},scales:{x:{ticks:{color:'#8b949e'},grid:{display:false}},y:{ticks:{color:'#8b949e'},grid:{color:'#30363d44'},title:{display:true,text:'Basis Points',color:'#8b949e'}}}}
+});
+
+const metrics=['Category','Vol (1Y)','24H Volume','Bid-Ask','Exchange','Unit','Price'];
+document.getElementById('cmpTable').innerHTML=metrics.map(metric=>{
+return`<tr><td style="color:var(--m)">${metric}</td>${syms.map(s=>{
+const m=METALS.find(x=>x.sym===s);
+if(!m)return'<td>-</td>';
+switch(metric){
+case'Category':return`<td><span class="badge badge-a">${catLabels[m.cat]}</span></td>`;
+case'Vol (1Y)':return`<td>${m.vol.y1}%</td>`;
+case'24H Volume':return`<td>${m.vol24}</td>`;
+case'Bid-Ask':return`<td>${m.ba}</td>`;
+case'Exchange':return`<td>${m.exchange}</td>`;
+case'Unit':return`<td>${m.unit}</td>`;
+case'Price':return`<td><strong>${m.price.toLocaleString()}</strong></td>`;
+default:return`<td>-</td>`;
+}
+}).join('')}</tr>`;
+}).join('');
+}
+
+function renderReports(){}
+
+function exportCSV(section){
+let csv='';
+if(section==='volatility'||section==='all'){
+csv='Metal,Category,Vol 1M,Vol 3M,Vol 6M,Vol 1Y,Vol 2Y,Vol 5Y,Range,24H Vol\n';
+METALS.forEach(m=>{csv+=`${m.name},${catLabels[m.cat]},${m.vol.m1},${m.vol.m3},${m.vol.m6},${m.vol.y1},${m.vol.y2},${m.vol.y5},${m.range},${m.vol24}\n`;});
+csv+='\n';
+}
+if(section==='spreads'||section==='all'){
+csv+='Metal,Exchange,Tight,Normal,Wide\n';
+Object.entries(SPREADS).forEach(([sym,data])=>{data.forEach(d=>{csv+=`${sym},${d.ex},${d.t},${d.n},${d.w}\n`;});});
+csv+='\n';
+}
+if(section==='correlation'||section==='all'){
+csv='Metal,'+Object.keys(CORR_MATRIX).join(',')+'\n';
+Object.entries(CORR_MATRIX).forEach(([sym,row])=>{csv+=`${sym},${Object.values(row).join(',')}\n`;});
+csv+='\n';
+}
+if(section==='warehouses'||section==='all'){
+csv='Exchange,Metal,Tonnes,30D Change,Trend,Days Cover\n';
+WAREHOUSE_STOCKS.lme.forEach(r=>{csv+=`LME,${r.metal},${r.tonnes},${r.chg30},${r.trend},${r.days}\n`;});
+WAREHOUSE_STOCKS.shfe.forEach(r=>{csv+=`SHFE,${r.metal},${r.tonnes},${r.chg30},${r.trend},${r.days}\n`;});
+csv+='\n';
+}
+if(section==='fwdcurve'||section==='all'){
+csv='Metal,Spot,1M,3M,6M,1Y\n';
+Object.entries(FWD_CURVES).forEach(([sym,fc])=>{csv+=`${sym},${fc.spot},${fc.fwd.map(f=>f.p).join(',')}\n`;});
+csv+='\n';
+}
+if(section==='esg'||section==='all'){
+csv='Metal,Environmental,Social,Governance,Overall,Carbon (tCO2e/t),Ethical Rating,Region\n';
+ESG_DATA.forEach(e=>{csv+=`${e.metal},${e.env},${e.social},${e.governance},${e.overall},${e.carbon},${e.ethical},${e.region}\n`;});
+csv+='\n';
+}
+if(section==='supplydemand'||section==='all'){
+csv='Metal,Mine Output (kt),Recycled (kt),Total Supply,Demand (kt),Balance\n';
+SUPPLY_DEMAND.forEach(s=>{csv+=`${s.metal},${s.mine},${s.recycled},${s.total},${s.demand},${s.balance}\n`;});
+}
+const blob=new Blob([csv],{type:'text/csv'});
+const a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download=`metals-${section}-${new Date().toISOString().slice(0,10)}.csv`;
+a.click();
+}
+
+function toggleTheme(){
+document.body.classList.toggle('light');
+const btn=document.getElementById('themeBtn');
+btn.textContent=document.body.classList.contains('light')?'🌙':'☀️';
+localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark');
+}
+
+function initDashboardCustomize(){
+const saved=JSON.parse(localStorage.getItem('dashboardWidgets')||'{}');
+const container=document.getElementById('widgetToggles');
+container.innerHTML=OVERVIEW_WIDGETS.map(w=>{
+const on=saved[w.id]!==undefined?saved[w.id]:w.defaultOn;
+if(!on){const el=document.getElementById(w.id);if(el)el.style.display='none';}
+return`<div class="widget-toggle"><label>${w.label}</label><label class="toggle-switch"><input type="checkbox" ${on?'checked':''} onchange="toggleWidget('${w.id}',this.checked)"><span class="toggle-slider"></span></label></div>`;
+}).join('');
+}
+
+function toggleWidget(id,on){
+const el=document.getElementById(id);
+if(el)el.style.display=on?'':'none';
+const saved=JSON.parse(localStorage.getItem('dashboardWidgets')||'{}');
+saved[id]=on;
+localStorage.setItem('dashboardWidgets',JSON.stringify(saved));
+}
+
+function closeCustomize(){
+document.getElementById('customizePanel').style.display='none';
+document.getElementById('overlay').style.display='none';
+}
+
+function populateCompareSelects(){
+const opts=METALS.map(m=>`<option value="${m.sym}">${m.name} (${m.sym})</option>`).join('');
+document.getElementById('cmp1').innerHTML='<option value="">Select Metal 1</option>'+opts;
+document.getElementById('cmp2').innerHTML='<option value="">Select Metal 2</option>'+opts;
+document.getElementById('cmp3').innerHTML='<option value="">Select Metal 3</option>'+opts;
 }
 
 document.querySelectorAll('.nav-item').forEach(item=>{
-  item.addEventListener('click',()=>{
-    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    item.classList.add('active');
-    document.getElementById('page-'+item.dataset.page).classList.add('active');
-  });
+item.addEventListener('click',()=>{
+document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+item.classList.add('active');
+document.getElementById('page-'+item.dataset.page).classList.add('active');
+document.querySelector('.sidebar').classList.remove('open');
+setTimeout(()=>{
+const pg=item.dataset.page;
+if(pg==='volatility')renderVolatility();
+else if(pg==='overview')renderOverview();
+else if(pg==='spreads')renderSpreads();
+else if(pg==='sessions')renderSessions();
+else if(pg==='overlaps')renderOverlaps();
+else if(pg==='gaps')renderGaps();
+else if(pg==='fees')renderFees();
+else if(pg==='fx')renderFX();
+else if(pg==='rfq')renderRFQ();
+else if(pg==='tactics')renderTactics();
+},100);
+});
 });
 
-renderOverview();renderVolatility();renderSpreads();renderSessions();renderOverlaps();renderGaps();renderFees();renderFX();renderRFQ();renderTactics();
+document.querySelectorAll('.period-btn').forEach(btn=>{
+btn.addEventListener('click',()=>{
+document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+currentPeriod=btn.dataset.period;
+renderVolatility();
+renderOverview();
+});
+});
+
+if(localStorage.getItem('theme')==='light')toggleTheme();
+
+renderTicker();
+renderOverview();renderVolatility();renderSpreads();renderSessions();renderOverlaps();
+renderGaps();renderFees();renderFX();renderRFQ();renderTactics();
+renderCorrelation();renderSeasonality();renderWarehouses();renderFwdCurves();
+renderMacro();renderSupplyDemand();renderSentiment();renderESG();
+renderAlerts();renderSizing();populateCompareSelects();initDashboardCustomize();
+
+setInterval(()=>{
+const items=document.querySelectorAll('.ticker-item .ticker-price');
+items.forEach(el=>{
+const v=parseFloat(el.textContent.replace(/,/g,''));
+const nv=v*(1+(Math.random()*0.002-0.001));
+el.textContent=nv.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const chg=el.nextElementSibling;
+if(chg){const c=(Math.random()*4-2).toFixed(2);chg.textContent=(parseFloat(c)>=0?'▲':'▼')+c+'%';chg.className='ticker-chg '+(parseFloat(c)>=0?'ticker-up':'ticker-dn');}
+});
+},5000);
 </script>
 </body>
 </html>
+
